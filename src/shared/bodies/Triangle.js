@@ -1,13 +1,13 @@
 import { Bodies, Vertices } from 'matter-js';
 import { TRIANGLE_FRICTION, TRIANGLE_RESTITUTION, TRIANGLE_X_OFFSET, TRIANGLE_Y_OFFSET } from '../constants/bodies';
-import { WALL_COLOR } from '../constants/colors';
+import { WALL_TINT } from '../constants/colors';
+import { TRIANGLE_SPRITE } from '../constants/sprites';
 import GameObject from './GameObject';
 import engine from '../../client/engine'
 
 import decomp from 'poly-decomp';
- 
-window.decomp = decomp;
 
+window.decomp = decomp;
 
 let PIXI;
 
@@ -18,7 +18,7 @@ if (typeof window === 'object') {
 export default class Triangle extends GameObject {
   constructor({ x, y }) {
     super({ x, y })
-  
+
     this.xOffset = TRIANGLE_X_OFFSET;
     this.yOffset = TRIANGLE_Y_OFFSET;
 
@@ -40,13 +40,14 @@ export default class Triangle extends GameObject {
   }
 
   createSprite() {
-    const triangle = new PIXI.Sprite.fromImage('https://i.imgur.com/vjI9mpy.png');
+    const triangle = new PIXI.Sprite.fromImage(TRIANGLE_SPRITE);
 
     // The sprite is located based on the actual x, y passed into Triangle
     triangle.position.x = this.x;
     triangle.position.y = this.y;
     triangle.scale.set(0.33, 0.33);
     triangle.anchor.set(0.5, 0.5);
+    triangle.tint = WALL_TINT;
 
     this.sprite = triangle;
   }
