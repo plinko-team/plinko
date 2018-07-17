@@ -1,0 +1,1 @@
+{"version":3,"sources":["../../../src/shared/constants/colors.js"],"names":["CHIP_COLOR","CANVAS_COLOR"],"mappings":";;;;;AAAO,IAAMA,kCAAa,QAAnB;AACA,IAAMC,sCAAe,QAArB","file":"colors.js","sourcesContent":["export const CHIP_COLOR = 0xaa33ff;\nexport const CANVAS_COLOR = 0x1099bb;\n"]}

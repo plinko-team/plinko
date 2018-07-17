@@ -1,5 +1,5 @@
 import { Bodies, World } from 'matter-js';
-import { CHIP_RADIUS } from '../constants/gameEngine';
+import { CHIP_RADIUS } from '../constants/game';
 import { CHIP_FRICTION, CHIP_RESTITUTION } from '../constants/bodies';
 import { CHIP_COLOR } from '../constants/colors';
 
@@ -19,7 +19,7 @@ export default class Chip {
   }
 
   createSprite() {
-    this.sprite = PIXI.Graphics();
+    this.sprite = new PIXI.Graphics();
     this.sprite.beginFill(0x334455);
     this.sprite.drawCircle(this.x, this.y, CHIP_RADIUS);
     this.sprite.endFill();

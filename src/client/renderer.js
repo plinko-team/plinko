@@ -1,7 +1,8 @@
 import * as PIXI from 'pixi.js'
 import { CANVAS_COLOR } from '../shared/constants/colors'
 
-export let renderer = PIXI.autoDetectRenderer(800, 600, { backgroundColor: CANVAS_COLOR })
+// Default width and height are 800, 600; add to constants if you want to change
+export let renderer = new PIXI.autoDetectRenderer({ backgroundColor: CANVAS_COLOR })
 document.querySelector('.canvas').appendChild(renderer.view);
 
 export let stage = new PIXI.Container();
