@@ -1,6 +1,6 @@
 root/
-├──lib/ // transpiled babel files for backend+frontend
-├──dist/ // minified front end; index.html and main.js
+├──lib/   (transpiled babel files for backend+frontend)
+├──dist/  (minified front end; index.html and main.js)
 ├──node_modules/
 ├──src/
 |  ├──bodies/
@@ -18,8 +18,8 @@ root/
 |  ├──renderer.js
 |  ├──loader.js
 |  ├──server.js
-|  ├──setup.js // used to be generateWorld.js
-|  ├──client.js // used to be index.js
+|  ├──setup.js    (used to be generateWorld.js)
+|  ├──client.js   (used to be index.js)
 ├──public/
 |  ├──images/
 |  | ├──sprites/
