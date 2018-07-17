@@ -1,7 +1,6 @@
 import { Bodies, World } from 'matter-js'
 import { WALL_FRICTION, WALL_RESTITUTION} from '../constants/bodies'
 import { WALL_COLOR } from '../constants/colors'
-import { Engine } from '.'
 
 let PIXI;
 
