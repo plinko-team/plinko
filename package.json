@@ -31,5 +31,9 @@
     "babel-preset-es2015": "^6.24.1",
     "webpack": "^4.16.1",
     "webpack-cli": "^3.0.8"
+  },
+  "dependencies": {
+    "matter-js": "^0.14.2",
+    "pixi.js": "^4.8.1"
   }
 }

@@ -1,0 +1,1 @@
+{"version":3,"sources":["../../../src/shared/constants/bodies.js"],"names":["CHIP_FRICTION","CHIP_RESTITUTION"],"mappings":";;;;;AAAO,IAAMA,wCAAgB,CAAtB;AACA,IAAMC,8CAAmB,GAAzB","file":"bodies.js","sourcesContent":["export const CHIP_FRICTION = 0;\nexport const CHIP_RESTITUTION = 0.5;\n"]}
