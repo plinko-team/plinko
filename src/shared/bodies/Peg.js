@@ -9,11 +9,9 @@ if (typeof window === 'object') {
 }
 
 export default class Peg {
-  constructor({ x, y, width, height }) {
+  constructor({ x, y }) {
     this.x = x;
     this.y = y;
-    this.width = width;
-    this.height = height;
     this.type = 'peg';
 
     this.createPhysics();
