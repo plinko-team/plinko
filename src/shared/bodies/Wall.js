@@ -1,7 +1,7 @@
 import { Bodies } from 'matter-js';
 import { WALL_FRICTION, WALL_RESTITUTION} from '../constants/bodies';
 import { WALL_COLOR } from '../constants/colors';
-import { CANVAS_HEIGHT } from '../constants/canvas';
+import { CANVAS_HEIGHT, CANVAS_WIDTH } from '../constants/canvas';
 import GameObject from './GameObject';
 
 let PIXI;
@@ -33,32 +33,35 @@ class Wall extends GameObject {
   }
 
   createSprite() {
-    this.sprite = new PIXI.Graphics()
-    this.sprite.beginFill(WALL_COLOR);
-    this.sprite.drawRect(this.x, this.y, this.width, this.height);
-    this.sprite.endFill();
+    const wall = new PIXI.Sprite.fromImage('https://i.imgur.com/7IFyj9r.png');
+    wall.position.x = this.x;
+    wall.position.y = this.y;
+    wall.height = this.height;
+    wall.width = this.width;
+    wall.anchor.set(0.5, 0.5);
+
+    this.sprite = wall;
   }
 }
 
 export class VerticalWall extends Wall {
   constructor({x, y}) {
-    super({x, y, width: 5, height: 500});
+    super({x, y, width: 10, height: CANVAS_HEIGHT});
   }
 }
 
 export class HorizontalWall extends Wall {
   constructor() {
-    super({
-      x: 0,
-      y: 590,
-      width: 800,
-      height: 10
-    });
+    super({ x: CANVAS_WIDTH / 2,
+            y: 600,
+            width: CANVAS_WIDTH,
+            height: 10
+          })
   }
 }
 
 export class BucketWall extends Wall {
   constructor({ x }) {
-    super({ x, y: CANVAS_HEIGHT - 100, width: 5, height: 100 });
+    super({ x, y: CANVAS_HEIGHT - 50, width: 10, height: 100 });
   }
 }
