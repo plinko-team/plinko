@@ -1,6 +1,7 @@
 import { Bodies } from 'matter-js';
 import { CHIP_DENSITY, CHIP_FRICTION, CHIP_RESTITUTION, CHIP_RADIUS, CHIP_DIAMETER } from '../constants/bodies';
-import { CHIP_COLOR } from '../constants/colors';
+import { CHIP_TINT } from '../constants/colors';
+import { CHIP_SPRITE } from '../constants/sprites';
 import { Events, Body } from 'matter-js'
 import GameObject from './GameObject';
 
@@ -39,12 +40,13 @@ export default class Chip extends GameObject {
   }
 
   createSprite() {
-    const chip = new PIXI.Sprite.fromImage('https://i.imgur.com/OV7kVtt.png');
+    const chip = new PIXI.Sprite.fromImage(CHIP_SPRITE);
     chip.position.x = this.x;
     chip.position.y = this.y;
     chip.height = CHIP_DIAMETER;
     chip.width = CHIP_DIAMETER;
     chip.anchor.set(0.5, 0.5);
+    chip.tint = CHIP_TINT;
 
     this.sprite = chip;
   }
@@ -72,7 +74,7 @@ export default class Chip extends GameObject {
   shrink(callback) {
     setTimeout(() => {
       const startTime = Date.now()
-      const SHRINK_FACTOR = 0.9
+      const SHRINK_FACTOR = 0.95
       const interval = setInterval(() => {
         Body.scale(this.body, SHRINK_FACTOR, SHRINK_FACTOR)
         this.body.circleRadius *= SHRINK_FACTOR
@@ -85,6 +87,6 @@ export default class Chip extends GameObject {
         }
 
       }, 50)
-    }, 1000)
+    }, 2000)
   }
 }

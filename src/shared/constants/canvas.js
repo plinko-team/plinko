@@ -3,9 +3,9 @@ import { CHIP_DIAMETER } from './bodies'
 export const CANVAS_WIDTH = 800;
 export const CANVAS_HEIGHT = 600;
 
-const ROW_ADJUSTMENT = 0.66
+const row_adjustment = 0.66
 export const ROWS = 6;
-export const ROW_SPACING = (CANVAS_HEIGHT / ROWS) * ROW_ADJUSTMENT;
+export const ROW_SPACING = (CANVAS_HEIGHT / ROWS) * row_adjustment;
 
 export const COLS = 12;
 export const COL_SPACING = CANVAS_WIDTH / COLS;

@@ -1,15 +1,23 @@
+@import url('https://fonts.googleapis.com/css?family=Fredoka+One|Lato');
+
 body {
-  background: #aaaaaa;
+  background: #e0e0e0;
   color: white;
-  font: 16px normal sans-serif;
   text-align: center;
   box-sizing: border-box;
+  font-family: 'Lato', sans-serif;
+  font-size: 16px;
 }
 
 header {
   padding: 30px;
-  background: #174DB2;
-  font-size: 50px;
+  background: #96e6ff;
+  font-size: 60px;
+}
+
+h1,
+h2 {
+  font-family: 'Fredoka One', cursive;
 }
 
 h2 {
@@ -19,7 +27,7 @@ h2 {
 main {
   display: block;
   margin: 0 auto;
-  background: black;
+  background: #e0e0e0;
   height: 1000px;
   min-width: 900px;
 }
@@ -34,7 +42,7 @@ main {
 
 .canvas {
   float: left;
-  background: #5390FF;
+  background: #e0e0e0;
   margin-right: 20%;
   width: 80%;
 }
@@ -47,14 +55,14 @@ canvas {
 
 .game-info {
   width: 20%;
-  background: #3A7FFF;
+  background: #96e6ff;
   margin-left: -20%;
   min-width: 200px;
 }
 
 .info-box {
   margin: 0 auto;
-  border: 2px solid #174DB2;
+  border: 2px solid #4f4f4f;
   padding: 5px;
   border-radius: 5px;
   width: 200px;
@@ -62,7 +70,6 @@ canvas {
 .info-box + .info-box {
   margin-top: 10px;
 }
-
 
 .players-list, .game-info-list {
   text-align: left;
@@ -74,7 +81,7 @@ canvas {
 
 span {
   margin-left: 10px;
-  background: blue;
+  background: #ffaaaa;
   padding: 2px 5px;
   float: right;
 }
