@@ -1,5 +1,5 @@
 import { Bodies, World } from 'matter-js';
-import { PEG_FRICTION, PEG_RESTITUTION } from '../constants/bodies';
+import { PEG_FRICTION, PEG_RESTITUTION, PEG_RADIUS } from '../constants/bodies';
 import { PEG_COLOR } from '../constants/colors';
 
 let PIXI;
