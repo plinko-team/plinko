@@ -1,7 +1,7 @@
 import Peg from './bodies/Peg';
 import { VerticalWall, HorizontalWall, BucketWall } from './bodies/Wall';
 import { stage } from '../client/renderer';
-import { engine } from '../client/engine'
+import engine from '../client/engine';
 import { ROWS, COLS, SPACING, CANVAS_WIDTH, CANVAS_HEIGHT } from './constants/canvas';
 
 function createWalls() {
