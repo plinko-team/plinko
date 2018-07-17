@@ -12,8 +12,7 @@ if (typeof window === 'object') {
 
 export default class Chip extends GameObject {
   constructor({ x, y }) {
-    this.x = x;
-    this.y = y;
+    super({ x, y });
     this.type = 'chip';
     this.createPhysics();
     if (typeof window === 'object') { this.createSprite() };
@@ -23,6 +22,7 @@ export default class Chip extends GameObject {
     Events.on(engine, 'afterUpdate', () => {
       this.sprite.position.x = this.body.position.x;
       this.sprite.position.y = this.body.position.y;
+      this.sprite.rotation = this.body.angle;
       this.x = this.body.position.x;
       this.y = this.body.position.y;
     })
