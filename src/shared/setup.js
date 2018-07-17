@@ -4,8 +4,8 @@ import engine from '../client/engine';
 import { ROWS, COLS, SPACING, CANVAS_WIDTH, CANVAS_HEIGHT } from './constants/canvas';
 
 function createWalls(stage) {
-  const leftWall = new VerticalWall({x: 0, y: 400});
-  const rightWall = new VerticalWall({x: CANVAS_WIDTH, y: 400});
+  const leftWall = new VerticalWall({x: 0, y: CANVAS_HEIGHT / 2});
+  const rightWall = new VerticalWall({x: CANVAS_WIDTH, y: CANVAS_HEIGHT / 2});
   const ground = new HorizontalWall();
   if (typeof window === 'object') { createWallSprites(stage, leftWall, rightWall, ground) }
   createWallBodies(leftWall, rightWall, ground);
@@ -30,10 +30,14 @@ function createBucketWalls(stage) {
 
 function createPegs(stage) {
   for (let row = 0; row < ROWS; row++) {
-    for (let col = 0; col < COLS + 1; col++) {
+    for (let col = 1; col < COLS; col++) {
       let rowPlacement = col * SPACING;
       let colPlacement = SPACING + (row * SPACING);
-      if (row % 2 === 0) {
+      if (row % 2 === 1 && col === COLS - 1) {
+        // skip last peg on odd rows
+        break;
+      } else if (row % 2 === 1) {
+        // offset odd rows
         rowPlacement += SPACING / 2;
       }
 

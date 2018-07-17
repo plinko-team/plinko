@@ -1,5 +1,5 @@
 import { Bodies } from 'matter-js';
-import { PEG_FRICTION, PEG_RESTITUTION, PEG_RADIUS } from '../constants/bodies';
+import { PEG_FRICTION, PEG_RESTITUTION, PEG_RADIUS, PEG_DIAMETER } from '../constants/bodies';
 import { PEG_COLOR } from '../constants/colors';
 import GameObject from './GameObject';
 
@@ -33,9 +33,14 @@ export default class Peg extends GameObject {
   }
 
   createSprite() {
-    this.sprite = new PIXI.Graphics();
-    this.sprite.beginFill(PEG_COLOR);
-    this.sprite.drawCircle(this.x, this.y, PEG_RADIUS);
-    this.sprite.endFill();
+    const peg = new PIXI.Sprite.fromImage('https://i.imgur.com/ND1YGoj.png');
+
+    peg.position.x = this.x;
+    peg.position.y = this.y;
+    peg.height = PEG_DIAMETER;
+    peg.width = PEG_DIAMETER;
+    peg.anchor.set(0.5, 0.5);
+
+    this.sprite = peg;
   }
 }

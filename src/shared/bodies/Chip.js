@@ -46,6 +46,7 @@ export default class Chip extends GameObject {
     }
 
     this.body = Bodies.circle(this.x, this.y, CHIP_RADIUS, options);
+    this.body.mass = 0.0001;
     this.body.position.x = this.x;
     this.body.position.y = this.y;
   }
