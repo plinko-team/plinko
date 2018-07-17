@@ -1,7 +1,7 @@
 import Peg from './bodies/Peg';
 import { VerticalWall, HorizontalWall, BucketWall } from './bodies/Wall';
 import engine from '../client/engine';
-import { ROWS, COLS, ROW_SPACING, COL_SPACING, VERTICAL_OFFSET, HORIZONTAL_OFFSET, CANVAS_WIDTH, CANVAS_HEIGHT } from './constants/canvas';
+import { ROWS, COLS, ROW_SPACING, COL_SPACING, VERTICAL_MARGIN, HORIZONTAL_OFFSET, CANVAS_WIDTH, CANVAS_HEIGHT } from './constants/canvas';
 
 function createWalls(stage) {
   const leftWall = new VerticalWall({x: 0, y: CANVAS_HEIGHT / 2});
@@ -34,18 +34,19 @@ function createPegs(stage) {
 
   for (let row = 0; row < ROWS; row++) {
     for (let col = 1; col < COLS; col++) {
-      let xPlacement = col * COL_SPACING;
-      // gives vertical offset to all rows to leave space to drop chips
-      let yPlacement = VERTICAL_OFFSET + ROW_SPACING + (row * ROW_SPACING);
+      let x = col * COL_SPACING;
+      // leave extra space at top of frame to drop chips
+      let y = VERTICAL_MARGIN + (row * ROW_SPACING);
+
       if (row % 2 === 1 && col === COLS - 1) {
         // skip last peg on odd rows
         break;
       } else if (row % 2 === 1) {
-        // gives horizontal offset to columns in odd rows
-        xPlacement += HORIZONTAL_OFFSET;
+        // offset columns in odd rows by half
+        x += HORIZONTAL_OFFSET;
       }
 
-      let peg = new Peg({ x: xPlacement, y: yPlacement });
+      let peg = new Peg({ x, y });
       peg.addToEngine(engine.world);
       if (peg.sprite) { peg.addToRenderer(stage) };
     }
