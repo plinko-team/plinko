@@ -1,6 +1,5 @@
 import { Bodies, World } from 'matter-js';
-import { CHIP_RADIUS } from '../constants/game';
-import { CHIP_FRICTION, CHIP_RESTITUTION } from '../constants/bodies';
+import { CHIP_FRICTION, CHIP_RESTITUTION, CHIP_RADIUS } from '../constants/bodies';
 import { CHIP_COLOR } from '../constants/colors';
 
 let PIXI;
