@@ -1,0 +1,1 @@
+{"version":3,"sources":["../../../src/shared/constants/game.js"],"names":["MS_IN_SECOND","FPS","TIMESTEP"],"mappings":";;;;;AAAO,IAAMA,sCAAe,IAArB;AACA,IAAMC,oBAAM,EAAZ;AACA,IAAMC,8BAAWF,eAAeC,GAAhC","file":"game.js","sourcesContent":["export const MS_IN_SECOND = 1000;\nexport const FPS = 60;\nexport const TIMESTEP = MS_IN_SECOND / FPS;\n"]}

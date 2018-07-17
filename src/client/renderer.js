@@ -10,7 +10,8 @@ const options = {
   antialias: false,
   resolution: 2,
 }
-export const renderer = new PIXI.CanvasRenderer(options)
+
+export const renderer = new PIXI.CanvasRenderer(options);
 document.querySelector('.canvas').appendChild(renderer.view);
 
 export const stage = new PIXI.Container();

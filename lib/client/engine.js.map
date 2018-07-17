@@ -1,0 +1,1 @@
+{"version":3,"sources":["../../src/client/engine.js"],"names":["engine","Engine","create"],"mappings":";;;;;;AAAA;;AAEA,IAAMA,SAASC,iBAAOC,MAAP,EAAf;kBACeF,M","file":"engine.js","sourcesContent":["import { Engine } from 'matter-js';\n\nconst engine = Engine.create();\nexport default engine;\n"]}

@@ -1,7 +1,7 @@
-import { Bodies, World } from 'matter-js'
-import { WALL_FRICTION, WALL_RESTITUTION} from '../constants/bodies'
-import { WALL_COLOR } from '../constants/colors'
-import { Engine } from '.'
+import { Bodies, World } from 'matter-js';
+import { WALL_FRICTION, WALL_RESTITUTION} from '../constants/bodies';
+import { WALL_COLOR } from '../constants/colors';
+import { CANVAS_HEIGHT } from '../constants/canvas';
 
 let PIXI;
 
@@ -10,7 +10,7 @@ if (typeof window === 'object') {
 }
 
 class Wall {
-  constructor({x, y, width, height}) {
+  constructor({ x, y, width, height }) {
     this.x = x;
     this.y = y;
     this.width = width;
@@ -60,12 +60,12 @@ export class HorizontalWall extends Wall {
             y: 590,
             width: 800,
             height: 10
-    })
+          })
   }
 }
 
 export class BucketWall extends Wall {
-  constructor({x}) {
-    super({x, y: 600, width: 5, height: 100});
+  constructor({ x }) {
+    super({ x, y: CANVAS_HEIGHT - 100, width: 5, height: 100 });
   }
 }
