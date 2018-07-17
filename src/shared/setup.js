@@ -4,8 +4,8 @@ import engine from '../client/engine';
 import { ROWS, COLS, SPACING, CANVAS_WIDTH, CANVAS_HEIGHT } from './constants/canvas';
 
 function createWalls(stage) {
-  const leftWall = new VerticalWall({x: 0, y: 100});
-  const rightWall = new VerticalWall({x: 795, y: 100});
+  const leftWall = new VerticalWall({x: 0, y: 400});
+  const rightWall = new VerticalWall({x: CANVAS_WIDTH, y: 400});
   const ground = new HorizontalWall();
   if (typeof window === 'object') { createWallSprites(stage, leftWall, rightWall, ground) }
   createWallBodies(leftWall, rightWall, ground);
