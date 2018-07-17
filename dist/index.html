@@ -3,9 +3,34 @@
 <head>
   <title>Plinko</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/4.8.1/pixi.min.js"></script>
+  <link rel=stylesheet href="../public/stylesheets/reset.css">
+  <link rel=stylesheet href="../public/stylesheets/style.css">
 </head>
 <body>
-  <h1>Welcome to Plinko!</h1>
+  <header>
+    <h1>Plinko.js</h1>
+  </header>
+  <main>
+    <div class="canvas container">
+    </div><!--
+ --><div class="game-info container">
+      <div class="info-box">
+        <h2>Users</h3>
+        <ul class="players-list game-info-list">
+          <li class="player-1">Branko<span class="score">9</span></li>
+          <li class="player-2">Ryann<span class="score">12</span></li>
+          <li class="player-3">Josh<span class="score">31</span></li>
+        </ul>
+      </div>
+      <div class="game-info-box info-box">
+        <h2>Info</h3>
+        <ul class="game-info-list">
+          <li>Chip count:<span>0</span></li>
+          <li>Peg target:<span>78</span></li>
+        </ul>
+      </div>
+    </div>
+  </main>
   <script type="text/javascript" src="../src/client/renderer.js"></script>
 </body>
 </html>
