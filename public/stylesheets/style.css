@@ -1,0 +1,82 @@
+body {
+  background: #aaaaaa;
+  color: white;
+  font: 16px normal sans-serif;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+header {
+  padding: 30px;
+  background: #174DB2;
+  font-size: 50px;
+}
+
+h2 {
+  font-size: 30px;
+}
+
+main {
+  display: block;
+  margin: 0 auto;
+  background: black;
+  height: 1000px;
+  min-width: 900px;
+}
+
+.container {
+  display: block;
+  float:left;
+  box-sizing: border-box;
+  padding: 20px;
+  height: 100%;
+}
+
+.canvas {
+  float: left;
+  background: #5390FF;
+  margin-right: 30%;
+  width: 70%;
+  min-width: 600px;
+}
+
+.game-info {
+  width: 30%;
+  background: #3A7FFF;
+  margin-left: -30%;
+  min-width: 200px;
+}
+
+.info-box {
+  margin: 0 auto;
+  border: 2px solid #174DB2;
+  padding: 5px;
+  border-radius: 5px;
+  width: 200px;
+}
+.info-box + .info-box {
+  margin-top: 10px;
+}
+
+
+.players-list, .game-info-list {
+  text-align: left;
+}
+
+.players-list li, .game-info-list li {
+  margin: 5px 0;
+}
+
+span {
+  margin-left: 10px;
+  background: blue;
+  padding: 2px 5px;
+  float: right;
+}
+
+canvas {
+  margin: 0 auto;
+}
+
+
+
