@@ -1,1 +1,1 @@
-{"version":3,"sources":["../../../src/shared/constants/game.js"],"names":["CHIP_RADIUS"],"mappings":";;;;;AAAO,IAAMA,oCAAc,EAApB","file":"game.js","sourcesContent":["export const CHIP_RADIUS = 15;\n"]}
+{"version":3,"sources":[],"names":[],"mappings":"","file":"game.js","sourcesContent":[]}
