@@ -1,5 +1,6 @@
 import { Bodies, World } from 'matter-js'
-import { PEG_FRICTION, PEG_RESTITUTION} from '../constants/bodies'
+import { WALL_FRICTION, WALL_RESTITUTION} from '../constants/bodies'
+import { WALL_COLOR } from '../constants/colors'
 
 let PIXI;
 
@@ -19,8 +20,8 @@ class Wall {
 
   createPhysics({width, height}) {
     let options = {
-      restitution: PEG_RESTITUTION,
-      friction: PEG_FRICTION,
+      restitution: WALL_RESTITUTION,
+      friction: WALL_FRICTION,
     }
    
     this.body = Bodies.rectangle(this.x, this.y, this.width, this.height, options);
@@ -28,12 +29,11 @@ class Wall {
     this.body.position.x = this.x;
     this.body.position.y = this.y;
     this.body.label = this.type;
-    this.body.isShrinking = false;
   }
 
   createSprite() {
     this.sprite = new PIXI.Graphics()
-    this.sprite.beginFill(0xff22aa);
+    this.sprite.beginFill(WALL_COLOR);
     this.sprite.drawRect(this.x, this.y, this.width, this.height);
     this.sprite.endFill();
   }
@@ -48,8 +48,8 @@ class Wall {
 }
 
 export class VerticalWall extends Wall {
-  constructor({x, y, width, height}) {
-    super({x, y, width, height});
+  constructor({x, y}) {
+    super({x, y, width: 5, height: 500});
   }
 }
 
@@ -64,7 +64,7 @@ export class HorizontalWall extends Wall {
 }
 
 export class BucketWall extends Wall {
-  constructor({x, y, width, height}) {
-    super({x, y, width, height});
+  constructor({x}) {
+    super({x, y: 600, width: 5, height: 100});
   }
 }
