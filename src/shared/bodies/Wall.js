@@ -1,7 +1,8 @@
-import { Bodies, World } from 'matter-js';
+import { Bodies } from 'matter-js';
 import { WALL_FRICTION, WALL_RESTITUTION} from '../constants/bodies';
 import { WALL_COLOR } from '../constants/colors';
 import { CANVAS_HEIGHT } from '../constants/canvas';
+import GameObject from './GameObject';
 
 let PIXI;
 
@@ -9,10 +10,9 @@ if (typeof window === 'object') {
   PIXI = require('pixi.js');
 }
 
-class Wall {
+class Wall extends GameObject {
   constructor({ x, y, width, height }) {
-    this.x = x;
-    this.y = y;
+    super({ x, y })
     this.width = width;
     this.height = height;
     this.createPhysics({ width, height });
@@ -38,14 +38,6 @@ class Wall {
     this.sprite.drawRect(this.x, this.y, this.width, this.height);
     this.sprite.endFill();
   }
-
-  addToRenderer(stage) {
-    stage.addChild(this.sprite);
-  }
-
-  addToEngine(world) {
-    World.add(world, this.body);
-  }
 }
 
 export class VerticalWall extends Wall {
@@ -56,11 +48,12 @@ export class VerticalWall extends Wall {
 
 export class HorizontalWall extends Wall {
   constructor() {
-    super({ x: 0,
-            y: 590,
-            width: 800,
-            height: 10
-          })
+    super({
+      x: 0,
+      y: 590,
+      width: 800,
+      height: 10
+    });
   }
 }
 
