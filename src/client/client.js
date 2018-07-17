@@ -1,6 +1,7 @@
 import { renderer, stage } from './renderer.js';
 import Chip from '../shared/bodies/Chip';
-import engine from './engine.js';
+import engine from './engine';
+import GameLoop from './gameLoop'
 
 // On click, add a chip at the mouse's x and y relative to canvas
 document.querySelector('canvas').addEventListener('click', (e) => {
