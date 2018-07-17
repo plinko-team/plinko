@@ -4,7 +4,7 @@ var fs = require('fs');
 
 module.exports = {
   target: 'web',
-  entry: './index.js',
+  entry: './src/client/client.js',
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: 'main.js'
@@ -15,7 +15,8 @@ module.exports = {
         test: /\.js?$/,
         loader: "babel-loader",
         options: {
-          presets: ["es2015"]
+          presets: ["es2015"],
+          plugins: ["transform-class-properties"]
         },
       }
     ]
