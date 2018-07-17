@@ -1,0 +1,5 @@
+const CANVAS_WIDTH = 800;
+const CANVAS_HEIGHT = 600;
+const ROWS = 6;
+const COLS = 10;
+const SPACING = CANVAS_WIDTH / COLS;
