@@ -1,1 +1,1 @@
-{"version":3,"sources":[],"names":[],"mappings":"","file":"GameObject.js","sourcesContent":[]}
+{"version":3,"sources":["../../../src/shared/bodies/GameObject.js"],"names":["GameObject"],"mappings":";;;;;;;;IAAqBA,U;;;;kBAAAA,U","file":"GameObject.js","sourcesContent":["export default class GameObject {\n\n}\n"]}

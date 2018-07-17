@@ -1,17 +1,18 @@
-import { Bodies, World } from 'matter-js';
-import { CHIP_FRICTION, CHIP_RESTITUTION, CHIP_RADIUS } from '../constants/bodies';
+import { Bodies } from 'matter-js';
+import { CHIP_FRICTION, CHIP_RESTITUTION, CHIP_RADIUS, CHIP_DIAMETER } from '../constants/bodies';
 import { CHIP_COLOR } from '../constants/colors';
 import { Events } from 'matter-js'
+import GameObject from './GameObject';
+
 let PIXI;
 
 if (typeof window === 'object') {
   PIXI = require('pixi.js');
 }
 
-export default class Chip {
+export default class Chip extends GameObject {
   constructor({ x, y }) {
-    this.x = x;
-    this.y = y;
+    super({ x, y });
     this.type = 'chip';
     this.createPhysics();
     if (typeof window === 'object') { this.createSprite() };
@@ -31,8 +32,8 @@ export default class Chip {
     const chip = new PIXI.Sprite.fromImage('https://i.imgur.com/Q6GxA85.png');
     chip.position.x = this.x;
     chip.position.y = this.y;
-    chip.height = 40;
-    chip.width = 40;
+    chip.height = CHIP_DIAMETER;
+    chip.width = CHIP_DIAMETER;
     chip.anchor.set(0.5, 0.5);
 
     this.sprite = chip;
@@ -47,13 +48,5 @@ export default class Chip {
     this.body = Bodies.circle(this.x, this.y, CHIP_RADIUS, options);
     this.body.position.x = this.x;
     this.body.position.y = this.y;
-  }
-
-  addToRenderer(stage) {
-    stage.addChild(this.sprite);
-  }
-
-  addToEngine(world) {
-    World.add(world, this.body);
   }
 }
