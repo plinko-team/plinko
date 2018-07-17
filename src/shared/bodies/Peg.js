@@ -1,6 +1,7 @@
-import { Bodies, World } from 'matter-js';
+import { Bodies } from 'matter-js';
 import { PEG_FRICTION, PEG_RESTITUTION, PEG_RADIUS } from '../constants/bodies';
 import { PEG_COLOR } from '../constants/colors';
+import GameObject from './GameObject';
 
 let PIXI;
 
@@ -8,10 +9,9 @@ if (typeof window === 'object') {
   PIXI = require('pixi.js');
 }
 
-export default class Peg {
+export default class Peg extends GameObject {
   constructor({ x, y }) {
-    this.x = x;
-    this.y = y;
+    super({ x, y });
     this.type = 'peg';
 
     this.createPhysics();
@@ -37,13 +37,5 @@ export default class Peg {
     this.sprite.beginFill(PEG_COLOR);
     this.sprite.drawCircle(this.x, this.y, PEG_RADIUS);
     this.sprite.endFill();
-  }
-
-  addToEngine(world) {
-    World.add(world, this.body);
-  }
-
-  addToRenderer(stage) {
-    stage.addChild(this.sprite);
   }
 }
