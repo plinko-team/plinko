@@ -1,6 +1,6 @@
 export const PEG_FRICTION = 1;
 export const PEG_RESTITUTION = .7;
-export const PEG_RADIUS = 5;
+export const PEG_RADIUS = 4;
 export const PEG_DIAMETER = PEG_RADIUS * 2;
 export const CHIP_DENSITY = 0.00001;
 export const CHIP_FRICTION = 1;
