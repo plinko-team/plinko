@@ -1,6 +1,7 @@
 import { Bodies, World } from 'matter-js'
 import { WALL_FRICTION, WALL_RESTITUTION} from '../constants/bodies'
 import { WALL_COLOR } from '../constants/colors'
+import { Engine } from '.'
 
 let PIXI;
 
@@ -23,7 +24,7 @@ class Wall {
       restitution: WALL_RESTITUTION,
       friction: WALL_FRICTION,
     }
-   
+
     this.body = Bodies.rectangle(this.x, this.y, this.width, this.height, options);
     this.body.isStatic = true;
     this.body.position.x = this.x;
@@ -41,7 +42,7 @@ class Wall {
   addToRenderer(stage) {
     stage.addChild(this.sprite);
   }
-  
+
   addToEngine(world) {
     World.add(world, this.body);
   }
