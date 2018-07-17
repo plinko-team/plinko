@@ -1,7 +1,7 @@
 import { Bodies, World } from 'matter-js';
 import { CHIP_FRICTION, CHIP_RESTITUTION, CHIP_RADIUS } from '../constants/bodies';
 import { CHIP_COLOR } from '../constants/colors';
-
+import { Events } from 'matter-js'
 let PIXI;
 
 if (typeof window === 'object') {
@@ -15,6 +15,15 @@ export default class Chip {
     this.type = 'chip';
     this.createPhysics();
     if (typeof window === 'object') { this.createSprite() };
+  }
+
+  registerUpdateListener(engine) {
+    Events.on(engine, 'afterUpdate', () => {
+      this.sprite.position.x = this.body.position.x;
+      this.sprite.position.y = this.body.position.y;
+      this.x = this.body.position.x;
+      this.y = this.body.position.y;
+    })
   }
 
   createSprite() {
