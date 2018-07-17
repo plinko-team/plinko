@@ -35,7 +35,7 @@ export default class Peg {
   }
 
   createSprite() {
-    this.sprite = PIXI.Graphics();
+    this.sprite = new PIXI.Graphics();
     this.sprite.beginFill(PEG_COLOR);
     this.sprite.drawCircle(this.x, this.y, PEG_RADIUS);
     this.sprite.endFill();
