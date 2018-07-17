@@ -1,5 +1,5 @@
-import { World } from 'matter-js'
-import { PEG_FRICTION, PEG_RESTITUTION} from '../constants/bodies'
+import { Bodies, World } from 'matter-js'
+import { WALL_FRICTION, WALL_RESTITUTION} from '../constants/bodies'
 import { WALL_COLOR } from '../constants/colors'
 
 let PIXI;
@@ -20,8 +20,8 @@ class Wall {
 
   createPhysics({width, height}) {
     let options = {
-      restitution: PEG_RESTITUTION,
-      friction: PEG_FRICTION,
+      restitution: WALL_RESTITUTION,
+      friction: WALL_FRICTION,
     }
    
     this.body = Bodies.rectangle(this.x, this.y, this.width, this.height, options);
@@ -29,7 +29,6 @@ class Wall {
     this.body.position.x = this.x;
     this.body.position.y = this.y;
     this.body.label = this.type;
-    this.body.isShrinking = false;
   }
 
   createSprite() {
