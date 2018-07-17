@@ -1,6 +1,12 @@
-import * as PIXI from 'pixi.js'
-import { Bodies, World } from 'matter-js'
-import { PEG_FRICTION, PEG_RESTITUTION } from '../constants/bodies'
+import { Bodies, World } from 'matter-js';
+import { PEG_FRICTION, PEG_RESTITUTION } from '../constants/bodies';
+import { PEG_COLOR } from '../constants/colors';
+
+let PIXI;
+
+if (typeof window === 'object') {
+  PIXI = require('pixi.js');
+}
 
 export default class Peg {
   constructor({ x, y, width, height }) {
@@ -8,9 +14,10 @@ export default class Peg {
     this.y = y;
     this.width = width;
     this.height = height;
-    this.type = 'peg'
+    this.type = 'peg';
 
-    this.createSprite()
+    this.createPhysics();
+    this.createSprite();
   }
 
   createPhysics() {
@@ -19,26 +26,26 @@ export default class Peg {
       restitution: PEG_RESTITUTION,
     }
 
-    this.body = Bodies.circle(this.x, this.y, PEG_RADIUS, options)
-    this.body.isStatic = true
-    this.body.position.x = this.x
-    this.body.position.y = this.y
-    this.body.label = this.type
-    this.body.isShrinking = false
+    this.body = Bodies.circle(this.x, this.y, PEG_RADIUS, options);
+    this.body.isStatic = true;
+    this.body.position.x = this.x;
+    this.body.position.y = this.y;
+    this.body.label = this.type;
+    this.body.isShrinking = false;
   }
 
   createSprite() {
     this.sprite = PIXI.Graphics();
-    this.sprite.beginFill(0xa0d1d3);
+    this.sprite.beginFill(PEG_COLOR);
     this.sprite.drawCircle(this.x, this.y, PEG_RADIUS);
     this.sprite.endFill();
   }
 
   addToEngine(world) {
-    World.add(world, this.body)
+    World.add(world, this.body);
   }
 
   addToRenderer(stage) {
-    stage.addChild(this.sprite)
+    stage.addChild(this.sprite);
   }
 }
