@@ -74,10 +74,7 @@ span {
   float: right;
 }
 
-#canvas-placeholder {
-  background: black;
-  width: 500px;
-  height: 600px;
+canvas {
   margin: 0 auto;
 }
 
