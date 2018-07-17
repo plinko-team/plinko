@@ -4,6 +4,8 @@ import { CANVAS_COLOR } from '../shared/constants/colors'
 // Default width and height are 800, 600,
 // add to constants if you want to change them
 const options = {
+  width: 800,
+  height: 600,
   backgroundColor: CANVAS_COLOR,
   antialias: false,
   resolution: 2,

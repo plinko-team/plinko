@@ -11,9 +11,6 @@ header {
   background: #174DB2;
   font-size: 50px;
 }
-canvas {
-  width: 100%;
-}
 
 h2 {
   font-size: 30px;
@@ -38,15 +35,20 @@ main {
 .canvas {
   float: left;
   background: #5390FF;
-  margin-right: 30%;
-  width: 70%;
-  min-width: 600px;
+  margin-right: 20%;
+  width: 80%;
+}
+
+canvas {
+  width: 100%;
+  width: 800px;
+  height: 600px;
 }
 
 .game-info {
-  width: 30%;
+  width: 20%;
   background: #3A7FFF;
-  margin-left: -30%;
+  margin-left: -20%;
   min-width: 200px;
 }
 
