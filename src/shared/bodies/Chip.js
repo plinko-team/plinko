@@ -18,10 +18,14 @@ export default class Chip {
   }
 
   createSprite() {
-    this.sprite = new PIXI.Graphics();
-    this.sprite.beginFill(0x334455);
-    this.sprite.drawCircle(this.x, this.y, CHIP_RADIUS);
-    this.sprite.endFill();
+    const chip = new PIXI.Sprite.fromImage('https://i.imgur.com/Q6GxA85.png');
+    chip.position.x = this.x;
+    chip.position.y = this.y;
+    chip.height = 20;
+    chip.width = 20;
+    chip.anchor.set(0.5, 0.5);
+
+    this.sprite = chip;
   }
 
   createPhysics() {
