@@ -16,6 +16,11 @@ export default class Chip extends GameObject {
     this.type = 'chip';
     this.createPhysics();
     if (typeof window === 'object') { this.createSprite() };
+
+    // Sprite and Body have references to each other so that we can
+    // change renderer properties based on physics collisions
+    this.body.sprite = this.sprite;
+    this.sprite.body = this.body;
   }
 
   registerUpdateListener(engine) {
@@ -29,7 +34,7 @@ export default class Chip extends GameObject {
   }
 
   createSprite() {
-    const chip = new PIXI.Sprite.fromImage('https://i.imgur.com/Q6GxA85.png');
+    const chip = new PIXI.Sprite.fromImage('https://i.imgur.com/OV7kVtt.png');
     chip.position.x = this.x;
     chip.position.y = this.y;
     chip.height = CHIP_DIAMETER;
@@ -46,6 +51,7 @@ export default class Chip extends GameObject {
     }
 
     this.body = Bodies.circle(this.x, this.y, CHIP_RADIUS, options);
+    this.body.label = this.type;
     this.body.position.x = this.x;
     this.body.position.y = this.y;
   }

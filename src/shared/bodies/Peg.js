@@ -16,6 +16,11 @@ export default class Peg extends GameObject {
 
     this.createPhysics();
     this.createSprite();
+
+    // Sprite and Body have references to each other so that we can
+    // change renderer properties based on physics collisions
+    this.body.sprite = this.sprite;
+    this.sprite.body = this.body;
   }
 
   createPhysics() {
