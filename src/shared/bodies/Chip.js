@@ -21,6 +21,7 @@ export default class Chip {
     Events.on(engine, 'afterUpdate', () => {
       this.sprite.position.x = this.body.position.x;
       this.sprite.position.y = this.body.position.y;
+      this.sprite.rotation = this.body.angle;
       this.x = this.body.position.x;
       this.y = this.body.position.y;
     })
@@ -30,8 +31,8 @@ export default class Chip {
     const chip = new PIXI.Sprite.fromImage('https://i.imgur.com/Q6GxA85.png');
     chip.position.x = this.x;
     chip.position.y = this.y;
-    chip.height = 20;
-    chip.width = 20;
+    chip.height = 40;
+    chip.width = 40;
     chip.anchor.set(0.5, 0.5);
 
     this.sprite = chip;
