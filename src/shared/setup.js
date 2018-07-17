@@ -1,7 +1,9 @@
 import Peg from './bodies/Peg';
+import Triangle from './bodies/Triangle';
 import { VerticalWall, HorizontalWall, BucketWall } from './bodies/Wall';
 import engine from '../client/engine';
 import { ROWS, COLS, ROW_SPACING, COL_SPACING, VERTICAL_MARGIN, HORIZONTAL_OFFSET, CANVAS_WIDTH, CANVAS_HEIGHT } from './constants/canvas';
+import { TRIANGLES_RIGHT_WALL } from './constants/bodies';
 
 function createWalls(stage) {
   const leftWall = new VerticalWall({x: 0, y: CANVAS_HEIGHT / 2});
@@ -27,6 +29,17 @@ function createBucketWalls(stage) {
     bucket.addToEngine(engine.world);
   }
 }
+
+function createTriangles(stage) {
+  let triangles = TRIANGLES_RIGHT_WALL
+
+  triangles.forEach(triangle => {
+    let t = new Triangle(triangle);
+    t.addToEngine(engine.world);
+    if (typeof window === 'object') { t.addToRenderer(stage) }
+  });
+}
+
 
 function createPegs(stage) {
   const verticalOffset = ROW_SPACING / 2;
@@ -57,4 +70,5 @@ export default function createEnvironment(stage) {
   createWalls(stage);
   createBucketWalls(stage);
   createPegs(stage);
+  createTriangles(stage);
 }
