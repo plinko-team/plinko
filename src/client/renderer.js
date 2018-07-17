@@ -1,9 +1,9 @@
-// import * as PIXI from 'pixi.js'
+import * as PIXI from 'pixi.js'
 
-var renderer = PIXI.autoDetectRenderer(800, 600, {backgroundColor: 0x1099bb})
+export let renderer = PIXI.autoDetectRenderer(800, 600, { backgroundColor: 0x1099bb })
 document.querySelector('.canvas').appendChild(renderer.view);
 
-//var stage = new PIXI.Container();
+export let stage = new PIXI.Container();
 
 //renderer.render
 
