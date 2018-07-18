@@ -11,6 +11,8 @@ if (typeof window === 'object') {
 }
 
 export default class Chip extends GameObject {
+  static count = 0
+
   constructor({ x, y }) {
     super({ x, y });
     this.type = 'chip';
@@ -45,6 +47,9 @@ export default class Chip extends GameObject {
   }
 
   createPhysics() {
+    Chip.count++
+    console.log(Chip.count)
+
     const options = {
       restitution: CHIP_RESTITUTION,
       friction: CHIP_FRICTION,

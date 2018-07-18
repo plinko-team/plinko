@@ -13,7 +13,7 @@ export default class Game {
 
   init() {
     createEnvironment(this.stage);
-    this.registerEvents();
+    this.registerCanvasEvents();
     this.registerPhysicsEvents();
 
     return this;
@@ -58,7 +58,7 @@ export default class Game {
     }
   }
 
-  registerEvents() {
+  registerCanvasEvents() {
     // On click, add a chip at the mouse's x and y relative to canvas
     document.querySelector('canvas').addEventListener('click', this.onClick);
 
