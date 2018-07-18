@@ -1,7 +1,7 @@
 import { Bodies } from 'matter-js';
-import { CHIP_FRICTION, CHIP_RESTITUTION, CHIP_RADIUS, CHIP_DIAMETER } from '../constants/bodies';
+import { CHIP_DENSITY, CHIP_FRICTION, CHIP_RESTITUTION, CHIP_RADIUS, CHIP_DIAMETER } from '../constants/bodies';
 import { CHIP_COLOR } from '../constants/colors';
-import { Events } from 'matter-js'
+import { Events, Body } from 'matter-js'
 import GameObject from './GameObject';
 
 let PIXI;
@@ -51,6 +51,11 @@ export default class Chip extends GameObject {
     }
 
     this.body = Bodies.circle(this.x, this.y, CHIP_RADIUS, options);
+
+    // this.body.mass = 0.01
+    // this.body.inverseMass = 1 / this.body.mass
+
+    Body.setDensity(this.body, CHIP_DENSITY)
     this.body.label = this.type;
     this.body.position.x = this.x;
     this.body.position.y = this.y;
