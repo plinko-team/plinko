@@ -58,6 +58,7 @@ export class HorizontalWall extends Wall {
       width: CANVAS_WIDTH,
       height: 10
     })
+    this.body.label = 'ground'
   }
 }
 
