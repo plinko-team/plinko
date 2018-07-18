@@ -1,4 +1,4 @@
-import { Engine, Render, Events } from 'matter-js';
+import { World, Engine, Render, Events } from 'matter-js';
 import Chip from '../shared/bodies/Chip';
 import HoverChip from '../shared/bodies/HoverChip';
 import { DROP_BOUNDARY, TIMESTEP } from '../shared/constants/game'
@@ -9,6 +9,7 @@ export default class Game {
     this.engine = engine;
     this.renderer = renderer;
     this.stage = stage;
+    this.chips = [];
   }
 
   init() {
@@ -29,8 +30,10 @@ export default class Game {
 
     chip.addToEngine(this.engine.world);
     chip.addToRenderer(this.stage);
-    chip.registerUpdateListener(this.engine);
+    // chip.registerUpdateListener(this.engine);
+    this.chips.push(chip)
     this.renderer.render(this.stage);
+
   }
 
   onMouseEnter = (e) => {
@@ -54,6 +57,19 @@ export default class Game {
         pair.bodyA.sprite.tint = 0xFFAAAA;
       } else if (pair.bodyB.label === 'peg') {
         pair.bodyB.sprite.tint = 0xFFAAAA;
+      }
+
+      if (pair.bodyA.label === 'chip' && pair.bodyB.label === 'ground') {
+        pair.bodyA.parentObject.shrink(() => {
+          World.remove(this.engine.world, pair.bodyA)
+          this.stage.removeChild(pair.bodyA.sprite)
+        })
+      } else if (pair.bodyB.label === 'chip' && pair.bodyA.label === 'ground') {
+        pair.bodyB.parentObject.shrink(() => {
+          World.remove(this.engine.world, pair.bodyB)
+          this.stage.removeChild(pair.bodyB.sprite)
+        })
+
       }
     }
   }
@@ -79,6 +95,12 @@ export default class Game {
       while (Date.now() > this.nextTimestep) {
         Engine.update(this.engine, TIMESTEP);
         this.nextTimestep += TIMESTEP;
+
+        this.chips.forEach(chip => {
+          chip.sprite.position.x = chip.body.position.x;
+          chip.sprite.position.y = chip.body.position.y;
+          chip.sprite.rotation = chip.body.angle;
+        })
       }
 
       this.renderer.render(this.stage);

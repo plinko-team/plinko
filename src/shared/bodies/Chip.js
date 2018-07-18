@@ -23,6 +23,9 @@ export default class Chip extends GameObject {
     // change renderer properties based on physics collisions
     this.body.sprite = this.sprite;
     this.sprite.body = this.body;
+
+    this.body.parentObject = this;
+    this.sprite.parentObject = this;
   }
 
   registerUpdateListener(engine) {
@@ -64,5 +67,24 @@ export default class Chip extends GameObject {
     this.body.label = this.type;
     this.body.position.x = this.x;
     this.body.position.y = this.y;
+  }
+
+  shrink(callback) {
+    setTimeout(() => {
+      const startTime = Date.now()
+      const SHRINK_FACTOR = 0.9
+      const interval = setInterval(() => {
+        Body.scale(this.body, SHRINK_FACTOR, SHRINK_FACTOR)
+        this.body.circleRadius *= SHRINK_FACTOR
+        this.sprite.width *= SHRINK_FACTOR
+        this.sprite.height *= SHRINK_FACTOR
+
+        if (this.body.circleRadius < 0.1) {
+          clearInterval(interval);
+          callback();
+        }
+
+      }, 50)
+    }, 1000)
   }
 }
