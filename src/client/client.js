@@ -5,10 +5,14 @@ import GameLoop from './gameLoop';
 import createEnvironment from '../shared/setup';
 import { Render, Events } from 'matter-js';
 import HoverChip from '../shared/bodies/HoverChip';
+import { DROP_BOUNDARY } from '../shared/constants/game'
 
 // On click, add a chip at the mouse's x and y relative to canvas
 document.querySelector('canvas').addEventListener('click', (e) => {
   e.preventDefault();
+
+  // Short circuit handler if outside of drop boundary
+  if (e.offsetY > DROP_BOUNDARY) { return }
 
   const chip = new Chip({ x: e.offsetX, y: e.offsetY });
 
