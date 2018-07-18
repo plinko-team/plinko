@@ -48,7 +48,6 @@ export default class Chip extends GameObject {
     const options = {
       restitution: CHIP_RESTITUTION,
       friction: CHIP_FRICTION,
-      slop: 0,
     }
 
     this.body = Bodies.circle(this.x, this.y, CHIP_RADIUS, options);
