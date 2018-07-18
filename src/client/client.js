@@ -30,6 +30,10 @@ gameLoop.start();
    const x = e.offsetX;
    const y = e.offsetY;
 
-   new HoverChip({ x, y, stage});
-   renderer.render(stage)
+   const hoverChip = new HoverChip({ x, y });
+   hoverChip.addToRenderer(stage);
+
+   e.target.addEventListener('mouseleave', (e) => {
+     hoverChip.removeChip(stage);
+   });
  })

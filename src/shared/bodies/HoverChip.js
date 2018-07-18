@@ -1,28 +1,17 @@
 import { CHIP_DIAMETER } from '../constants/bodies';
 import { CHIP_COLOR } from '../constants/colors';
 import GameObject from './GameObject';
-
-let PIXI;
-
-if (typeof window === 'object') {
-  PIXI = require('pixi.js');
-}
+import * as PIXI from 'pixi.js'
 
 export default class HoverChip extends GameObject {
-  constructor({ x, y, stage }) {
+  constructor({ x, y }) {
     super({ x, y });
     this.type = 'hover_chip';
-    this.stage = stage;
     if (typeof window === 'object') { this.createSprite() };
-    this.addToRenderer(stage);
     this.registerListener();
   }
 
   registerListener() {
-    document.querySelector('canvas').addEventListener('mouseleave', (e) => {
-      this.removeChip()
-    });
-    
     document.querySelector('canvas').addEventListener('mousemove', (e) => {
       const x = e.offsetX;
       const y = e.offsetY;
@@ -31,8 +20,8 @@ export default class HoverChip extends GameObject {
     });
   }
 
-  removeChip() {
-    this.stage.removeChild(this.sprite);
+  removeChip(stage) {
+    stage.removeChild(this.sprite);
   }
 
   createSprite() {
