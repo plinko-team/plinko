@@ -3,8 +3,13 @@ var path = require('path');
 var fs = require('fs');
 
 module.exports = {
+<<<<<<< HEAD
+  watch: true,
+  mode: 'development',
+=======
   mode: 'development',
   watch: true,
+>>>>>>> master
   watchOptions: {
     ignored: [/node_modules/],
     poll: 1000,

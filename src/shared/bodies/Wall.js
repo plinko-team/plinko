@@ -46,22 +46,23 @@ class Wall extends GameObject {
 
 export class VerticalWall extends Wall {
   constructor({x, y}) {
-    super({x, y, width: 10, height: CANVAS_HEIGHT});
+    super({x, y, width: 4, height: CANVAS_HEIGHT});
   }
 }
 
 export class HorizontalWall extends Wall {
   constructor() {
-    super({ x: CANVAS_WIDTH / 2,
-            y: 600,
-            width: CANVAS_WIDTH,
-            height: 10
-          })
+    super({
+      x: CANVAS_WIDTH / 2,
+      y: 600,
+      width: CANVAS_WIDTH,
+      height: 10
+    })
   }
 }
 
 export class BucketWall extends Wall {
   constructor({ x }) {
-    super({ x, y: CANVAS_HEIGHT - 50, width: 10, height: 100 });
+    super({ x, y: CANVAS_HEIGHT - 50, width: 5, height: 130 });
   }
 }
