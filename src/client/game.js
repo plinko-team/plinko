@@ -4,12 +4,16 @@ import HoverChip from '../shared/bodies/HoverChip';
 import { DROP_BOUNDARY, TIMESTEP } from '../shared/constants/game'
 import createEnvironment from '../shared/setup';
 
+
+
 export default class Game {
   constructor({ engine, renderer, stage }) {
     this.engine = engine;
     this.renderer = renderer;
     this.stage = stage;
     this.chips = [];
+
+
   }
 
   init() {

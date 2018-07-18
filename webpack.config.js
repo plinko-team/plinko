@@ -12,7 +12,7 @@ module.exports = {
   target: 'web',
   entry: './src/client/client.js',
   output: {
-    path: path.resolve(__dirname, 'dist'),
+    path: path.resolve(__dirname, 'public'),
     filename: 'main.js'
   },
   module: {
