@@ -3,6 +3,7 @@ import Chip from '../shared/bodies/Chip';
 import engine from './engine';
 import GameLoop from './gameLoop';
 import createEnvironment from '../shared/setup';
+import HoverChip from '../shared/bodies/HoverChip';
 
 
 // On click, add a chip at the mouse's x and y relative to canvas
@@ -25,11 +26,10 @@ const gameLoop = new GameLoop({ engine, stage, renderer });
 gameLoop.start();
 
 // // When the client moves the mouse, display a chip overlay
-// document.querySelector('canvas').addEventListener('mousemove', (e) => {
-//   const x = e.offsetX;
-//   const y = e.offsetY;
-//
-//   const chip = new Chip({ x, y });
-//   chip.addToRenderer(stage);
-//   renderer.render(stage)
-// })
+ document.querySelector('canvas').addEventListener('mouseenter', (e) => {
+   const x = e.offsetX;
+   const y = e.offsetY;
+
+   new HoverChip({ x, y, stage});
+   renderer.render(stage)
+ })

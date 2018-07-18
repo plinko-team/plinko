@@ -3,6 +3,7 @@ var path = require('path');
 var fs = require('fs');
 
 module.exports = {
+  mode: 'development',
   target: 'web',
   entry: './src/client/client.js',
   output: {
