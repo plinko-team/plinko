@@ -1,6 +1,4 @@
 import { Engine, Render, Events } from 'matter-js';
-import engine from './engine';
-import { renderer, stage } from './renderer';
 import Chip from '../shared/bodies/Chip';
 import HoverChip from '../shared/bodies/HoverChip';
 import { DROP_BOUNDARY, TIMESTEP } from '../shared/constants/game'
@@ -14,7 +12,7 @@ export default class Game {
   }
 
   init() {
-    createEnvironment(stage);
+    createEnvironment(this.stage);
     this.registerEvents();
     this.registerPhysicsEvents();
 
@@ -31,10 +29,10 @@ export default class Game {
 
       const chip = new Chip({ x: e.offsetX, y: e.offsetY });
 
-      chip.addToEngine(engine.world);
-      chip.addToRenderer(stage);
-      chip.registerUpdateListener(engine);
-      renderer.render(stage);
+      chip.addToEngine(this.engine.world);
+      chip.addToRenderer(this.stage);
+      chip.registerUpdateListener(this.engine);
+      this.renderer.render(this.stage);
     });
 
 
@@ -43,17 +41,17 @@ export default class Game {
       const x = e.offsetX;
       const y = e.offsetY;
       const hoverChip = new HoverChip({ x, y });
-      hoverChip.addToRenderer(stage);
+      hoverChip.addToRenderer(this.stage);
 
       e.target.addEventListener('mouseleave', () => {
-        hoverChip.removeChip(stage);
+        hoverChip.removeChip(this.stage);
       });
     })
   }
 
   registerPhysicsEvents() {
     // Collision Events
-    Events.on(engine, 'collisionStart', function(event) {
+    Events.on(this.engine, 'collisionStart', function(event) {
       const pairs = event.pairs;
 
       for (let i = 0; i < pairs.length; i++) {
