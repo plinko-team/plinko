@@ -1,7 +1,7 @@
 import Peg from './bodies/Peg';
 import { VerticalWall, HorizontalWall, BucketWall } from './bodies/Wall';
 import engine from '../client/engine';
-import { ROWS, COLS, SPACING, CANVAS_WIDTH, CANVAS_HEIGHT } from './constants/canvas';
+import { ROWS, COLS, ROW_SPACING, COL_SPACING, VERTICAL_MARGIN, HORIZONTAL_OFFSET, CANVAS_WIDTH, CANVAS_HEIGHT } from './constants/canvas';
 
 function createWalls(stage) {
   const leftWall = new VerticalWall({x: 0, y: CANVAS_HEIGHT / 2});
@@ -21,7 +21,7 @@ function createWallBodies(...walls) {
 
 function createBucketWalls(stage) {
   for (let i = 1; i < COLS; i++) {
-    let bucket = new BucketWall({ x: i * SPACING });
+    let bucket = new BucketWall({ x: i * COL_SPACING });
 
     if (typeof window === 'object') { bucket.addToRenderer(stage) }
     bucket.addToEngine(engine.world);
@@ -29,19 +29,24 @@ function createBucketWalls(stage) {
 }
 
 function createPegs(stage) {
+  const verticalOffset = ROW_SPACING / 2;
+  const horizontalOffset = COL_SPACING / 2;
+
   for (let row = 0; row < ROWS; row++) {
     for (let col = 1; col < COLS; col++) {
-      let rowPlacement = col * SPACING;
-      let colPlacement = SPACING + (row * SPACING);
+      let x = col * COL_SPACING;
+      // leave extra space at top of frame to drop chips
+      let y = VERTICAL_MARGIN + (row * ROW_SPACING);
+
       if (row % 2 === 1 && col === COLS - 1) {
         // skip last peg on odd rows
         break;
       } else if (row % 2 === 1) {
-        // offset odd rows
-        rowPlacement += SPACING / 2;
+        // offset columns in odd rows by half
+        x += HORIZONTAL_OFFSET;
       }
 
-      let peg = new Peg({ x: rowPlacement, y: colPlacement });
+      let peg = new Peg({ x, y });
       peg.addToEngine(engine.world);
       if (peg.sprite) { peg.addToRenderer(stage) };
     }
