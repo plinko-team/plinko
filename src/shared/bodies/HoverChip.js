@@ -1,5 +1,7 @@
 import { CHIP_DIAMETER } from '../constants/bodies';
 import { CHIP_COLOR } from '../constants/colors';
+import { DROP_BOUNDARY } from '../constants/game'
+
 import GameObject from './GameObject';
 import * as PIXI from 'pixi.js'
 
@@ -15,6 +17,10 @@ export default class HoverChip extends GameObject {
     document.querySelector('canvas').addEventListener('mousemove', (e) => {
       const x = e.offsetX;
       const y = e.offsetY;
+
+      // Change color if cursor crosses boundary
+      this.sprite.tint = y > DROP_BOUNDARY ? 0xFF8888 : 0xFFFFFF
+
       this.sprite.position.x = x;
       this.sprite.position.y = y;
     });
@@ -28,7 +34,7 @@ export default class HoverChip extends GameObject {
     const chip = new PIXI.Sprite.fromImage('https://i.imgur.com/Q6GxA85.png');
     chip.position.x = this.x;
     chip.position.y = this.y;
-    chip.alpha = .5;
+    chip.alpha = 0.5;
     chip.height = CHIP_DIAMETER;
     chip.width = CHIP_DIAMETER;
     chip.anchor.set(0.5, 0.5);
