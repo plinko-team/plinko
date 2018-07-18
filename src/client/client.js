@@ -21,16 +21,14 @@ document.querySelector('canvas').addEventListener('click', (e) => {
 Events.on(engine, 'collisionStart', function(event) {
   const pairs = event.pairs;
 
-  for (var i = 0; i < pairs.length; i++) {
-    var pair = pairs[i];
+  for (let i = 0; i < pairs.length; i++) {
+    let pair = pairs[i];
 
     if (pair.bodyA.label === 'peg') {
       pair.bodyA.sprite.tint = 0xFFAAAA;
     } else if (pair.bodyB.label === 'peg') {
       pair.bodyB.sprite.tint = 0xFFAAAA;
     }
-
-
   }
 });
 
