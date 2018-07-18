@@ -1,9 +1,11 @@
-import Game from './game'
 import engine from './engine';
 import { renderer, stage } from './renderer';
-import { Render } from 'matter-js'
-const game = new Game({ renderer, engine, stage })
-game.init().start();
+import { Render } from 'matter-js';
+import ClientGame from './clientGame'
+
+const game = new ClientGame({ renderer, engine, stage });
+game.init();
+game.startGame();
 
 // Debug renderer
 if (false) {
