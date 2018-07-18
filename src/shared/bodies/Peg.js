@@ -1,4 +1,4 @@
-import { Bodies } from 'matter-js';
+import { Body, Bodies } from 'matter-js';
 import { PEG_FRICTION, PEG_RESTITUTION, PEG_RADIUS, PEG_DIAMETER } from '../constants/bodies';
 import { PEG_COLOR } from '../constants/colors';
 import GameObject from './GameObject';
@@ -30,6 +30,7 @@ export default class Peg extends GameObject {
     }
 
     this.body = Bodies.circle(this.x, this.y, PEG_RADIUS, options);
+    Body.setDensity(this.body, 1)
     this.body.isStatic = true;
     this.body.position.x = this.x;
     this.body.position.y = this.y;

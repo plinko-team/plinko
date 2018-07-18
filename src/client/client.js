@@ -3,7 +3,7 @@ import Chip from '../shared/bodies/Chip';
 import engine from './engine';
 import GameLoop from './gameLoop';
 import createEnvironment from '../shared/setup';
-import { Events } from 'matter-js';
+import { Render, Events } from 'matter-js';
 import HoverChip from '../shared/bodies/HoverChip';
 
 // On click, add a chip at the mouse's x and y relative to canvas
@@ -36,6 +36,17 @@ Events.on(engine, 'collisionStart', function(event) {
 createEnvironment(stage);
 
 renderer.render(stage);
+
+let r = Render.create({
+  element: document.body,
+  engine: engine,
+  options: {
+    width: 600,
+    height: 800
+  }
+})
+
+Render.run(r)
 
 const gameLoop = new GameLoop({ engine, stage, renderer });
 gameLoop.start();
