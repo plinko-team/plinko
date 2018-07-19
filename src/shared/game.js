@@ -1,11 +1,13 @@
 import { World, Engine, Events } from 'matter-js';
-import { DROP_BOUNDARY, TIMESTEP } from '../shared/constants/game'
+import { DROP_BOUNDARY, TIMESTEP } from '../shared/constants/game';
+import { PLAYER_COLORS } from './constants/colors';
 import createEnvironment from './setup';
 
 export default class Game {
   constructor() {
     this.engine = Engine.create();
     this.chips = [];
+    this.pegs = {};
   }
 
   init() {
@@ -22,10 +24,12 @@ export default class Game {
       const bodyB = pair.bodyB;
 
       if (bodyA.label === 'peg') {
-        bodyA.sprite.tint = 0xFFAAAA;
+        bodyA.parentObject.ownerId = bodyB.parentObject.ownerId;
+        bodyA.sprite.tint = PLAYER_COLORS[bodyA.parentObject.ownerId];
       }
       if (bodyB.label === 'peg') {
-        bodyB.sprite.tint = 0xFFAAAA;
+        bodyB.parentObject.ownerId = bodyA.parentObject.ownerId;
+        bodyB.sprite.tint = PLAYER_COLORS[bodyB.parentObject.ownerId];
       }
 
       if (bodyB.label === 'ground') {

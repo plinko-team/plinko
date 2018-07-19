@@ -1,6 +1,6 @@
 import { Bodies } from 'matter-js';
 import { CHIP_DENSITY, CHIP_FRICTION, CHIP_RESTITUTION, CHIP_RADIUS, CHIP_DIAMETER } from '../constants/bodies';
-import { CHIP_TINT } from '../constants/colors';
+import { PLAYER_COLORS } from '../constants/colors';
 import { CHIP_SPRITE } from '../constants/sprites';
 import { Events, Body } from 'matter-js'
 import GameObject from './GameObject';
@@ -14,8 +14,8 @@ if (typeof window === 'object') {
 export default class Chip extends GameObject {
   static count = 0
 
-  constructor({ x, y }) {
-    super({ x, y });
+  constructor({ id, x, y, ownerId }) {
+    super({ id, x, y, ownerId });
     this.type = 'chip';
     this.createPhysics();
     if (typeof window === 'object') { this.createSprite() };
@@ -46,7 +46,7 @@ export default class Chip extends GameObject {
     chip.height = CHIP_DIAMETER;
     chip.width = CHIP_DIAMETER;
     chip.anchor.set(0.5, 0.5);
-    chip.tint = CHIP_TINT;
+    chip.tint = PLAYER_COLORS[this.ownerId];
 
     this.sprite = chip;
   }
@@ -87,6 +87,6 @@ export default class Chip extends GameObject {
         }
 
       }, 50)
-    }, 2000)
+    }, 500)
   }
 }

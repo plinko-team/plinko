@@ -44,9 +44,11 @@ function createTriangles(stage, engine) {
 }
 
 
-function createPegs(stage, engine) {
+function createPegs(stage, engine, pegs) {
   const verticalOffset = ROW_SPACING / 2;
   const horizontalOffset = COL_SPACING / 2;
+
+  let id = 0;
 
   for (let row = 0; row < ROWS; row++) {
     for (let col = 1; col < COLS; col++) {
@@ -62,16 +64,19 @@ function createPegs(stage, engine) {
         x += HORIZONTAL_OFFSET;
       }
 
-      let peg = new Peg({ x, y });
+      let peg = new Peg({ id, x, y });
+      pegs[id] = peg;
       peg.addToEngine(engine.world);
       if (peg.sprite) { peg.addToRenderer(stage) };
+
+      id++;
     }
   }
 }
 
-export default function createEnvironment(stage, engine) {
+export default function createEnvironment(stage, engine, pegs) {
   createWalls(stage, engine);
   createBucketWalls(stage, engine);
-  createPegs(stage, engine);
+  createPegs(stage, engine, pegs);
   createTriangles(stage, engine);
 }

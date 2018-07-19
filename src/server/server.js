@@ -14,15 +14,14 @@ app.use(express.static('public'));
 
 const game = new Game();
 
-let playerId = 1
+let playerId = 0
 
 io.on('connection', socket => {
-  socket.emit('connection established', { playerId: playerId++ })
+  socket.emit('connection established', { playerId: playerId % 4 })
+  playerId++;
 
   // Events must be set on socket established through connection
   socket.on('new chip', chipInfo => {
-    console.log(chipInfo);
-    
     socket.emit('new chip', chipInfo)
     socket.broadcast.emit('new chip', chipInfo)
   })
