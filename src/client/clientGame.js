@@ -6,15 +6,32 @@ import Game from '../shared/game';
 import createEnvironment from '../shared/setup'
 
 export default class ClientGame extends Game {
-  constructor({ engine, renderer, stage }) {
-    super({ engine });
+  constructor({ renderer, stage, socket }) {
+    super();
+    this.socket = socket;
     this.renderer = renderer;
     this.stage = stage;
     this.env = 'client';
+
+    this.registerSocketEvents();
+  }
+
+  registerSocketEvents() {
+    this.socket.on('new chip', this.onNewChip.bind(this));
+  }
+
+  onNewChip(chipInfo) {
+    const chip = new Chip(chipInfo);
+
+    chip.addToEngine(this.engine.world);
+    chip.addToRenderer(this.stage);
+    this.chips.push(chip)
+    this.renderer.render(this.stage);
+    console.log('chip info: ', chipInfo)
   }
 
   init() {
-    createEnvironment(this.stage);
+    createEnvironment(this.stage, this.engine);
     this.registerPhysicsEvents();
     this.registerCanvasEvents();
   }
@@ -26,12 +43,10 @@ export default class ClientGame extends Game {
     // Short circuit handler if outside of drop boundary
     if (e.offsetY > DROP_BOUNDARY) { return }
 
-    const chip = new Chip({ x: e.offsetX, y: e.offsetY });
+    const x = e.offsetX;
+    const y = e.offsetY;
 
-    chip.addToEngine(this.engine.world);
-    chip.addToRenderer(this.stage);
-    this.chips.push(chip)
-    this.renderer.render(this.stage);
+    this.socket.emit('new chip', { x, y })
   }
 
   onMouseEnter = (e) => {

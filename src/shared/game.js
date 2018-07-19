@@ -3,13 +3,13 @@ import { DROP_BOUNDARY, TIMESTEP } from '../shared/constants/game'
 import createEnvironment from './setup';
 
 export default class Game {
-  constructor({ engine }) {
-    this.engine = engine;
+  constructor() {
+    this.engine = Engine.create();
     this.chips = [];
   }
 
   init() {
-    createEnvironment(this.stage);
+    createEnvironment(this.stage, this.engine);
     this.registerPhysicsEvents();
   }
 
