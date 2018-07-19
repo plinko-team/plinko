@@ -4,7 +4,7 @@ function openSocketConnection(url) {
   const socket = io.connect(url);
 
   socket.on('connection established', () => {
-    console.log('ESTABLISHED!')
+    console.log('ESTABLISHED!');
   })
 
   return socket;
