@@ -6,12 +6,11 @@ import GameObject from './GameObject';
 import engine from '../../client/engine'
 import decomp from 'poly-decomp';
 
-window.decomp = decomp;
-
 let PIXI;
 
 if (typeof window === 'object') {
   PIXI = require('pixi.js');
+  window.decomp = decomp;
 }
 
 export default class Triangle extends GameObject {
@@ -22,7 +21,7 @@ export default class Triangle extends GameObject {
     this.createPhysics();
     if (typeof window === 'object') { this.createSprite() };
   }
-  
+
   createPhysics() {
     let options = {
       restitution: TRIANGLE_RESTITUTION,
