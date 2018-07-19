@@ -50,18 +50,32 @@ export default class Game {
   startGame() {
     this.timeStarted = Date.now();
     this.nextTimestep = Date.now();
+    let endX;
+    let endY;
+    let startX;
+    let startY;
 
     this.loop = setInterval(() => {
       while (Date.now() > this.nextTimestep) {
+
         Engine.update(this.engine, TIMESTEP);
         this.nextTimestep += TIMESTEP;
 
-        this.env === 'client' && this.chips.forEach(chip => {
-          chip.sprite.position.x = chip.body.position.x;
-          chip.sprite.position.y = chip.body.position.y;
-          chip.sprite.rotation = chip.body.angle;
-        })
       }
+
+      let interpolation = (Date.now() + TIMESTEP - this.nextTimestep)
+                        / TIMESTEP;
+
+      this.env === 'client' && this.chips.forEach(chip => {
+        chip.sprite.destination = chip.body.position;
+        chip.sprite.begin = chip.sprite.position;
+        let incrementX = chip.sprite.destination.x - chip.sprite.begin.x;
+        let incrementY = chip.sprite.destination.y - chip.sprite.begin.y;
+
+        chip.sprite.position.x += incrementX * interpolation;
+        chip.sprite.position.y += incrementY * interpolation;
+        chip.sprite.rotation = chip.body.angle;
+      })
 
       this.env === 'client' && this.renderer.render(this.stage);
     }, 0)

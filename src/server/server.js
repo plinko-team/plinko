@@ -11,8 +11,10 @@ const io = socket(server)
 // Sets 'public' to serve static files
 app.use(express.static('public'));
 
+let playerId = 1
+
 io.on('connection', (socket) => {
-  socket.emit('connection established', {})
+  socket.emit('connection established', { playerId: playerId++ })
 });
 
 startLocalTunnel();
