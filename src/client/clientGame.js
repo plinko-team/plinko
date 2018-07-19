@@ -21,6 +21,7 @@ export default class ClientGame extends Game {
 
   onClick = (e) => {
     e.preventDefault();
+    e.stopPropagation()
 
     // Short circuit handler if outside of drop boundary
     if (e.offsetY > DROP_BOUNDARY) { return }
@@ -46,8 +47,10 @@ export default class ClientGame extends Game {
 
   registerCanvasEvents() {
     // On click, add a chip at the mouse's x and y relative to canvas
-    document.querySelector('canvas').addEventListener('click', this.onClick);
-
+    document.querySelector('canvas').addEventListener('click', this.onClick, false);
+    // We prevent the default mousedown event so that when you spam chips,
+    // random parts of the DOM might get highlighted due to double click
+    document.body.addEventListener('mousedown', (e) => { e.preventDefault() })
     // When the client moves the mouse, display a chip overlay
     document.querySelector('canvas').addEventListener('mouseenter', this.onMouseEnter)
   }

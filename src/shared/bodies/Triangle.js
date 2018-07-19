@@ -3,9 +3,8 @@ import { TRIANGLE_FRICTION, TRIANGLE_RESTITUTION, TRIANGLE_X_OFFSET, TRIANGLE_Y_
 import { WALL_COLOR } from '../constants/colors';
 import GameObject from './GameObject';
 import engine from '../../client/engine'
-
 import decomp from 'poly-decomp';
- 
+
 window.decomp = decomp;
 
 
@@ -17,8 +16,8 @@ if (typeof window === 'object') {
 
 export default class Triangle extends GameObject {
   constructor({ x, y }) {
-    super({ x, y })
-  
+    super({ x, y });
+
     this.xOffset = TRIANGLE_X_OFFSET;
     this.yOffset = TRIANGLE_Y_OFFSET;
 
