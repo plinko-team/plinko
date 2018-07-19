@@ -11,8 +11,9 @@ if (typeof window === 'object') {
 }
 
 export default class Peg extends GameObject {
-  constructor({ x, y }) {
-    super({ x, y });
+  constructor({ id, x, y }) {
+    super({ id, x, y });
+    this.ownerId = null;
     this.type = 'peg';
 
     this.createPhysics();
@@ -22,6 +23,9 @@ export default class Peg extends GameObject {
     // change renderer properties based on physics collisions
     this.body.sprite = this.sprite;
     this.sprite.body = this.body;
+
+    this.body.parentObject = this;
+    this.sprite.parentObject = this;
   }
 
   createPhysics() {
@@ -46,7 +50,7 @@ export default class Peg extends GameObject {
     peg.position.y = this.y;
     peg.height = PEG_DIAMETER;
     peg.width = PEG_DIAMETER;
-    peg.tint = PEG_TINT
+    peg.tint = PEG_TINT;
     peg.anchor.set(0.5, 0.5);
 
     this.sprite = peg;

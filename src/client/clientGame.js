@@ -22,16 +22,14 @@ export default class ClientGame extends Game {
 
   onNewChip(chipInfo) {
     const chip = new Chip(chipInfo);
-
     chip.addToEngine(this.engine.world);
     chip.addToRenderer(this.stage);
-    this.chips.push(chip)
+    this.chips.push(chip);
     this.renderer.render(this.stage);
-    console.log('chip info: ', chipInfo)
   }
 
   init() {
-    createEnvironment(this.stage, this.engine);
+    createEnvironment(this.stage, this.engine, this.pegs);
     this.registerPhysicsEvents();
     this.registerCanvasEvents();
   }
@@ -46,13 +44,13 @@ export default class ClientGame extends Game {
     const x = e.offsetX;
     const y = e.offsetY;
 
-    this.socket.emit('new chip', { x, y })
+    this.socket.emit('new chip', { x, y, ownerId: window.playerId })
   }
 
   onMouseEnter = (e) => {
     const x = e.offsetX;
     const y = e.offsetY;
-    const hoverChip = new HoverChip({ x, y });
+    const hoverChip = new HoverChip({ x, y, ownerId: window.playerId });
     hoverChip.addToRenderer(this.stage);
 
     e.target.addEventListener('mouseleave', () => {
