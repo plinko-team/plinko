@@ -1,6 +1,6 @@
 import { Bodies } from 'matter-js';
 import { WALL_FRICTION, WALL_RESTITUTION} from '../constants/bodies';
-import { WALL_COLOR } from '../constants/colors';
+import { WALL_TINT } from '../constants/colors';
 import { CANVAS_HEIGHT, CANVAS_WIDTH } from '../constants/canvas';
 import GameObject from './GameObject';
 
@@ -33,11 +33,13 @@ class Wall extends GameObject {
   }
 
   createSprite() {
-    const wall = new PIXI.Sprite.fromImage('https://i.imgur.com/7IFyj9r.png');
+    const texture = PIXI.Texture.WHITE;
+    const wall = new PIXI.Sprite(texture);
     wall.position.x = this.x;
     wall.position.y = this.y;
     wall.height = this.height;
     wall.width = this.width;
+    wall.tint = WALL_TINT;
     wall.anchor.set(0.5, 0.5);
 
     this.sprite = wall;
@@ -54,7 +56,7 @@ export class HorizontalWall extends Wall {
   constructor() {
     super({
       x: CANVAS_WIDTH / 2,
-      y: 600,
+      y: CANVAS_HEIGHT,
       width: CANVAS_WIDTH,
       height: 10
     })

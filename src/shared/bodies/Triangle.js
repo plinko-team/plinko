@@ -1,11 +1,11 @@
 import { Bodies, Vertices } from 'matter-js';
 import { TRIANGLE_FRICTION, TRIANGLE_RESTITUTION, TRIANGLE_X_OFFSET_RIGHT, TRIANGLE_Y_OFFSET_RIGHT, TRIANGLE_X_OFFSET_LEFT, TRIANGLE_Y_OFFSET_LEFT } from '../constants/bodies';
 import { TRIANGLE_LEFT_SPRITE, TRIANGLE_RIGHT_SPRITE } from '../constants/sprites';
-import { WALL_COLOR } from '../constants/colors';
+import { WALL_TINT } from '../constants/colors';
 import GameObject from './GameObject';
 import engine from '../../client/engine'
 import decomp from 'poly-decomp';
- 
+
 window.decomp = decomp;
 
 let PIXI;
@@ -49,6 +49,7 @@ export default class Triangle extends GameObject {
     triangle.position.y = this.y;
     triangle.scale.set(0.33, 0.33);
     triangle.anchor.set(0.5, 0.5);
+    triangle.tint = WALL_TINT;
 
     this.sprite = triangle;
   }
