@@ -3,7 +3,6 @@ import Triangle from './bodies/Triangle';
 import { VerticalWall, HorizontalWall, BucketWall } from './bodies/Wall';
 import engine from '../client/engine';
 import { ROWS, COLS, ROW_SPACING, COL_SPACING, VERTICAL_MARGIN, HORIZONTAL_OFFSET, CANVAS_WIDTH, CANVAS_HEIGHT } from './constants/canvas';
-import { TRIANGLES_RIGHT_WALL } from './constants/bodies';
 
 function createWalls(stage) {
   const leftWall = new VerticalWall({x: 0, y: CANVAS_HEIGHT / 2});
@@ -31,8 +30,13 @@ function createBucketWalls(stage) {
 }
 
 function createTriangles(stage) {
-  let triangles = TRIANGLES_RIGHT_WALL
 
+  // Positional calculations and vertices for the wall triangles.
+  let triangles = [{x: 772, y: 290, vertices: '50 150 15 75 50 0', side: 'right'}, {x: 772, y: 158, vertices: '50 150 15 75 50 0', side: 'right'}, 
+                   {x: 772, y: 422, vertices: '50 150 15 75 50 0', side: 'right'}, {x: 28, y: 305, vertices: '50 150 85 75 50 0', side: 'left'}, 
+                   {x: 28, y: 173, vertices: '50 150 85 75 50 0', side: 'left'}, {x: 28, y: 437, vertices: '50 150 85 75 50 0', side: 'left'}];
+
+  
   triangles.forEach(triangle => {
     let t = new Triangle(triangle);
     t.addToEngine(engine.world);

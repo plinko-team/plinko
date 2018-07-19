@@ -12,8 +12,7 @@ export const WALL_RESTITUTION = .1;
 
 export const TRIANGLE_FRICTION = 0.1;
 export const TRIANGLE_RESTITUTION = .1;
-export const TRIANGLE_X_OFFSET = 13;
-export const TRIANGLE_Y_OFFSET = 15;
-export const TRIANGLES_RIGHT_WALL = [{x: 772, y: 290}, {x: 772, y: 158}, {x: 772, y: 422}];
-
-
+export const TRIANGLE_X_OFFSET_RIGHT = 13;
+export const TRIANGLE_Y_OFFSET_RIGHT = 15;
+export const TRIANGLE_X_OFFSET_LEFT = 15;
+export const TRIANGLE_Y_OFFSET_LEFT = 5;
