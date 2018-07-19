@@ -4,10 +4,10 @@ import { WALL_TINT } from '../constants/colors';
 import { TRIANGLE_SPRITE } from '../constants/sprites';
 import GameObject from './GameObject';
 import engine from '../../client/engine'
-
 import decomp from 'poly-decomp';
 
 window.decomp = decomp;
+
 
 let PIXI;
 
