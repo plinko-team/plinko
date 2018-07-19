@@ -1,8 +1,8 @@
 import path from 'path'
 import http from 'http'
 import socket from 'socket.io'
-import localtunnel from 'localtunnel'
 import express from 'express'
+import startLocalTunnel from './tunnel'
 
 const app = express()
 const server = http.Server(app)
@@ -15,13 +15,6 @@ io.on('connection', (socket) => {
   socket.emit('connection established', {})
 });
 
-
-const tunnel = localtunnel(3000, {subdomain: 'radioactive-kittens'}, (err, tunnel) => {
-  console.log(tunnel.url)
-})
-
-tunnel.on('close', function() {
-  console.log('tunnel closed :(')
-});
+startLocalTunnel();
 
 server.listen(3000)
