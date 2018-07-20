@@ -29,10 +29,10 @@ export default class Game {
     document.body.querySelector(formerPegOwnerElement).children[0].innerHTML = score;  
   }
 
-  updateScore = (bodyA, bodyB) => {
+  updateScore = (peg, chip) => {
     // Assuming pegs are always the bodyA and chips are always the bodyB (Matter.js implementation)
-    const formerPegOwner = bodyA.parentObject.ownerId;
-    const chipOwner = bodyB.parentObject.ownerId;
+    const formerPegOwner = peg.parentObject.ownerId;
+    const chipOwner = chip.parentObject.ownerId;
     
     if (chipOwner !== formerPegOwner) {
       this.incrementScore(chipOwner);
