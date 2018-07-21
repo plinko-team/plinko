@@ -15,6 +15,33 @@ export default class Game {
     this.registerPhysicsEvents();
   }
 
+  incrementScore(chipOwner) {
+    const ownerScoreElement = '.player-' + chipOwner;
+    const chipOwnerScore  = +document.body.querySelector(ownerScoreElement).children[0].innerHTML;
+    const score = chipOwnerScore + 1;
+    document.body.querySelector(ownerScoreElement).children[0].innerHTML = score;
+  }
+
+  decrementScore(formerPegOwner) {
+    const formerPegOwnerElement = '.player-' + formerPegOwner;
+    const formerPegOwnerScore  = +document.body.querySelector(formerPegOwnerElement).children[0].innerHTML;
+    const score = formerPegOwnerScore - 1;
+    document.body.querySelector(formerPegOwnerElement).children[0].innerHTML = score;  
+  }
+
+  updateScore = (peg, chip) => {
+    // Assuming pegs are always the bodyA and chips are always the bodyB (Matter.js implementation)
+    const formerPegOwner = peg.parentObject.ownerId;
+    const chipOwner = chip.parentObject.ownerId;
+    
+    if (chipOwner !== formerPegOwner) {
+      this.incrementScore(chipOwner);
+      
+      // Pegs initialize with owner set to null 
+      if (formerPegOwner) { this.decrementScore(formerPegOwner); }
+    }
+  }
+
   onCollisionStart = (event) => {
     const pairs = event.pairs;
 
@@ -23,6 +50,10 @@ export default class Game {
       const bodyA = pair.bodyA;
       const bodyB = pair.bodyB;
 
+      if (bodyA.label === 'peg' && bodyB.label === 'chip') {
+        this.updateScore(bodyA, bodyB);
+      }
+      
       if (bodyA.label === 'peg') {
         bodyA.parentObject.ownerId = bodyB.parentObject.ownerId;
         bodyA.sprite.tint = PLAYER_COLORS[bodyA.parentObject.ownerId];
