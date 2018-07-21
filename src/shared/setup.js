@@ -43,12 +43,7 @@ function createTriangles(stage, engine) {
   });
 }
 
-
-<<<<<<< HEAD
-function createPegs(stage, engine) {
-=======
 function createPegs(stage, engine, pegs) {
->>>>>>> aea5bf61d8a51ebf6c1fa363442d951a873d562f
   const verticalOffset = ROW_SPACING / 2;
   const horizontalOffset = COL_SPACING / 2;
 
@@ -78,16 +73,9 @@ function createPegs(stage, engine, pegs) {
   }
 }
 
-<<<<<<< HEAD
-export default function createEnvironment(stage, engine) {
-  createWalls(stage, engine);
-  createBucketWalls(stage, engine);
-  createPegs(stage, engine);
-=======
 export default function createEnvironment(stage, engine, pegs) {
   createWalls(stage, engine);
   createBucketWalls(stage, engine);
   createPegs(stage, engine, pegs);
->>>>>>> aea5bf61d8a51ebf6c1fa363442d951a873d562f
   createTriangles(stage, engine);
 }

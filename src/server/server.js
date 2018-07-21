@@ -14,17 +14,7 @@ app.use(express.static('public'));
 
 const game = new Game();
 
-<<<<<<< HEAD
-let playerId = 1
 
-io.on('connection', socket => {
-  socket.emit('connection established', { playerId: playerId++ })
-
-  // Events must be set on socket established through connection
-  socket.on('new chip', chipInfo => {
-    console.log(chipInfo);
-    
-=======
 let playerId = 0
 
 io.on('connection', socket => {
@@ -33,7 +23,6 @@ io.on('connection', socket => {
 
   // Events must be set on socket established through connection
   socket.on('new chip', chipInfo => {
->>>>>>> aea5bf61d8a51ebf6c1fa363442d951a873d562f
     socket.emit('new chip', chipInfo)
     socket.broadcast.emit('new chip', chipInfo)
   })

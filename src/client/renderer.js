@@ -1,9 +1,7 @@
 import * as PIXI from 'pixi.js'
 import { CANVAS_COLOR } from '../shared/constants/colors'
 
-// Default width and height are 800, 600,
-// add to constants if you want to change them
-const options = {
+const defaultOptions = {
   width: 800,
   height: 600,
   backgroundColor: CANVAS_COLOR,
@@ -11,7 +9,11 @@ const options = {
   resolution: 2,
 }
 
-export const renderer = new PIXI.CanvasRenderer(options);
-document.querySelector('.canvas').appendChild(renderer.view);
+export default class RenderEngine {
+  constructor(options) {
+    this.renderer = new PIXI.CanvasRenderer(Object.assign(defaultOptions, options));
+    this.stage = new PIXI.Container();
 
-export const stage = new PIXI.Container();
+    document.querySelector('.canvas').appendChild(this.renderer.view)
+  }
+}
