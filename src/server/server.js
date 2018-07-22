@@ -14,6 +14,7 @@ app.use(express.static('public'));
 
 const game = new Game();
 
+
 let playerId = 0
 
 io.on('connection', socket => {

@@ -43,7 +43,6 @@ function createTriangles(stage, engine) {
   });
 }
 
-
 function createPegs(stage, engine, pegs) {
   const verticalOffset = ROW_SPACING / 2;
   const horizontalOffset = COL_SPACING / 2;
