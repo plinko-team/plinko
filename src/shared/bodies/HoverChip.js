@@ -1,4 +1,4 @@
-import { CHIP_DIAMETER } from '../constants/bodies';
+import { CHIP } from '../constants/bodies';
 import { DROP_BOUNDARY } from '../constants/game';
 import { CHIP_SPRITE } from '../constants/sprites';
 import { CANVAS_COLOR, PLAYER_COLORS, HOVER_CHIP_TRANSPARENCY } from '../constants/colors';
@@ -36,8 +36,8 @@ export default class HoverChip extends GameObject {
     chip.position.x = this.x;
     chip.position.y = this.y;
     chip.alpha = HOVER_CHIP_TRANSPARENCY;
-    chip.height = CHIP_DIAMETER;
-    chip.width = CHIP_DIAMETER;
+    chip.height = CHIP.DIAMETER;
+    chip.width = CHIP.DIAMETER;
     chip.anchor.set(0.5, 0.5);
 
     this.sprite = chip;
