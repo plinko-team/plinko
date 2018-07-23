@@ -6,6 +6,7 @@ import createEnvironment from '../shared/setup';
 export default class ServerEngine {
   constructor() {
     this.engine = Engine.create();
+    this.genesisTime = Date.now();
   }
 
   init() {

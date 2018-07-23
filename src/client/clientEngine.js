@@ -7,16 +7,17 @@ import { DROP_BOUNDARY, TIMESTEP } from '../shared/constants/game'
 import { PLAYER_COLORS } from '../shared/constants/colors';
 import createEnvironment from '../shared/setup';
 import io from 'socket.io-client';
+import EventEmitter from 'eventemitter3';
 
 export default class ClientEngine {
   constructor({ url }) {
     this.env = 'client';
-    this.socket = io.connect(url)
-    this.renderer = new Renderer()
+    this.socket = io.connect(url);
+    this.renderer = new Renderer();
     this.stage = this.renderer.stage;
     this.engine = Engine.create();
-    this.synchronizer = new Synchronizer(this.socket);
-
+    this.eventEmitter = new EventEmitter();
+    this.synchronizer = new Synchronizer(this.socket, this.eventEmitter);
     console.log("Connecting to...", url)
   }
 
@@ -30,6 +31,14 @@ export default class ClientEngine {
     this.registerSocketEvents();
 
     return this;
+  }
+
+  establishGenesisTime() {
+    this.synchronizer.handshake();
+
+    this.eventEmitter.once('handshake complete', () => {
+      socket.emit('request genesis time');
+    })
   }
 
   incrementScore(chipOwner) {
@@ -105,6 +114,9 @@ export default class ClientEngine {
       window.playerId = playerId;
 
       this.socket.on('new chip', this.onNewChip.bind(this));
+      this.socket.on('genesis time', ({ genesisTime }) => {
+        this.genesisTime = genesisTime;
+      })
     })
   }
 
@@ -119,6 +131,8 @@ export default class ClientEngine {
   }
 
   startGame() {
+    this.synchronizer.startSyncing();
+
     this.timeStarted = Date.now();
     this.nextTimestep = Date.now();
     let endX;

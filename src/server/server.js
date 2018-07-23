@@ -12,7 +12,7 @@ const io = socket(server)
 // Sets 'public' to serve static files
 app.use(express.static('public'));
 
-// const serverEngine = new ServerEngine();
+const serverEngine = new ServerEngine();
 
 let playerId = 0
 let i = 0;
@@ -28,7 +28,10 @@ io.on('connection', socket => {
 
   socket.on('pingMessage', () => {
     socket.emit('pongMessage', { serverTime: Date.now() })
-    socket.broadcast.emit('pong', { serverTime: Date.now() })
+  })
+
+  socket.on('request genesis time', () => {
+    socket.emit('genesis time', { genesisTime: serverEngine.genesisTime })
   })
 });
 

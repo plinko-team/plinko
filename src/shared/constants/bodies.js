@@ -4,7 +4,6 @@ export const PEG = {
   RADIUS: 4,
 }
 
-
 PEG.DIAMETER = PEG.RADIUS * 2;
 
 export const CHIP = {
