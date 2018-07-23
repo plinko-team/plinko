@@ -1,7 +1,11 @@
 import { World, Engine, Events } from 'matter-js';
 import { DROP_BOUNDARY, TIMESTEP } from '../shared/constants/game';
-import { PLAYER_COLORS } from '../shared/constants/colors';
-import createEnvironment from '../shared/setup';
+import { CANVAS, ROWS, COLS, ROW_SPACING, COL_SPACING, VERTICAL_MARGIN, HORIZONTAL_OFFSET } from '../shared/constants/canvas';
+import Chip from '../shared/bodies/Chip';
+import Peg from '../shared/bodies/Peg';
+import Triangle from '../shared/bodies/Triangle';
+import { VerticalWall, HorizontalWall, BucketWall } from '../shared/bodies/Wall';
+import EventEmitter from 'eventemitter3';
 
 /**
 
@@ -10,43 +14,32 @@ import createEnvironment from '../shared/setup';
 **/
 
 export default class ServerEngine {
-  constructor() {
+  constructor({ io }) {
+    this.knownPlayers = [];
+    this.io = io;
     this.engine = Engine.create();
     this.genesisTime = Date.now();
   }
 
   init() {
+    this.lastId = 0;
     this.chips = [];
-    this.pegs = {};
-    createEnvironment(this.stage, this.engine);
+    this.pegs = [];
+    this.toBeDeleted = {};
+    this.createEnvironment();
     this.registerPhysicsEvents();
+    this.registerSocketEvents();
+
+    return this;
   }
 
   incrementScore(chipOwner) {
-    const ownerScoreElement = '.player-' + chipOwner;
-    const chipOwnerScore  = +document.body.querySelector(ownerScoreElement).children[0].innerHTML;
-    const score = chipOwnerScore + 1;
-    document.body.querySelector(ownerScoreElement).children[0].innerHTML = score;
   }
 
   decrementScore(formerPegOwner) {
-    const formerPegOwnerElement = '.player-' + formerPegOwner;
-    const formerPegOwnerScore  = +document.body.querySelector(formerPegOwnerElement).children[0].innerHTML;
-    const score = formerPegOwnerScore - 1;
-    document.body.querySelector(formerPegOwnerElement).children[0].innerHTML = score;
   }
 
   updateScore = (peg, chip) => {
-    // Assuming pegs are always the bodyA and chips are always the bodyB (Matter.js implementation)
-    const formerPegOwner = peg.parentObject.ownerId;
-    const chipOwner = chip.parentObject.ownerId;
-
-    if (chipOwner !== formerPegOwner) {
-      this.incrementScore(chipOwner);
-
-      // Pegs initialize with owner set to null
-      if (formerPegOwner) { this.decrementScore(formerPegOwner); }
-    }
   }
 
   onCollisionStart = (event) => {
@@ -63,23 +56,11 @@ export default class ServerEngine {
 
       if (bodyA.label === 'peg') {
         bodyA.parentObject.ownerId = bodyB.parentObject.ownerId;
-        bodyA.sprite.tint = PLAYER_COLORS[bodyA.parentObject.ownerId];
-      }
-      if (bodyB.label === 'peg') {
-        bodyB.parentObject.ownerId = bodyA.parentObject.ownerId;
-        bodyB.sprite.tint = PLAYER_COLORS[bodyB.parentObject.ownerId];
       }
 
-      if (bodyB.label === 'ground') {
-        bodyA.parentObject.shrink(() => {
-          World.remove(this.engine.world, bodyA)
-          this.env === 'client' && this.stage.removeChild(bodyA.sprite)
-        })
-      } else if (bodyA.label === 'ground') {
-        bodyB.parentObject.shrink(() => {
-          World.remove(this.engine.world, bodyB)
-          this.env === 'client' && this.stage.removeChild(bodyB.sprite)
-        })
+      if (bodyA.label === 'ground') {
+        this.toBeDeleted[bodyB.parentObject.id] = true;
+        World.remove(this.engine.world, bodyB);
       }
     }
   }
@@ -89,41 +70,143 @@ export default class ServerEngine {
     Events.on(this.engine, 'collisionStart', this.onCollisionStart);
   }
 
+  registerSocketEvents() {
+    let playerId = 0
+    let i = 0;
+
+    this.io.on('connection', socket => {
+      this.knownPlayers.push(socket);
+
+      socket.emit('connection established', { playerId: playerId % 4 })
+      playerId++;
+
+      // Events must be set on socket established through connection
+      socket.on('new chip', (chipInfo) => {
+        // Add a new chip to our world
+        let chip = new Chip({ id: this.lastId++, ownerId: chipInfo.ownerId, x: chipInfo.x, y: chipInfo.y })
+        chip.addToEngine(this.engine.world);
+        this.chips.push(chip)
+      })
+
+      socket.on('pingMessage', () => {
+        socket.emit('pongMessage', { serverTime: Date.now() })
+      })
+
+      socket.on('request genesis time', () => {
+        socket.emit('genesis time', { genesisTime: serverEngine.genesisTime })
+      })
+    });
+  }
+
   startGame() {
     this.timeStarted = Date.now();
     this.nextTimestep = Date.now();
-    let endX;
-    let endY;
-    let startX;
-    let startY;
 
     this.loop = setInterval(() => {
       while (Date.now() > this.nextTimestep) {
-
         Engine.update(this.engine, TIMESTEP);
+
+        const chipInfo = this.chips.map(chip => {
+          return {
+                   id: chip.id,
+                   ownerId: chip.ownerId,
+                   x: chip.body.position.x,
+                   y: chip.body.position.y,
+                   angle: chip.body.angle,
+                 };
+        });
+
+        const pegInfo = this.pegs.map(peg => {
+          return { id: peg.id, ownerId: peg.ownerId };
+        });
+
+        this.knownPlayers.forEach(socket => {
+          socket.emit('snapshot', { chips: chipInfo, pegs: pegInfo });
+        })
+
+        this.chips = this.chips.filter(chip => {
+          return !this.chipsToBeDeleted[chip.id];
+        })
+
+        this.chipsToBeDeleted = {};
+
         this.nextTimestep += TIMESTEP;
-
       }
-
-      let interpolation = (Date.now() + TIMESTEP - this.nextTimestep)
-                        / TIMESTEP;
-
-      this.env === 'client' && this.chips.forEach(chip => {
-        chip.sprite.destination = chip.body.position;
-        chip.sprite.begin = chip.sprite.position;
-        let incrementX = chip.sprite.destination.x - chip.sprite.begin.x;
-        let incrementY = chip.sprite.destination.y - chip.sprite.begin.y;
-
-        chip.sprite.position.x += incrementX * interpolation;
-        chip.sprite.position.y += incrementY * interpolation;
-        chip.sprite.rotation = chip.body.angle;
-      })
-
-      this.env === 'client' && this.renderer.render(this.stage);
     }, 0)
   }
 
   stopGame() {
     clearInterval(this.loop);
+  }
+
+  _createWalls() {
+    const leftWall = new VerticalWall({x: 0, y: CANVAS.HEIGHT / 2});
+    const rightWall = new VerticalWall({x: CANVAS.WIDTH, y: CANVAS.HEIGHT / 2});
+    const ground = new HorizontalWall();
+
+    [leftWall, rightWall, ground].forEach(wall => wall.addToEngine(this.engine.world));
+  }
+
+
+  _createBucketWalls() {
+    for (let i = 1; i < COLS; i++) {
+      let bucket = new BucketWall({ x: i * COL_SPACING });
+      bucket.addToEngine(this.engine.world);
+    }
+  }
+
+  _createTriangles() {
+
+    // Positional calculations and vertices for the wall triangles.
+    let triangles = [
+                      {x: 772, y: 290, side: 'right'},
+                      {x: 772, y: 158, vertices: '50 150 15 75 50 0', side: 'right'},
+                      {x: 772, y: 422, vertices: '50 150 15 75 50 0', side: 'right'},
+                      {x: 28, y: 305,  vertices: '50 150 85 75 50 0', side: 'left'},
+                      {x: 28, y: 173,  vertices: '50 150 85 75 50 0', side: 'left'},
+                      {x: 28, y: 437,  vertices: '50 150 85 75 50 0', side: 'left'},
+                    ];
+
+
+    triangles.forEach(triangle => {
+      let t = new Triangle(triangle);
+      t.addToEngine(this.engine.world);
+    });
+  }
+
+  _createPegs() {
+    const verticalOffset = ROW_SPACING / 2;
+    const horizontalOffset = COL_SPACING / 2;
+
+    let id = 0;
+
+    for (let row = 0; row < ROWS; row++) {
+      for (let col = 1; col < COLS; col++) {
+        let x = col * COL_SPACING;
+        // leave extra space at top of frame to drop chips
+        let y = VERTICAL_MARGIN + (row * ROW_SPACING);
+
+        if (row % 2 === 1 && col === COLS - 1) {
+          // skip last peg on odd rows
+          break;
+        } else if (row % 2 === 1) {
+          // offset columns in odd rows by half
+          x += HORIZONTAL_OFFSET;
+        }
+
+        let peg = new Peg({ id, x, y });
+        this.pegs[id] = peg;
+        peg.addToEngine(this.engine.world);
+
+        id++;
+      }
+    }
+  }
+
+  createEnvironment() {
+    this._createWalls();
+    this._createBucketWalls();
+    this._createPegs();
+    this._createTriangles();
   }
 }

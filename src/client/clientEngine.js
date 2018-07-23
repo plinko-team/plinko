@@ -2,6 +2,8 @@ import { Engine, Render, Events, World } from 'matter-js';
 import Renderer from './renderer';
 import Synchronizer from './synchronizer';
 import Chip from '../shared/bodies/Chip';
+import Triangle from '../shared/bodies/Triangle';
+import { VerticalWall, HorizontalWall, BucketWall } from '../shared/bodies/Wall';
 import HoverChip from '../shared/bodies/HoverChip';
 import { DROP_BOUNDARY, TIMESTEP } from '../shared/constants/game'
 import { PLAYER_COLORS } from '../shared/constants/colors';
@@ -17,7 +19,6 @@ import EventEmitter from 'eventemitter3';
 
 **/
 
-
 export default class ClientEngine {
   constructor({ url }) {
     this.env = 'client';
@@ -31,8 +32,9 @@ export default class ClientEngine {
   }
 
   init() {
-    this.chips = [];
+    this.chips = {};
     this.pegs = {};
+    this.newSnapshot = false;
 
     createEnvironment(this.stage, this.engine, this.pegs);
     this.registerPhysicsEvents();
@@ -121,12 +123,17 @@ export default class ClientEngine {
     this.socket.on('connection established', ({ playerId }) => {
       console.log('ESTABLISHED! Your player ID is: ', playerId);
       window.playerId = playerId;
-
-      this.socket.on('new chip', this.onNewChip.bind(this));
-      this.socket.on('genesis time', ({ genesisTime }) => {
-        this.genesisTime = genesisTime;
-      })
     })
+
+    this.socket.on('genesis time', ({ genesisTime }) => {
+      this.genesisTime = genesisTime;
+    })
+
+    this.socket.on('snapshot', ({ pegs, chips }) => {
+      this.nextPegs = pegs;
+      this.nextChips = chips;
+      this.newSnapshot = true;
+    });
   }
 
   registerCanvasEvents() {
@@ -140,38 +147,67 @@ export default class ClientEngine {
   }
 
   startGame() {
-    this.synchronizer.startSyncing();
+    // this.synchronizer.startSyncing();
 
     this.timeStarted = Date.now();
+    this.lastTimestep = Date.now();
     this.nextTimestep = Date.now();
-    let endX;
-    let endY;
-    let startX;
-    let startY;
 
     this.loop = setInterval(() => {
-      while (Date.now() > this.nextTimestep) {
+      if (Date.now() > this.nextTimestep) {
+        if (this.newSnapshot) {
+          this.nextChips.forEach(chip => {
+            let id = chip.id;
+            let x = chip.x;
+            let y = chip.y;
+            let angle = chip.angle;
+            let ownerId = chip.ownerId;
 
-        Engine.update(this.engine, TIMESTEP);
-        this.nextTimestep += TIMESTEP;
+            if (!this.chips[id]) {
+              let chip = new Chip({ id, ownerId, x, y });
+              chip.addToEngine(this.engine.world);
+              chip.addToRenderer(this.stage);
+              this.chips[id] = chip;
+            }
 
+            this.chips[id].lastX = this.chips[id].body.position.x
+            this.chips[id].lastY = this.chips[id].body.position.y
+            this.chips[id].lastAngle = this.chips[id].body.angle
+
+            this.chips[id].nextX = x;
+            this.chips[id].nextY = y;
+            this.chips[id].nextAngle = angle;
+
+            this.newSnapshot = false;
+          });
+        }
+
+        this.lastTimestep = Date.now();
+        this.nextTimestep = Date.now() + TIMESTEP;
       }
 
-      let interpolation = (Date.now() + TIMESTEP - this.nextTimestep)
-                        / TIMESTEP;
+      let interpolation = (Date.now() - this.lastTimestep) / (this.nextTimestep - this.lastTimestep)
+      interpolation = Math.min(1, interpolation)
+      // console.log('interpolation', interpolation);
+      // console.log('nextTimestep', this.nextTimestep);
+      // console.log('lastTimestep', this.lastTimestep);
 
-      this.env === 'client' && this.chips.forEach(chip => {
-        chip.sprite.destination = chip.body.position;
-        chip.sprite.begin = chip.sprite.position;
-        let incrementX = chip.sprite.destination.x - chip.sprite.begin.x;
-        let incrementY = chip.sprite.destination.y - chip.sprite.begin.y;
+      for (let id in Object.keys(this.chips)) {
+        let chip = this.chips[id]
+        let x = chip.nextX - chip.lastX;
+        chip.body.position.x = chip.lastX + x * interpolation;
+        chip.sprite.position.x = chip.body.position.x;
 
-        chip.sprite.position.x += incrementX * interpolation;
-        chip.sprite.position.y += incrementY * interpolation;
+        let y = chip.nextY - chip.lastY;
+        chip.body.position.y = chip.lastY + y * interpolation;
+        chip.sprite.position.y = chip.body.position.y;
+
+        let angle = chip.nextAngle - chip.lastAngle;
+        chip.body.angle = chip.lastAngle + angle * interpolation;
         chip.sprite.rotation = chip.body.angle;
-      })
+      }
 
-      this.env === 'client' && this.renderer.render(this.stage);
+      this.renderer.render(this.stage);
     }, 0)
   }
 
@@ -179,14 +215,14 @@ export default class ClientEngine {
     clearInterval(this.loop);
   }
 
-  onNewChip(chipInfo) {
-    const chip = new Chip(chipInfo);
-
-    chip.addToEngine(this.engine.world);
-    chip.addToRenderer(this.stage);
-    this.chips.push(chip);
-    this.renderer.render(this.stage);
-  }
+  // onNewChip(chipInfo) {
+  //   const chip = new Chip(chipInfo);
+  //
+  //   chip.addToEngine(this.engine.world);
+  //   chip.addToRenderer(this.stage);
+  //   this.chips.push(chip);
+  //   this.renderer.render(this.stage);
+  // }
 
   onClick = (e) => {
     e.preventDefault();

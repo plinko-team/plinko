@@ -18,15 +18,17 @@ export default class Chip extends GameObject {
     super({ id, x, y, ownerId });
     this.type = 'chip';
     this.createPhysics();
-    if (typeof window === 'object') { this.createSprite() };
+    if (typeof window === 'object') {
+      this.createSprite()
 
-    // Sprite and Body have references to each other so that we can
-    // change renderer properties based on physics collisions
-    this.body.sprite = this.sprite;
-    this.sprite.body = this.body;
+      // Sprite and Body have references to each other so that we can
+      // change renderer properties based on physics collisions
+      this.body.sprite = this.sprite;
+      this.sprite.body = this.body;
+      this.sprite.parentObject = this;
+    };
 
     this.body.parentObject = this;
-    this.sprite.parentObject = this;
   }
 
   registerUpdateListener(engine) {
@@ -78,8 +80,11 @@ export default class Chip extends GameObject {
       const interval = setInterval(() => {
         Body.scale(this.body, SHRINK_FACTOR, SHRINK_FACTOR)
         this.body.circleRadius *= SHRINK_FACTOR
-        this.sprite.width *= SHRINK_FACTOR
-        this.sprite.height *= SHRINK_FACTOR
+
+        if (typeof window === 'object') {
+          this.sprite.width *= SHRINK_FACTOR
+          this.sprite.height *= SHRINK_FACTOR
+        }
 
         if (this.body.circleRadius < 0.1) {
           clearInterval(interval);
