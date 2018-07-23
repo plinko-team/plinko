@@ -150,33 +150,61 @@ export default class ClientEngine {
     // this.synchronizer.startSyncing();
 
     this.timeStarted = Date.now();
+    this.lastTimestep = Date.now();
     this.nextTimestep = Date.now();
 
     this.loop = setInterval(() => {
-      if (this.newSnapshot) {
-        this.nextChips.forEach(chip => {
-          let id = chip.id;
-          let x = chip.x;
-          let y = chip.y;
-          let angle = chip.angle;
-          let ownerId = chip.ownerId;
+      if (Date.now() > this.nextTimestep) {
+        if (this.newSnapshot) {
+          this.nextChips.forEach(chip => {
+            let id = chip.id;
+            let x = chip.x;
+            let y = chip.y;
+            let angle = chip.angle;
+            let ownerId = chip.ownerId;
 
-          if (!this.chips[id]) {
-            let chip = new Chip({ id, ownerId, x, y });
-            chip.addToEngine(this.engine.world);
-            chip.addToRenderer(this.stage);
-            this.chips[id] = chip;
-          }
+            if (!this.chips[id]) {
+              let chip = new Chip({ id, ownerId, x, y });
+              chip.addToEngine(this.engine.world);
+              chip.addToRenderer(this.stage);
+              this.chips[id] = chip;
+            }
 
-          this.chips[id].body.position.x = x;
-          this.chips[id].body.position.y = y;
-          this.chips[id].body.angle = angle;
-          this.chips[id].sprite.position.x = x
-          this.chips[id].sprite.position.y = y
-          this.chips[id].sprite.rotation = angle;
-        });
+            this.chips[id].lastX = this.chips[id].body.position.x
+            this.chips[id].lastY = this.chips[id].body.position.y
+            this.chips[id].lastAngle = this.chips[id].body.angle
 
-        this.newSnapshot = false;
+            this.chips[id].nextX = x;
+            this.chips[id].nextY = y;
+            this.chips[id].nextAngle = angle;
+
+            this.newSnapshot = false;
+          });
+        }
+
+        this.lastTimestep = Date.now();
+        this.nextTimestep = Date.now() + TIMESTEP;
+      }
+
+      let interpolation = (Date.now() - this.lastTimestep) / (this.nextTimestep - this.lastTimestep)
+      interpolation = Math.min(1, interpolation)
+      // console.log('interpolation', interpolation);
+      // console.log('nextTimestep', this.nextTimestep);
+      // console.log('lastTimestep', this.lastTimestep);
+
+      for (let id in Object.keys(this.chips)) {
+        let chip = this.chips[id]
+        let x = chip.nextX - chip.lastX;
+        chip.body.position.x = chip.lastX + x * interpolation;
+        chip.sprite.position.x = chip.body.position.x;
+
+        let y = chip.nextY - chip.lastY;
+        chip.body.position.y = chip.lastY + y * interpolation;
+        chip.sprite.position.y = chip.body.position.y;
+
+        let angle = chip.nextAngle - chip.lastAngle;
+        chip.body.angle = chip.lastAngle + angle * interpolation;
+        chip.sprite.rotation = chip.body.angle;
       }
 
       this.renderer.render(this.stage);
