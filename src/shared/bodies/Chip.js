@@ -1,5 +1,5 @@
 import { Bodies } from 'matter-js';
-import { CHIP_DENSITY, CHIP_FRICTION, CHIP_RESTITUTION, CHIP_RADIUS, CHIP_DIAMETER } from '../constants/bodies';
+import { CHIP } from '../constants/bodies';
 import { PLAYER_COLORS } from '../constants/colors';
 import { CHIP_SPRITE } from '../constants/sprites';
 import { Events, Body } from 'matter-js'
@@ -43,8 +43,8 @@ export default class Chip extends GameObject {
     const chip = new PIXI.Sprite.fromImage(CHIP_SPRITE);
     chip.position.x = this.x;
     chip.position.y = this.y;
-    chip.height = CHIP_DIAMETER;
-    chip.width = CHIP_DIAMETER;
+    chip.height = CHIP.DIAMETER;
+    chip.width = CHIP.DIAMETER;
     chip.anchor.set(0.5, 0.5);
     chip.tint = PLAYER_COLORS[this.ownerId];
 
@@ -56,16 +56,16 @@ export default class Chip extends GameObject {
     console.log(Chip.count)
 
     const options = {
-      restitution: CHIP_RESTITUTION,
-      friction: CHIP_FRICTION,
+      restitution: CHIP.RESTITUTION,
+      friction: CHIP.FRICTION,
     }
 
-    this.body = Bodies.circle(this.x, this.y, CHIP_RADIUS, options);
+    this.body = Bodies.circle(this.x, this.y, CHIP.RADIUS, options);
 
     // this.body.mass = 0.01
     // this.body.inverseMass = 1 / this.body.mass
 
-    Body.setDensity(this.body, CHIP_DENSITY)
+    Body.setDensity(this.body, CHIP.DENSITY)
     this.body.label = this.type;
     this.body.position.x = this.x;
     this.body.position.y = this.y;

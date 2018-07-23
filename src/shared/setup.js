@@ -1,11 +1,11 @@
 import Peg from './bodies/Peg';
 import Triangle from './bodies/Triangle';
 import { VerticalWall, HorizontalWall, BucketWall } from './bodies/Wall';
-import { ROWS, COLS, ROW_SPACING, COL_SPACING, VERTICAL_MARGIN, HORIZONTAL_OFFSET, CANVAS_WIDTH, CANVAS_HEIGHT } from './constants/canvas';
+import { ROWS, COLS, ROW_SPACING, COL_SPACING, VERTICAL_MARGIN, HORIZONTAL_OFFSET, CANVAS } from './constants/canvas';
 
 function createWalls(stage, engine) {
-  const leftWall = new VerticalWall({x: 0, y: CANVAS_HEIGHT / 2});
-  const rightWall = new VerticalWall({x: CANVAS_WIDTH, y: CANVAS_HEIGHT / 2});
+  const leftWall = new VerticalWall({x: 0, y: CANVAS.HEIGHT / 2});
+  const rightWall = new VerticalWall({x: CANVAS.WIDTH, y: CANVAS.HEIGHT / 2});
   const ground = new HorizontalWall();
   if (typeof window === 'object') { createWallSprites(stage, leftWall, rightWall, ground) }
   createWallBodies(engine, leftWall, rightWall, ground);

@@ -1,5 +1,5 @@
 import { Body, Bodies } from 'matter-js';
-import { PEG_FRICTION, PEG_RESTITUTION, PEG_RADIUS, PEG_DIAMETER } from '../constants/bodies';
+import { PEG } from '../constants/bodies';
 import { PEG_TINT } from '../constants/colors';
 import { PEG_SPRITE } from '../constants/sprites';
 import GameObject from './GameObject';
@@ -30,11 +30,11 @@ export default class Peg extends GameObject {
 
   createPhysics() {
     let options = {
-      friction: PEG_FRICTION,
-      restitution: PEG_RESTITUTION,
+      friction: PEG.FRICTION,
+      restitution: PEG.RESTITUTION,
     }
 
-    this.body = Bodies.circle(this.x, this.y, PEG_RADIUS, options);
+    this.body = Bodies.circle(this.x, this.y, PEG.RADIUS, options);
     Body.setDensity(this.body, 1)
     this.body.isStatic = true;
     this.body.position.x = this.x;
@@ -48,8 +48,8 @@ export default class Peg extends GameObject {
 
     peg.position.x = this.x;
     peg.position.y = this.y;
-    peg.height = PEG_DIAMETER;
-    peg.width = PEG_DIAMETER;
+    peg.height = PEG.DIAMETER;
+    peg.width = PEG.DIAMETER;
     peg.tint = PEG_TINT;
     peg.anchor.set(0.5, 0.5);
 

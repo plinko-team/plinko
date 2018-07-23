@@ -1,7 +1,7 @@
 import { Bodies } from 'matter-js';
-import { WALL_FRICTION, WALL_RESTITUTION} from '../constants/bodies';
+import { WALL } from '../constants/bodies';
 import { WALL_TINT } from '../constants/colors';
-import { CANVAS_HEIGHT, CANVAS_WIDTH } from '../constants/canvas';
+import { CANVAS } from '../constants/canvas';
 import GameObject from './GameObject';
 
 let PIXI;
@@ -21,8 +21,8 @@ class Wall extends GameObject {
 
   createPhysics({width, height}) {
     let options = {
-      restitution: WALL_RESTITUTION,
-      friction: WALL_FRICTION,
+      restitution: WALL.RESTITUTION,
+      friction: WALL.FRICTION,
     }
 
     this.body = Bodies.rectangle(this.x, this.y, this.width, this.height, options);
@@ -48,16 +48,16 @@ class Wall extends GameObject {
 
 export class VerticalWall extends Wall {
   constructor({x, y}) {
-    super({x, y, width: 4, height: CANVAS_HEIGHT});
+    super({x, y, width: 4, height: CANVAS.HEIGHT});
   }
 }
 
 export class HorizontalWall extends Wall {
   constructor() {
     super({
-      x: CANVAS_WIDTH / 2,
-      y: CANVAS_HEIGHT,
-      width: CANVAS_WIDTH,
+      x: CANVAS.WIDTH / 2,
+      y: CANVAS.HEIGHT,
+      width: CANVAS.WIDTH,
       height: 10
     })
     this.body.label = 'ground'
@@ -66,6 +66,6 @@ export class HorizontalWall extends Wall {
 
 export class BucketWall extends Wall {
   constructor({ x }) {
-    super({ x, y: CANVAS_HEIGHT - 50, width: 5, height: 130 });
+    super({ x, y: CANVAS.HEIGHT - 50, width: 5, height: 130 });
   }
 }
