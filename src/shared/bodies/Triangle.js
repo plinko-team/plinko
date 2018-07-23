@@ -1,5 +1,5 @@
 import { Bodies, Vertices } from 'matter-js';
-import { TRIANGLE_FRICTION, TRIANGLE_RESTITUTION, TRIANGLE_X_OFFSET_RIGHT, TRIANGLE_Y_OFFSET_RIGHT, TRIANGLE_X_OFFSET_LEFT, TRIANGLE_Y_OFFSET_LEFT } from '../constants/bodies';
+import {  TRIANGLE } from '../constants/bodies';
 import { TRIANGLE_LEFT_SPRITE, TRIANGLE_RIGHT_SPRITE } from '../constants/sprites';
 import { WALL_TINT } from '../constants/colors';
 import GameObject from './GameObject';
@@ -14,27 +14,28 @@ if (typeof window === 'object') {
 }
 
 export default class Triangle extends GameObject {
-  constructor({ x, y, vertices, side }) {
+  constructor({ x, y, side }) {
     super({ x, y })
-    this.vertices = vertices;
     this.side = side;
+    this.vertices = side === 'right' ? TRIANGLE.RIGHT.VERTICES : TRIANGLE.LEFT.VERTICES;
     this.createPhysics();
     if (typeof window === 'object') { this.createSprite() };
+
   }
 
   createPhysics() {
     let options = {
-      restitution: TRIANGLE_RESTITUTION,
-      friction: TRIANGLE_FRICTION,
+      restitution: TRIANGLE.RESTITUTION,
+      friction: TRIANGLE.FRICTION,
     }
 
     let triangleVertices = Vertices.fromPath(this.vertices);
 
     // The simulated triangle is created based on the x, y passed in plus/minus their respective offsets
     if (this.side === 'left') {
-      this.body = Bodies.fromVertices(this.x - TRIANGLE_X_OFFSET_LEFT, this.y - TRIANGLE_Y_OFFSET_LEFT, [triangleVertices], options)
+      this.body = Bodies.fromVertices(this.x - TRIANGLE.LEFT.X_OFFSET, this.y - TRIANGLE.LEFT.Y_OFFSET, [triangleVertices], options)
     } else {
-      this.body = Bodies.fromVertices(this.x + TRIANGLE_X_OFFSET_RIGHT, this.y + TRIANGLE_Y_OFFSET_RIGHT, [triangleVertices], options)
+      this.body = Bodies.fromVertices(this.x + TRIANGLE.RIGHT.X_OFFSET, this.y + TRIANGLE.RIGHT.Y_OFFSET, [triangleVertices], options)
     }
     this.body.isStatic = true;
   }

@@ -9,11 +9,15 @@ const defaultOptions = {
   resolution: 2,
 }
 
-export default class RenderEngine {
+export default class Renderer {
   constructor(options) {
     this.renderer = new PIXI.CanvasRenderer(Object.assign(defaultOptions, options));
     this.stage = new PIXI.Container();
 
     document.querySelector('.canvas').appendChild(this.renderer.view)
+  }
+
+  render(stage=this.stage) {
+    this.renderer.render(stage)
   }
 }

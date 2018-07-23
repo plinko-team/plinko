@@ -1,6 +1,6 @@
 import { Engine, Render, Events, World } from 'matter-js';
-import RenderEngine from './renderer';
-import openSocketConnection from './socket';
+import Renderer from './renderer';
+import Synchronizer from './synchronizer';
 import Chip from '../shared/bodies/Chip';
 import HoverChip from '../shared/bodies/HoverChip';
 import { DROP_BOUNDARY, TIMESTEP } from '../shared/constants/game'
@@ -11,11 +11,13 @@ import io from 'socket.io-client';
 export default class ClientEngine {
   constructor({ url }) {
     this.env = 'client';
-    this.socket = this.openSocketConnection(url);
-    this.renderEngine = new RenderEngine()
-    this.renderer = this.renderEngine.renderer;
-    this.stage = this.renderEngine.stage;
+    this.socket = io.connect(url)
+    this.renderer = new Renderer()
+    this.stage = this.renderer.stage;
     this.engine = Engine.create();
+    this.synchronizer = new Synchronizer(this.socket);
+
+    console.log("Connecting to...", url)
   }
 
   init() {
@@ -28,17 +30,6 @@ export default class ClientEngine {
     this.registerSocketEvents();
 
     return this;
-  }
-
-  openSocketConnection(url) {
-    const socket = io.connect(url);
-
-    socket.on('connection established', ({ playerId }) => {
-      console.log('ESTABLISHED! Your player ID is: ', playerId);
-      window.playerId = playerId;
-    })
-
-    return socket;
   }
 
   incrementScore(chipOwner) {
@@ -109,7 +100,12 @@ export default class ClientEngine {
   }
 
   registerSocketEvents() {
-    this.socket.on('new chip', this.onNewChip.bind(this));
+    this.socket.on('connection established', ({ playerId }) => {
+      console.log('ESTABLISHED! Your player ID is: ', playerId);
+      window.playerId = playerId;
+
+      this.socket.on('new chip', this.onNewChip.bind(this));
+    })
   }
 
   registerCanvasEvents() {
@@ -191,5 +187,83 @@ export default class ClientEngine {
     e.target.addEventListener('mouseleave', () => {
       hoverChip.removeChip(this.stage);
     });
+  }
+
+  _createWalls(stage, engine) {
+    const leftWall = new VerticalWall({x: 0, y: CANVAS_HEIGHT / 2});
+    const rightWall = new VerticalWall({x: CANVAS_WIDTH, y: CANVAS_HEIGHT / 2});
+    const ground = new HorizontalWall();
+    const walls = [leftWall, rightWall, ground];
+
+    if (typeof window === 'object') {
+      walls.forEach(wall => wall.addToRenderer(this.stage));
+    }
+
+    walls.forEach(wall => wall.addToEngine(this.engine.world));
+  }
+
+
+  _createBucketWalls() {
+    for (let i = 1; i < COLS; i++) {
+      let bucket = new BucketWall({ x: i * COL_SPACING });
+
+      if (typeof window === 'object') { bucket.addToRenderer(this.stage) }
+      bucket.addToEngine(this.engine.world);
+    }
+  }
+
+  _createTriangles() {
+    // Positional calculations and vertices for the wall triangles.
+    let triangles = [
+                {x: 772, y: 290, side: 'right'},
+                {x: 772, y: 158, vertices: '50 150 15 75 50 0', side: 'right'},
+                {x: 772, y: 422, vertices: '50 150 15 75 50 0', side: 'right'},
+                {x: 28, y: 305,  vertices: '50 150 85 75 50 0', side: 'left'},
+                {x: 28, y: 173,  vertices: '50 150 85 75 50 0', side: 'left'},
+                {x: 28, y: 437,  vertices: '50 150 85 75 50 0', side: 'left'},
+              ];
+
+    triangles.forEach(triangle => {
+      let t = new Triangle(triangle);
+      t.addToEngine(this.engine.world);
+      if (typeof window === 'object') { t.addToRenderer(this.stage) }
+    });
+  }
+
+  _createPegs() {
+    const verticalOffset = ROW_SPACING / 2;
+    const horizontalOffset = COL_SPACING / 2;
+
+    let id = 0;
+
+    for (let row = 0; row < ROWS; row++) {
+      for (let col = 1; col < COLS; col++) {
+        let x = col * COL_SPACING;
+        // leave extra space at top of frame to drop chips
+        let y = VERTICAL_MARGIN + (row * ROW_SPACING);
+
+        if (row % 2 === 1 && col === COLS - 1) {
+          // skip last peg on odd rows
+          break;
+        } else if (row % 2 === 1) {
+          // offset columns in odd rows by half
+          x += HORIZONTAL_OFFSET;
+        }
+
+        let peg = new Peg({ id, x, y });
+        this.pegs[id] = peg;
+        peg.addToEngine(this.engine.world);
+        if (peg.sprite) { peg.addToRenderer(this.stage) };
+
+        id++;
+      }
+    }
+  }
+
+  createEnvironment() {
+    _createWalls();
+    _createBucketWalls();
+    _createPegs();
+    _createTriangles();
   }
 }
