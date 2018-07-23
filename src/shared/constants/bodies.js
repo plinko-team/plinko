@@ -24,14 +24,3 @@ export const TRIANGLE = {
     VERTICES: '50 150 85 75 50 0',
   },
 }
-
-// These constants are for compatibility
-// Remove eventually
-// export const TRIANGLE_FRICTION = 0.1;
-// export const TRIANGLE_RESTITUTION = .1;
-// export const TRIANGLE_X_OFFSET_RIGHT = 13;
-// export const TRIANGLE_Y_OFFSET_RIGHT = 15;
-// export const TRIANGLE_X_OFFSET_LEFT = 15;
-// export const TRIANGLE_Y_OFFSET_LEFT = 5;
-// export const RIGHT_VERTICES = '50 150 15 75 50 0';
-// export const LEFT_VERTICES = '50 150 85 75 50 0';
