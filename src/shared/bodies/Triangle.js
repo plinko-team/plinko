@@ -3,7 +3,6 @@ import {  TRIANGLE } from '../constants/bodies';
 import { TRIANGLE_LEFT_SPRITE, TRIANGLE_RIGHT_SPRITE } from '../constants/sprites';
 import { WALL_TINT } from '../constants/colors';
 import GameObject from './GameObject';
-import engine from '../../client/engine'
 import decomp from 'poly-decomp';
 
 let PIXI;

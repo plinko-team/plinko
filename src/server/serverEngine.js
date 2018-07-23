@@ -3,9 +3,16 @@ import { DROP_BOUNDARY, TIMESTEP } from '../shared/constants/game';
 import { PLAYER_COLORS } from '../shared/constants/colors';
 import createEnvironment from '../shared/setup';
 
+/**
+
+  TODO: Write description
+
+**/
+
 export default class ServerEngine {
   constructor() {
     this.engine = Engine.create();
+    this.genesisTime = Date.now();
   }
 
   init() {

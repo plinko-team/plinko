@@ -10,17 +10,24 @@ import { avg, median, sum, standardDeviation } from '../utils/math.js';
 **/
 
 export default class Synchronizer {
-  constructor(socket) {
-    this.genesisTime = Date.now();
+  constructor(socket, eventEmitter) {
+    this.socket = socket;
+    this.eventEmitter = eventEmitter;
+  }
+
+  init() {
     this.serverOffset = 0;
     this.rtt = null;
     this.avgLatency = null;
     this.history = [];
-    this.socket = socket;
+    this.handshakeComplete = false; // Will be set to true after 10 pings
+
+    this.registerSocketEvents();
+
   }
 
-  init() {
-    this.startSyncing();
+  registerSocketEvents() {
+    this.socket.on('pongMessage', this.sync);
   }
 
   get localTime() {
@@ -31,15 +38,26 @@ export default class Synchronizer {
     return Date.now() + this.serverOffset
   }
 
-  startSyncing(interval=1000) {
-    let time;
-
-    setInterval(() => {
+  pingOnInterval(intervalTime) {
+    let interval = setInterval(() => {
       this._lastSyncTime = Date.now();
       this.socket.emit('pingMessage', { ping: true })
-    }, interval)
 
-    this.socket.on('pongMessage', this.sync)
+    }, intervalTime)
+
+    return interval
+  }
+
+  handshake() {
+    let interval = this.pingOnInterval(100);
+    this.eventEmitter.on('handshake complete', () => {
+      clearInterval(interval);
+      this.handshakeComplete = true;
+    });
+  }
+
+  startSyncing(pingInterval=1000) {
+    let interval = this.pingOnInterval(pingInterval);
   }
 
   sync({ serverTime }) {
@@ -52,7 +70,8 @@ export default class Synchronizer {
     // Don't filter around median unless history buffer is full
     // Otherwise you will constantly filter out valid latencies
     if (this.history.length === 10) {
-      this.history = this.filterSDAroundMedian(this.history)
+      !this.handshakeComplete && this.eventEmitter.emit('handshake complete');
+      this.history = this._filterStandardDeviationAroundMedian(this.history)
     }
 
     this.serverOffset = Date.now() - (serverTime + avg(this.history))
@@ -61,7 +80,7 @@ export default class Synchronizer {
     console.log(`Differential: ${actualTime - Date.now()}`)
   }
 
-  filterSDAroundMedian(array) {
+  _filterStandardDeviationAroundMedian(array) {
     let medianValue = median(array);
     let standardDev = standardDeviation(array, true);
     console.log(`Median: ${medianValue}`)
