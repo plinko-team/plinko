@@ -20,6 +20,7 @@ export default class Triangle extends GameObject {
     this.vertices = side === 'right' ? TRIANGLE.RIGHT.VERTICES : TRIANGLE.LEFT.VERTICES;
     this.createPhysics();
     if (typeof window === 'object') { this.createSprite() };
+
   }
 
   createPhysics() {
