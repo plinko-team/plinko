@@ -34,3 +34,4 @@ export const TRIANGLE = {
     VERTICES: '50 150 85 75 50 0',
   },
 }
+
