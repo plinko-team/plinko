@@ -13,8 +13,6 @@ export default class Synchronizer {
   constructor(socket, eventEmitter) {
     this.socket = socket;
     this.eventEmitter = eventEmitter;
-
-
   }
 
   init() {

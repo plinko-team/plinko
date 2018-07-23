@@ -9,6 +9,15 @@ import createEnvironment from '../shared/setup';
 import io from 'socket.io-client';
 import EventEmitter from 'eventemitter3';
 
+/**
+
+  ClientEngine holds all of the logic for running the game loop, rendering
+  the objects to the canvas, connecting to the server through websockets. Also
+  generates the world and binds events.
+
+**/
+
+
 export default class ClientEngine {
   constructor({ url }) {
     this.env = 'client';
