@@ -2,6 +2,7 @@ import { Engine, Render, Events, World } from 'matter-js';
 import Renderer from './renderer';
 import Synchronizer from './synchronizer';
 import Chip from '../shared/bodies/Chip';
+import Peg from '../shared/bodies/Peg';
 import Triangle from '../shared/bodies/Triangle';
 import { VerticalWall, HorizontalWall, BucketWall } from '../shared/bodies/Wall';
 import HoverChip from '../shared/bodies/HoverChip';
@@ -311,8 +312,8 @@ export default class ClientEngine {
   }
 
   _createWalls(stage, engine) {
-    const leftWall = new VerticalWall({x: 0, y: CANVAS_HEIGHT / 2});
-    const rightWall = new VerticalWall({x: CANVAS_WIDTH, y: CANVAS_HEIGHT / 2});
+    const leftWall = new VerticalWall({x: 0, y: CANVAS.HEIGHT / 2});
+    const rightWall = new VerticalWall({x: CANVAS.WIDTH, y: CANVAS.HEIGHT / 2});
     const ground = new HorizontalWall();
     const walls = [leftWall, rightWall, ground];
 
