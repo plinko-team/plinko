@@ -101,7 +101,8 @@ export default class ServerEngine {
   startGame() {
     this.timeStarted = Date.now();
     this.nextTimestep = Date.now();
-    let counter = 0
+    let counter = 0;
+
     this.loop = setInterval(() => {
       while (Date.now() > this.nextTimestep) {
         counter++
@@ -123,11 +124,11 @@ export default class ServerEngine {
 
         // This counter slows down the rate of snapshot transmission
         // 10 means send a snapshot every 10 ticks
-        if (counter % 2 === 0) {
-          this.knownPlayers.forEach(socket => {
-            socket.emit('snapshot', { chips: chipInfo, pegs: pegInfo });
-          })
-        }
+
+        this.knownPlayers.forEach(socket => {
+          socket.emit('snapshot', { chips: chipInfo, pegs: pegInfo });
+        })
+
 
         this.chips = this.chips.filter(chip => {
           return !this.chipsToBeDeleted[chip.id];

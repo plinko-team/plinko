@@ -37,7 +37,7 @@ export default class ClientEngine {
     this.chips = {};
     this.pegs = {};
     this.newSnapshot = false;
-    this.snapshotBuffer = new SnapshotBuffer()
+    this.snapshotBuffer = new SnapshotBuffer();
 
     this.createEnvironment();
     this.registerPhysicsEvents();
@@ -105,13 +105,13 @@ export default class ClientEngine {
 
       if (bodyB.label === 'ground') {
         bodyA.parentObject.shrink(() => {
-          World.remove(this.engine.world, bodyA)
-          this.env === 'client' && this.stage.removeChild(bodyA.sprite)
+          World.remove(this.engine.world, bodyA);
+          this.env === 'client' && this.stage.removeChild(bodyA.sprite);
         })
       } else if (bodyA.label === 'ground') {
         bodyB.parentObject.shrink(() => {
-          World.remove(this.engine.world, bodyB)
-          this.env === 'client' && this.stage.removeChild(bodyB.sprite)
+          World.remove(this.engine.world, bodyB);
+          this.env === 'client' && this.stage.removeChild(bodyB.sprite);
         })
       }
     }
@@ -133,9 +133,7 @@ export default class ClientEngine {
     })
 
     this.socket.on('snapshot', ({ pegs, chips }) => {
-      // setTimeout(() => {
-        this.snapshotBuffer.push(new Snapshot({ pegs, chips }))
-      // }, TIMESTEP * 10)
+      this.snapshotBuffer.push(new Snapshot({ pegs, chips, timestamp: performance.now() }));
     });
   }
 
@@ -149,66 +147,125 @@ export default class ClientEngine {
     document.querySelector('canvas').addEventListener('mouseenter', this.onMouseEnter)
   }
 
-  startGame() {
-    this.lastTimestep = Date.now();
-    this.nextTimestep = Date.now();
+  update() {
+    // console.log("Snapshot buffer length: ", this.snapshotBuffer.length)
+    let firstSnapshot = this.snapshotBuffer.first
+    if (firstSnapshot && performance.now() - firstSnapshot.timestamp > TIMESTEP * 2) {
+      let snapshot = this.snapshotBuffer.shift()
 
-    setInterval(() => {
-      if (this.snapshotBuffer.length === 0) { return }
+      // Update the bodies based on the snapshot
+      let newChips = snapshot.chips;
 
-      if (Date.now() > this.nextTimestep) {
-        console.log("Snapshot buffer length: ", this.snapshotBuffer.length)
-        let snapshot = this.snapshotBuffer.shift();
+      newChips.forEach(newChip => {
+        let { id, x, y, angle, ownerId } = newChip;
 
-        // Update the bodies based on the snapshot
-        let newChips = snapshot.chips
-
-        newChips.forEach(newChip => {
-          let { id, x, y, angle, ownerId} = newChip;
-
-          let chip = this.chips[id]
-
-          if (!chip) {
-            chip = new Chip({ id, ownerId, x, y });
-            chip.addToEngine(this.engine.world);
-            chip.addToRenderer(this.stage);
-            this.chips[id] = chip;
-          }
-
-          chip.lastX = chip.body.position.x;
-          chip.lastY = chip.body.position.y;
-          chip.lastAngle = chip.body.angle;
-
-          chip.nextX = x;
-          chip.nextY = y;
-          chip.nextAngle = angle;
-        })
-
-        this.lastTimestep = Date.now();
-        this.nextTimestep = Date.now() + TIMESTEP;
-      }
-
-      // console.log(`Numerator:  ${Date.now() - this.lastTimestep}`)
-      // console.log(`Denominator: ${this.nextTimestep - this.lastTimestep}`)
-
-      let interpolation = 1 // (Date.now() - this.lastTimestep) / (this.nextTimestep - this.lastTimestep)
-      // console.log(`${Date.now() - l}, ${this.nextTimestep - l}, ${this.lastTimestep - l}`)
-
-      for (let id in Object.keys(this.chips)) {
         let chip = this.chips[id];
 
-        chip.body.position.x = chip.lastX + (chip.nextX - chip.lastX) * interpolation
-        chip.body.position.y = chip.lastY + (chip.nextY - chip.lastY) * interpolation
-        chip.body.angle = chip.lastAngle + (chip.nextAngle - chip.lastAngle) * interpolation
+        if (!chip) {
+          chip = new Chip({ id, ownerId, x, y });
+          chip.addToEngine(this.engine.world);
+          chip.addToRenderer(this.stage);
+          this.chips[id] = chip;
+        }
 
-        chip.sprite.position.x = chip.body.position.x;
-        chip.sprite.position.y = chip.body.position.y;
-        chip.sprite.rotation = chip.body.angle;
-      }
+        chip.lastX = chip.body.position.x;
+        chip.lastY = chip.body.position.y;
+        chip.lastAngle = chip.body.angle;
 
-      this.renderer.render(this.stage)
-    }, 0)
+        chip.nextX = x;
+        chip.nextY = y;
+        chip.nextAngle = angle;
+      })
+    }
   }
+
+  animate(timestamp) {
+    if (timestamp < this.lastFrameTime + TIMESTEP) {
+      this.frameID = requestAnimationFrame(this.animate.bind(this));
+      return;
+    }
+
+    this.delta += timestamp - this.lastFrameTime;
+    this.lastFrameTime = timestamp;
+
+    while (this.delta >= TIMESTEP) {
+      this.update();
+      this.delta -= TIMESTEP;
+    }
+
+    if (!!this.chips[0]) {
+      let logX = this.chips[0].body.position.x.toFixed(2);
+      let logY = this.chips[0].body.position.y.toFixed(2);
+      console.log(logX, logY)
+    }
+    this.renderer.interpolate(this.chips, 1);
+    this.renderer.render(this.stage);
+
+    this.frameID = requestAnimationFrame(this.animate.bind(this));
+  }
+
+  startGame() {
+    requestAnimationFrame((timestamp) => {
+      this.renderer.render(this.stage);
+      this.lastFrameTime = timestamp;
+      this.delta = 0;
+      requestAnimationFrame(this.animate.bind(this));
+    })
+  }
+
+  //
+  // oldAnimate(timestamp) {
+  //   this.lastTimestamp = timestamp;
+  //   this.nextTimestep = this.nextTimestep || timestamp;
+  //
+  //   if (timestamp > this.nextTimestep) {
+  //
+  //     if (this.snapshotBuffer.length > 0) {
+  //       let snapshot = this.snapshotBuffer.shift();
+  //
+  //       // Update the bodies based on the snapshot
+  //       let newChips = snapshot.chips;
+  //
+  //       newChips.forEach(newChip => {
+  //         let { id, x, y, angle, ownerId} = newChip;
+  //
+  //         let chip = this.chips[id];
+  //
+  //         if (!chip) {
+  //           chip = new Chip({ id, ownerId, x, y });
+  //           chip.addToEngine(this.engine.world);
+  //           chip.addToRenderer(this.stage);
+  //           this.chips[id] = chip;
+  //         }
+  //
+  //         chip.lastX = chip.body.position.x;
+  //         chip.lastY = chip.body.position.y;
+  //         chip.lastAngle = chip.body.angle;
+  //
+  //         chip.nextX = x;
+  //         chip.nextY = y;
+  //         chip.nextAngle = angle;
+  //       })
+  //     }
+  //
+  //     this.nextTimestep += TIMESTEP;
+  //   }
+  //
+  //   // console.log(`Numerator:  ${Date.now() - this.lastTimestep}`)
+  //   // console.log(`Denominator: ${this.nextTimestep - this.lastTimestep}`)
+  //
+  //   // let interpolation = (Date.now() - this.lastTimestep) / (this.nextTimestep - this.lastTimestep)
+  //   // console.log(interpolation)
+  //   // console.log(`${Date.now() - l}, ${this.nextTimestep - l}, ${this.lastTimestep - l}`)
+  //
+  //   this.renderer.interpolate(this.chips, 1);
+  //   this.renderer.render(this.stage);
+  //   requestAnimationFrame(this.animate.bind(this));
+  // }
+  //
+  // oldStartGame() {
+  //   requestAnimationFrame(this.animate.bind(this));
+  // }
 
   stopGame() {
     clearInterval(this.loop);
@@ -216,7 +273,7 @@ export default class ClientEngine {
 
   onClick = (e) => {
     e.preventDefault();
-    e.stopPropagation()
+    e.stopPropagation();
 
     // Short circuit handler if outside of drop boundary
     if (e.offsetY > DROP_BOUNDARY) { return }
@@ -224,7 +281,7 @@ export default class ClientEngine {
     const x = e.offsetX;
     const y = e.offsetY;
 
-    this.socket.emit('new chip', { x, y, ownerId: window.playerId })
+    this.socket.emit('new chip', { x, y, ownerId: window.playerId });
   }
 
   onMouseEnter = (e) => {
@@ -256,7 +313,7 @@ export default class ClientEngine {
     for (let i = 1; i < COLS; i++) {
       let bucket = new BucketWall({ x: i * COL_SPACING });
 
-      if (typeof window === 'object') { bucket.addToRenderer(this.stage) }
+      if (typeof window === 'object') { bucket.addToRenderer(this.stage) };
       bucket.addToEngine(this.engine.world);
     }
   }
@@ -275,7 +332,7 @@ export default class ClientEngine {
     triangles.forEach(triangle => {
       let t = new Triangle(triangle);
       t.addToEngine(this.engine.world);
-      if (typeof window === 'object') { t.addToRenderer(this.stage) }
+      if (typeof window === 'object') { t.addToRenderer(this.stage) };
     });
   }
 
@@ -298,7 +355,9 @@ export default class ClientEngine {
           // offset columns in odd rows by half
           x += HORIZONTAL_OFFSET;
         }
-
+        if (id === 0) {
+          console.log(`Peg Coords: ${x}, ${y}`)
+        }
         let peg = new Peg({ id, x, y });
         this.pegs[id] = peg;
         peg.addToEngine(this.engine.world);
