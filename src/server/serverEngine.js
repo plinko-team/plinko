@@ -84,7 +84,7 @@ export default class ServerEngine {
   }
 
   registerSocketEvents() {
-    let playerId = 0
+    let playerId = 1;
     let i = 0;
 
     this.io.on('connection', socket => {

@@ -36,6 +36,7 @@ export default class ClientEngine {
   init() {
     this.chips = {};
     this.pegs = {};
+    this.lastChipId = 0;
     this.newSnapshot = false;
     this.snapshotBuffer = new SnapshotBuffer();
 
@@ -160,35 +161,36 @@ export default class ClientEngine {
   }
 
   update() {
-    // console.log("Snapshot buffer length: ", this.snapshotBuffer.length)
-    let firstSnapshot = this.snapshotBuffer.first
-    if (firstSnapshot && performance.now() - firstSnapshot.timestamp > TIMESTEP * 2) {
-      let snapshot = this.snapshotBuffer.shift()
+    Engine.update(this.engine, TIMESTEP);
 
-      // Update the bodies based on the snapshot
-      let newChips = snapshot.chips;
-
-      newChips.forEach(newChip => {
-        let { id, x, y, angle, ownerId } = newChip;
-
-        let chip = this.chips[id];
-
-        if (!chip) {
-          chip = new Chip({ id, ownerId, x, y });
-          chip.addToEngine(this.engine.world);
-          chip.addToRenderer(this.stage);
-          this.chips[id] = chip;
-        }
-
-        chip.lastX = chip.body.position.x;
-        chip.lastY = chip.body.position.y;
-        chip.lastAngle = chip.body.angle;
-
-        chip.nextX = x;
-        chip.nextY = y;
-        chip.nextAngle = angle;
-      })
-    }
+    // let firstSnapshot = this.snapshotBuffer.first
+    // if (firstSnapshot && performance.now() - firstSnapshot.timestamp > TIMESTEP * 2) {
+    //   let snapshot = this.snapshotBuffer.shift()
+    //
+    //   // Update the bodies based on the snapshot
+    //   let newChips = snapshot.chips;
+    //
+    //   newChips.forEach(newChip => {
+    //     let { id, x, y, angle, ownerId } = newChip;
+    //
+    //     let chip = this.chips[id];
+    //
+    //     if (!chip) {
+    //       chip = new Chip({ id, ownerId, x, y });
+    //       chip.addToEngine(this.engine.world);
+    //       chip.addToRenderer(this.stage);
+    //       this.chips[id] = chip;
+    //     }
+    //
+    //     chip.lastX = chip.body.position.x;
+    //     chip.lastY = chip.body.position.y;
+    //     chip.lastAngle = chip.body.angle;
+    //
+    //     chip.nextX = x;
+    //     chip.nextY = y;
+    //     chip.nextAngle = angle;
+    //   })
+    // }
   }
 
   animate(timestamp) {
@@ -205,18 +207,17 @@ export default class ClientEngine {
       this.delta -= TIMESTEP;
     }
 
-    if (!!this.chips[0]) {
-      let logX = this.chips[0].body.position.x.toFixed(2);
-      let logY = this.chips[0].body.position.y.toFixed(2);
-      console.log(logX, logY)
-    }
-    this.renderer.interpolate(this.chips, 1);
+    // this.renderer.interpolate(this.chips, 1);
+    this.renderer.spriteUpdate(this.chips);
     this.renderer.render(this.stage);
 
     this.frameID = requestAnimationFrame(this.animate.bind(this));
   }
 
   startGame() {
+    // Entry point for updates and rendering
+    // Only gets called once
+
     requestAnimationFrame((timestamp) => {
       this.renderer.render(this.stage);
       this.lastFrameTime = timestamp;
@@ -224,60 +225,6 @@ export default class ClientEngine {
       requestAnimationFrame(this.animate.bind(this));
     })
   }
-
-  //
-  // oldAnimate(timestamp) {
-  //   this.lastTimestamp = timestamp;
-  //   this.nextTimestep = this.nextTimestep || timestamp;
-  //
-  //   if (timestamp > this.nextTimestep) {
-  //
-  //     if (this.snapshotBuffer.length > 0) {
-  //       let snapshot = this.snapshotBuffer.shift();
-  //
-  //       // Update the bodies based on the snapshot
-  //       let newChips = snapshot.chips;
-  //
-  //       newChips.forEach(newChip => {
-  //         let { id, x, y, angle, ownerId} = newChip;
-  //
-  //         let chip = this.chips[id];
-  //
-  //         if (!chip) {
-  //           chip = new Chip({ id, ownerId, x, y });
-  //           chip.addToEngine(this.engine.world);
-  //           chip.addToRenderer(this.stage);
-  //           this.chips[id] = chip;
-  //         }
-  //
-  //         chip.lastX = chip.body.position.x;
-  //         chip.lastY = chip.body.position.y;
-  //         chip.lastAngle = chip.body.angle;
-  //
-  //         chip.nextX = x;
-  //         chip.nextY = y;
-  //         chip.nextAngle = angle;
-  //       })
-  //     }
-  //
-  //     this.nextTimestep += TIMESTEP;
-  //   }
-  //
-  //   // console.log(`Numerator:  ${Date.now() - this.lastTimestep}`)
-  //   // console.log(`Denominator: ${this.nextTimestep - this.lastTimestep}`)
-  //
-  //   // let interpolation = (Date.now() - this.lastTimestep) / (this.nextTimestep - this.lastTimestep)
-  //   // console.log(interpolation)
-  //   // console.log(`${Date.now() - l}, ${this.nextTimestep - l}, ${this.lastTimestep - l}`)
-  //
-  //   this.renderer.interpolate(this.chips, 1);
-  //   this.renderer.render(this.stage);
-  //   requestAnimationFrame(this.animate.bind(this));
-  // }
-  //
-  // oldStartGame() {
-  //   requestAnimationFrame(this.animate.bind(this));
-  // }
 
   stopGame() {
     clearInterval(this.loop);
@@ -292,8 +239,17 @@ export default class ClientEngine {
 
     const x = e.offsetX;
     const y = e.offsetY;
+    const ownerId = window.playerId;
+    const id = ownerId + this.lastChipId++;
 
-    this.socket.emit('new chip', { x, y, ownerId: window.playerId });
+    let frame = this.frame;
+
+    let chip = new Chip({ id, ownerId, x, y });
+    chip.addToEngine(this.engine.world);
+    chip.addToRenderer(this.stage);
+    this.chips[id] = chip;
+
+    this.socket.emit('new chip', { frame, id, x, y, ownerId });
   }
 
   onMouseEnter = (e) => {
