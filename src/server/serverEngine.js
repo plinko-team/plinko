@@ -19,6 +19,19 @@ export default class ServerEngine {
     this.io = io;
     this.engine = Engine.create();
     this.genesisTime = Date.now();
+    this.frame = 0;
+    this.messages = {
+      network: 0,
+    };
+  }
+
+  log() {
+    // const lines = process.stdout.getWindowSize()[1];
+    // for(let i = 0; i < lines; i++) {
+    //     console.log('\r\n');
+    // }
+
+    console.log("Total bandwidth sent: ", this.messages.network / 1000 , " kb");
   }
 
   init() {
@@ -92,8 +105,8 @@ export default class ServerEngine {
         socket.emit('pongMessage', { serverTime: Date.now() })
       })
 
-      socket.on('request genesis time', () => {
-        socket.emit('genesis time', { genesisTime: serverEngine.genesisTime })
+      socket.on('request server frame', () => {
+        socket.emit('server frame', { frame: this.frame })
       })
     });
   }
@@ -105,7 +118,8 @@ export default class ServerEngine {
 
     this.loop = setInterval(() => {
       while (Date.now() > this.nextTimestep) {
-        counter++
+        this.frame++
+
         Engine.update(this.engine, TIMESTEP);
 
         const chipInfo = this.chips.map(chip => {
@@ -124,11 +138,13 @@ export default class ServerEngine {
 
         // This counter slows down the rate of snapshot transmission
         // 10 means send a snapshot every 10 ticks
+        this.messages.network += this.knownPlayers.length * (JSON.stringify(chipInfo) + JSON.stringify(pegInfo)).length
 
         this.knownPlayers.forEach(socket => {
           socket.emit('snapshot', { chips: chipInfo, pegs: pegInfo });
         })
 
+        this.log()
 
         this.chips = this.chips.filter(chip => {
           return !this.chipsToBeDeleted[chip.id];

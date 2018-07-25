@@ -43,15 +43,16 @@ export default class ClientEngine {
     this.registerPhysicsEvents();
     this.registerCanvasEvents();
     this.registerSocketEvents();
+    this.establishSynchronization();
 
     return this;
   }
 
-  establishGenesisTime() {
+  establishSynchronization() {
     this.synchronizer.handshake();
 
     this.eventEmitter.once('handshake complete', () => {
-      socket.emit('request genesis time');
+      socket.emit('request server frame');
     })
   }
 
@@ -128,8 +129,19 @@ export default class ClientEngine {
       window.playerId = playerId;
     })
 
-    this.socket.on('genesis time', ({ genesisTime }) => {
-      this.genesisTime = genesisTime;
+    this.socket.on('server frame', ({ frame }) => {
+      // Calculate next "whole" frame
+      // Calculate delay until next "whole" frame
+      // setTimeout for that delay to set this.frame to "whole" frame
+      // Initiate the game loop
+
+      let nextWholeFrame = Math.ceil(frame + this.synchronizer.latency / TIMESTEP)
+      let delay = (nextWholeFrame - frame) * TIMESTEP;
+
+      setTimeout(() => {
+        this.frame = nextWholeFrame;
+        this.startGame();
+      }, delay)
     })
 
     this.socket.on('snapshot', ({ pegs, chips }) => {
