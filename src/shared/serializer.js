@@ -67,49 +67,27 @@ export default class Serializer {
     return encoded;
   }
 
-  static decodeChip(encodedChip) {
+  static decodeChip(encoded) {
     let chip = {
       velocity: {}
     };
 
-    let id = '';
-    let ownerId = '';
-    let x = '';
-    let y = '';
-    let angle = '';
-    let velocityX = '';
-    let velocityY = '';
-    let angularVelocity = '';
+    let id = encoded.substring(0, 8);
+    let ownerId = encoded.substring(8, 11);
+    let x = encoded.substring(11, 21);
+    let y = encoded.substring(21, 31);
+    let angle = encoded.substring(31, 41);
+    let velocityX = encoded.substring(41, 49);
+    let velocityY = encoded.substring(49, 57);
+    let angularVelocity = encoded.substring(57, 67);
 
-    for (let i = 0; i < encodedChip.length; i++) {
-      let char = encodedChip[i];
-
-      if (i < 8) {
-        id += char;
-      } else if (i < 11) {
-        chip.id = parseInt(id, 2);
-        ownerId += char;
-      } else if (i < 21) {
-        chip.ownerId = parseInt(ownerId, 2);
-        x += char;
-      } else if (i < 31) {
-        chip.x = parseInt(x, 2);
-        y += char;
-      } else if (i < 41) {
-        chip.y = parseInt(y, 2);
-        angle += char;
-      } else if (i < 49) {
-        chip.angle = parseInt(angle, 2) / 1000;
-        velocityX += char;
-      } else if (i < 57) {
-        chip.velocity.x = parseInt(velocityX, 2)
-        velocityY += char;
-      } else if (i < 67) {
-        chip.velocity.y = parseInt(velocityY, 2);
-        angularVelocity += char;
-      }
-    }
-
+    chip.id = parseInt(id, 2);
+    chip.ownerId = parseInt(ownerId, 2);
+    chip.x = parseInt(x, 2);
+    chip.y = parseInt(y, 2);
+    chip.angle = parseInt(angle, 2) / 1000;
+    chip.velocity.x = parseInt(velocityX, 2)
+    chip.velocity.y = parseInt(velocityY, 2);
     chip.angularVelocity = parseInt(angularVelocity, 2) / 1000;
 
     return chip;
@@ -131,12 +109,9 @@ export default class Serializer {
     let peg = {};
 
     peg.id = parseInt(encodedPeg.slice(0, 7), 2);
+
     let ownerId = parseInt(encodedPeg.slice(7, 10), 2);
-    if (ownerId === 0) {
-      peg.ownerId = null;
-    } else {
-      peg.ownerId = ownerId - 1;
-    }
+    peg.ownerId = ownerId === 0 ? null : ownerId - 1;
 
     return peg;
   }
