@@ -40,9 +40,11 @@
 //
 // let { chips, pegs } = generateSnapshot()
 
+// TODO:
+// Currently sending bits as a string, should transmit just a number
+// Needs to send a separate "header" to indicate necessary bit length
 
-
-class Serializer {
+export default class Serializer {
   static toBinary(num, bitLength) {
     let output = '';
     for (let i = 0; i < bitLength; i++) { output += '0' };
