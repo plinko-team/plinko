@@ -124,8 +124,8 @@ export default class ServerEngine {
 
         this.messages.network += this.knownPlayers.length * (JSON.stringify(chipInfo) + JSON.stringify(pegInfo)).length
 
-        this.takeSnapshot(snapshot)
-        this.broadcastSnapshot(snapshot)
+        this.takeSnapshot(snapshot);
+        this.broadcastSnapshot(snapshot);
 
         this.chips = this.chips.filter(chip => {
           return !this.chipsToBeDeleted[chip.id];
@@ -150,6 +150,11 @@ export default class ServerEngine {
                x: chip.body.position.x,
                y: chip.body.position.y,
                angle: chip.body.angle,
+               velocity: {
+                 x: chip.body.velocity.x,
+                 y: chip.body.velocity.y,
+               },
+               angularVelocity: chip.body.angularVelocity
              };
     });
 
