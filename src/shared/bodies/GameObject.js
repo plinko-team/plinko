@@ -1,9 +1,11 @@
 import { World } from 'matter-js';
 
 export default class GameObject {
-  constructor({ x, y }) {
+  constructor({ id, x, y, ownerId }) {
+    this.id = id;
     this.x = x;
     this.y = y;
+    this.ownerId = ownerId;
   }
 
   addToRenderer(stage) {
