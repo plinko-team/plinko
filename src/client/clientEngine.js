@@ -150,9 +150,11 @@ export default class ClientEngine {
       this.startGame();
     })
 
-    // this.socket.on('snapshot', ({ pegs, chips }) => {
-    //   this.snapshotBuffer.push(new Snapshot({ pegs, chips, timestamp: performance.now() }));
-    // });
+    this.socket.on('snapshot', (encodedSnapshot) => {
+      let { chips, pegs } = Serializer.decode(encodedSnapshot);
+      console.log({ chips, pegs })
+      this.snapshotBuffer.push(new Snapshot({ pegs, chips, timestamp: performance.now() }));
+    });
   }
 
   registerCanvasEvents() {

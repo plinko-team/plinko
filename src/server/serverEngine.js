@@ -170,8 +170,9 @@ export default class ServerEngine {
   }
 
   broadcastSnapshot({ chips, pegs }) {
+    let serializedSnapshot = Serializer.encode({ chips, pegs })
     this.knownPlayers.forEach(socket => {
-      socket.emit('snapshot', { chips, pegs });
+      socket.emit('snapshot', serializedSnapshot);
     })
   }
 

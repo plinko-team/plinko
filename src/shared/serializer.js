@@ -119,8 +119,11 @@ export default class Serializer {
     let output = '';
 
     output += this.toBinary(peg.id, 7);
-    output += this.toBinary(peg.ownerId, 2);
-
+    if (peg.ownerId) {
+      output += this.toBinary(peg.ownerId + 1, 3);
+    } else {
+      output += this.toBinary(0, 3)
+    }
     return output;
   }
 
@@ -128,7 +131,12 @@ export default class Serializer {
     let peg = {};
 
     peg.id = parseInt(encodedPeg.slice(0, 7), 2);
-    peg.ownerId = parseInt(encodedPeg.slice(7, 9), 2);
+    let ownerId = parseInt(encodedPeg.slice(7, 10), 2);
+    if (ownerId === 0) {
+      peg.ownerId = null;
+    } else {
+      peg.ownerId = ownerId - 1;
+    }
 
     return peg;
   }
@@ -157,7 +165,7 @@ export default class Serializer {
 
   static decode(encodedSnapshot) {
     const BITS_PER_CHIP = 67;
-    const BITS_PER_PEG = 9;
+    const BITS_PER_PEG = 10;
 
     let numChips = parseInt(encodedSnapshot.substring(0, 8), 2);
     let chips = [];
