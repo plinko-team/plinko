@@ -38,6 +38,7 @@ export default class ServerEngine {
     this.lastId = 0;
     this.chips = [];
     this.pegs = [];
+    this.snapshots = [];
     this.toBeDeleted = {};
     this.createEnvironment();
     this.registerPhysicsEvents();
@@ -112,39 +113,19 @@ export default class ServerEngine {
   }
 
   startGame() {
-    this.timeStarted = Date.now();
     this.nextTimestep = Date.now();
-    let counter = 0;
 
     this.loop = setInterval(() => {
       while (Date.now() > this.nextTimestep) {
         this.frame++
         Engine.update(this.engine, TIMESTEP);
-        console.log(this.frame);
 
-        const chipInfo = this.chips.map(chip => {
-          return {
-                   id: chip.id,
-                   ownerId: chip.ownerId,
-                   x: chip.body.position.x,
-                   y: chip.body.position.y,
-                   angle: chip.body.angle,
-                 };
-        });
+        let snapshot = generateSnapshot(chipInfo, pegInfo)
 
-        const pegInfo = this.pegs.map(peg => {
-          return { id: peg.id, ownerId: peg.ownerId };
-        });
-
-        // This counter slows down the rate of snapshot transmission
-        // 10 means send a snapshot every 10 ticks
         this.messages.network += this.knownPlayers.length * (JSON.stringify(chipInfo) + JSON.stringify(pegInfo)).length
 
-        // this.knownPlayers.forEach(socket => {
-        //   socket.emit('snapshot', { chips: chipInfo, pegs: pegInfo });
-        // })
-
-        this.log()
+        this.takeSnapshot(snapshot)
+        this.broadcastSnapshot(snapshot)
 
         this.chips = this.chips.filter(chip => {
           return !this.chipsToBeDeleted[chip.id];
@@ -159,6 +140,34 @@ export default class ServerEngine {
 
   stopGame() {
     clearInterval(this.loop);
+  }
+
+  generateSnapshot(chips, pegs) {
+    const chipInfo = chips.map(chip => {
+      return {
+               id: chip.id,
+               ownerId: chip.ownerId,
+               x: chip.body.position.x,
+               y: chip.body.position.y,
+               angle: chip.body.angle,
+             };
+    });
+
+    const pegInfo = pegs.map(peg => {
+      return { id: peg.id, ownerId: peg.ownerId };
+    });
+
+    return { chips: chipInfo, pegs: pegInfo }
+  }
+
+  takeSnapshot({ chips, pegs }) {
+    this.snapshots[this.frame] = { chips: chipInfo, pegs: pegInfo }
+  }
+
+  broadcastSnapshot({ chips, pegs }) {
+    this.knownPlayers.forEach(socket => {
+      socket.emit('snapshot', { chips, pegs });
+    })
   }
 
   _createWalls() {
