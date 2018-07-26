@@ -12,6 +12,7 @@ import { CANVAS, ROWS, ROW_SPACING, COLS, COL_SPACING, VERTICAL_MARGIN, HORIZONT
 import io from 'socket.io-client';
 import EventEmitter from 'eventemitter3';
 import { Snapshot, SnapshotBuffer } from './snapshot.js'
+import Serializer from '../shared/serializer'
 
 /**
 
@@ -141,17 +142,19 @@ export default class ClientEngine {
       let nextWholeFrame = Math.ceil(frameWithOffset)
       let delay = (nextWholeFrame - frameWithOffset) * TIMESTEP
 
-      console.log("Frame from server: ", frame)
-      console.log("Synchronizer latency: ", this.synchronizer.latency)
-      console.log("next whole frame: ", nextWholeFrame);
+      // console.log("Frame from server: ", frame)
+      // console.log("Synchronizer latency: ", this.synchronizer.latency)
+      // console.log("next whole frame: ", nextWholeFrame);
 
       this.frame = nextWholeFrame;
       this.startGame();
     })
 
-    // this.socket.on('snapshot', ({ pegs, chips }) => {
-    //   this.snapshotBuffer.push(new Snapshot({ pegs, chips, timestamp: performance.now() }));
-    // });
+    this.socket.on('snapshot', (encodedSnapshot) => {
+      let { chips, pegs } = Serializer.decode(encodedSnapshot);
+      console.log({ chips, pegs })
+      this.snapshotBuffer.push(new Snapshot({ pegs, chips, timestamp: performance.now() }));
+    });
   }
 
   registerCanvasEvents() {
@@ -167,7 +170,6 @@ export default class ClientEngine {
   update() {
     this.frame++
     Engine.update(this.engine, TIMESTEP);
-    console.log("Frame from update(): ", this.frame)
   }
 
   animate(timestamp) {
