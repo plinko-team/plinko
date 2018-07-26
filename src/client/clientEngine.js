@@ -29,7 +29,7 @@ export default class ClientEngine {
     this.stage = this.renderer.stage;
     this.engine = Engine.create();
     this.eventEmitter = new EventEmitter();
-    this.synchronizer = new Synchronizer(this.socket, this.eventEmitter);
+    this.synchronizer = new Synchronizer(this.socket, this.eventEmitter).init();
     console.log("Connecting to...", url)
   }
 
@@ -53,7 +53,8 @@ export default class ClientEngine {
     this.synchronizer.handshake();
 
     this.eventEmitter.once('handshake complete', () => {
-      socket.emit('request server frame');
+      console.log("========== handshake complete =============")
+      this.socket.emit('request server frame');
     })
   }
 
@@ -139,10 +140,17 @@ export default class ClientEngine {
       let nextWholeFrame = Math.ceil(frame + this.synchronizer.latency / TIMESTEP)
       let delay = (nextWholeFrame - frame) * TIMESTEP;
 
-      setTimeout(() => {
+      console.log("Frame from server: ", frame)
+      console.log("Synchronizer latency: ", this.synchronizer.latency)
+      console.log("next whole frame: ", nextWholeFrame);
+
+      let time = Date.now()
+
+      setTimeout(function delayInTimeout() {
+        console.log(`Delay should be ${delay}, was actually ${Date.now() - time}`)
         this.frame = nextWholeFrame;
         this.startGame();
-      }, delay)
+      }.bind(this), delay)
     })
 
     this.socket.on('snapshot', ({ pegs, chips }) => {
@@ -161,36 +169,9 @@ export default class ClientEngine {
   }
 
   update() {
+    this.frame++
     Engine.update(this.engine, TIMESTEP);
-
-    // let firstSnapshot = this.snapshotBuffer.first
-    // if (firstSnapshot && performance.now() - firstSnapshot.timestamp > TIMESTEP * 2) {
-    //   let snapshot = this.snapshotBuffer.shift()
-    //
-    //   // Update the bodies based on the snapshot
-    //   let newChips = snapshot.chips;
-    //
-    //   newChips.forEach(newChip => {
-    //     let { id, x, y, angle, ownerId } = newChip;
-    //
-    //     let chip = this.chips[id];
-    //
-    //     if (!chip) {
-    //       chip = new Chip({ id, ownerId, x, y });
-    //       chip.addToEngine(this.engine.world);
-    //       chip.addToRenderer(this.stage);
-    //       this.chips[id] = chip;
-    //     }
-    //
-    //     chip.lastX = chip.body.position.x;
-    //     chip.lastY = chip.body.position.y;
-    //     chip.lastAngle = chip.body.angle;
-    //
-    //     chip.nextX = x;
-    //     chip.nextY = y;
-    //     chip.nextAngle = angle;
-    //   })
-    // }
+    // console.log("Frame from update(): ", this.frame)
   }
 
   animate(timestamp) {
@@ -322,9 +303,6 @@ export default class ClientEngine {
         } else if (row % 2 === 1) {
           // offset columns in odd rows by half
           x += HORIZONTAL_OFFSET;
-        }
-        if (id === 0) {
-          console.log(`Peg Coords: ${x}, ${y}`)
         }
         let peg = new Peg({ id, x, y });
         this.pegs[id] = peg;

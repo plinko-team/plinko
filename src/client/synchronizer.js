@@ -18,16 +18,17 @@ export default class Synchronizer {
   init() {
     this.serverOffset = 0;
     this.rtt = null;
-    this.avgLatency = null;
+    this.latency = null;
     this.history = [];
     this.handshakeComplete = false; // Will be set to true after 10 pings
 
     this.registerSocketEvents();
 
+    return this;
   }
 
   registerSocketEvents() {
-    this.socket.on('pongMessage', this.sync);
+    this.socket.on('pongMessage', this.sync.bind(this));
   }
 
   get localTime() {
@@ -50,6 +51,7 @@ export default class Synchronizer {
 
   handshake() {
     let interval = this.pingOnInterval(100);
+
     this.eventEmitter.on('handshake complete', () => {
       clearInterval(interval);
       this.handshakeComplete = true;
@@ -74,10 +76,10 @@ export default class Synchronizer {
       this.history = this._filterStandardDeviationAroundMedian(this.history)
     }
 
-    this.serverOffset = Date.now() - (serverTime + avg(this.history))
+    this.latency = avg(this.history);
+    this.serverOffset = Date.now() - (serverTime + this.latency)
 
-    console.log(`${i}: Actual time: ${actualTime}, now: ${Date.now()}`)
-    console.log(`Differential: ${actualTime - Date.now()}`)
+    console.log("Sync function executed")
   }
 
   _filterStandardDeviationAroundMedian(array) {

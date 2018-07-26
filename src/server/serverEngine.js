@@ -31,7 +31,7 @@ export default class ServerEngine {
     //     console.log('\r\n');
     // }
 
-    console.log("Total bandwidth sent: ", this.messages.network / 1000 , " kb");
+    // console.log("Total bandwidth sent: ", this.messages.network / 1000 , " kb");
   }
 
   init() {
@@ -119,8 +119,8 @@ export default class ServerEngine {
     this.loop = setInterval(() => {
       while (Date.now() > this.nextTimestep) {
         this.frame++
-
         Engine.update(this.engine, TIMESTEP);
+        console.log(this.frame);
 
         const chipInfo = this.chips.map(chip => {
           return {
@@ -140,9 +140,9 @@ export default class ServerEngine {
         // 10 means send a snapshot every 10 ticks
         this.messages.network += this.knownPlayers.length * (JSON.stringify(chipInfo) + JSON.stringify(pegInfo)).length
 
-        this.knownPlayers.forEach(socket => {
-          socket.emit('snapshot', { chips: chipInfo, pegs: pegInfo });
-        })
+        // this.knownPlayers.forEach(socket => {
+        //   socket.emit('snapshot', { chips: chipInfo, pegs: pegInfo });
+        // })
 
         this.log()
 
