@@ -22,7 +22,7 @@ export default class Renderer {
   }
 
   spriteUpdate(chips, interpolation=1) {
-    for (let id in Object.keys(chips)) {
+    for (let id of Object.keys(chips)) {
       let chip = chips[id];
       let body = chip.body;
       let sprite = chip.sprite;

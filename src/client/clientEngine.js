@@ -137,25 +137,21 @@ export default class ClientEngine {
       // setTimeout for that delay to set this.frame to "whole" frame
       // Initiate the game loop
 
-      let nextWholeFrame = Math.ceil(frame + this.synchronizer.latency / TIMESTEP)
-      let delay = (nextWholeFrame - frame) * TIMESTEP;
+      let frameWithOffset = frame + this.synchronizer.latency / TIMESTEP
+      let nextWholeFrame = Math.ceil(frameWithOffset)
+      let delay = (nextWholeFrame - frameWithOffset) * TIMESTEP
 
       console.log("Frame from server: ", frame)
       console.log("Synchronizer latency: ", this.synchronizer.latency)
       console.log("next whole frame: ", nextWholeFrame);
 
-      let time = Date.now()
-
-      setTimeout(function delayInTimeout() {
-        console.log(`Delay should be ${delay}, was actually ${Date.now() - time}`)
-        this.frame = nextWholeFrame;
-        this.startGame();
-      }.bind(this), delay)
+      this.frame = nextWholeFrame;
+      this.startGame();
     })
 
-    this.socket.on('snapshot', ({ pegs, chips }) => {
-      this.snapshotBuffer.push(new Snapshot({ pegs, chips, timestamp: performance.now() }));
-    });
+    // this.socket.on('snapshot', ({ pegs, chips }) => {
+    //   this.snapshotBuffer.push(new Snapshot({ pegs, chips, timestamp: performance.now() }));
+    // });
   }
 
   registerCanvasEvents() {
@@ -171,7 +167,7 @@ export default class ClientEngine {
   update() {
     this.frame++
     Engine.update(this.engine, TIMESTEP);
-    // console.log("Frame from update(): ", this.frame)
+    console.log("Frame from update(): ", this.frame)
   }
 
   animate(timestamp) {
