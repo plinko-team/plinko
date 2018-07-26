@@ -109,18 +109,9 @@ export default class Serializer {
     let peg = {};
 
     peg.id = parseInt(encodedPeg.slice(0, 7), 2);
-<<<<<<< HEAD:src/shared/serializer.js
 
     let ownerId = parseInt(encodedPeg.slice(7, 10), 2);
     peg.ownerId = ownerId === 0 ? null : ownerId - 1;
-=======
-    let ownerId = parseInt(encodedPeg.slice(7, 10), 2);
-    if (ownerId === 0) {
-      peg.ownerId = null;
-    } else {
-      peg.ownerId = ownerId - 1;
-    }
->>>>>>> 3d9e250be8fa7b89964ddb28d247f52151f19b07:src/shared/serializer.js
 
     return peg;
   }
