@@ -1,3 +1,5 @@
+// Leaving this code here just for testing
+
 // function rng(n) {
 //   return Math.floor(Math.random() * n)
 // }
@@ -21,18 +23,26 @@
 //   return { id, ownerId: rng(4) }
 // }
 //
-// let chips = []
-// let pegs = []
+// function generateSnapshot() {
+//   let chips = [];
+//   let pegs = [];
 //
-// for (let i = 0; i < 1; i++) {
-//   chips.push(generateChip())
+//   for (let i = 0; i < 200; i++) {
+//     chips.push(generateChip())
+//   }
+//
+//   for (let i = 0; i < 68; i++) {
+//     pegs.push(generatePeg(i))
+//   }
+//
+//   return { chips, pegs }
 // }
 //
-// for (let i = 0; i < 1; i++) {
-//   pegs.push(generatePeg(i))
-// }
+// let { chips, pegs } = generateSnapshot()
 
-export default class Serializer {
+
+
+class Serializer {
   static toBinary(num, bitLength) {
     let output = '';
     for (let i = 0; i < bitLength; i++) { output += '0' };
@@ -106,8 +116,8 @@ export default class Serializer {
   static encodePeg(peg) {
     let output = '';
 
-    output += Serializer.toBinary(peg.id, 7);
-    output += Serializer.toBinary(peg.ownerId, 2);
+    output += this.toBinary(peg.id, 7);
+    output += this.toBinary(peg.ownerId, 2);
 
     return output
   }
@@ -126,18 +136,18 @@ export default class Serializer {
 
     // Prepend the number of chips that need to be decoded
     // Up to 256 chips, so 8 bits required
-    encoded += Serializer.toBinary(chips.length, 8)
+    encoded += this.toBinary(chips.length, 8)
 
     for (let chip of chips) {
-      encoded += Serializer.encodeChip(chip)
+      encoded += this.encodeChip(chip)
     }
 
     // Prepend the number of pegs that need to be decoded
     // Always 68 so 7 bits required
-    encoded += Serializer.toBinary(pegs.length, 7)
+    encoded += this.toBinary(pegs.length, 7)
 
     for (let peg of pegs) {
-      encoded += Serializer.encodePeg(peg)
+      encoded += this.encodePeg(peg)
     }
 
     return encoded
@@ -147,21 +157,21 @@ export default class Serializer {
     const BITS_PER_CHIP = 67
     const BITS_PER_PEG = 9
 
-    let numChips = parseInt(encodedSnapshot.slice(0, 8), 2)
+    let numChips = parseInt(encodedSnapshot.substring(0, 8), 2)
     let chips = [];
     let pegs = [];
 
     for (let i = 0; i < numChips; i++) {
       let chipStart = 8 + i * BITS_PER_CHIP
-      chips.push(Serializer.decodeChip(encodedSnapshot.slice(chipStart, chipStart + BITS_PER_CHIP )))
+      chips.push(this.decodeChip(encodedSnapshot.substring(chipStart, chipStart + BITS_PER_CHIP )))
     }
 
     let chipsEnd = 8 + numChips * BITS_PER_CHIP
-    let numPegs = parseInt(encodedSnapshot.slice(chipsEnd, chipsEnd + 7), 2)
+    let numPegs = parseInt(encodedSnapshot.substring(chipsEnd, chipsEnd + 7), 2)
 
     for (let i = 0; i < numPegs; i++) {
       let pegStart = chipsEnd + 7 + BITS_PER_PEG * i;
-      pegs.push(Serializer.decodePeg(encodedSnapshot.slice(pegStart, pegStart + BITS_PER_PEG)))
+      pegs.push(this.decodePeg(encodedSnapshot.substring(pegStart, pegStart + BITS_PER_PEG)))
     }
 
     return { chips, pegs }
