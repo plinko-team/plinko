@@ -6,6 +6,7 @@ import Peg from '../shared/bodies/Peg';
 import Triangle from '../shared/bodies/Triangle';
 import { VerticalWall, HorizontalWall, BucketWall } from '../shared/bodies/Wall';
 import EventEmitter from 'eventemitter3';
+import Serializer from '../shared/serializer'
 
 /**
 
@@ -120,9 +121,8 @@ export default class ServerEngine {
         this.frame++
         Engine.update(this.engine, TIMESTEP);
 
-        let snapshot = generateSnapshot(this.chips, this.pegs)
+        let snapshot = this.generateSnapshot(this.chips, this.pegs)
 
-        this.messages.network += this.knownPlayers.length * (JSON.stringify(chipInfo) + JSON.stringify(pegInfo)).length
 
         this.takeSnapshot(snapshot);
         this.broadcastSnapshot(snapshot);
@@ -166,7 +166,7 @@ export default class ServerEngine {
   }
 
   takeSnapshot({ chips, pegs }) {
-    this.snapshots[this.frame] = { chips: chipInfo, pegs: pegInfo }
+    this.snapshots[this.frame] = { chips, pegs }
   }
 
   broadcastSnapshot({ chips, pegs }) {
