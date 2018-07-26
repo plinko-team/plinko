@@ -41,7 +41,7 @@ export default class Synchronizer {
 
   pingOnInterval(intervalTime) {
     let interval = setInterval(() => {
-      this._lastSyncTime = Date.now();
+      this._lastSyncTime = performance.now();
       this.socket.emit('pingMessage', { ping: true })
 
     }, intervalTime)
@@ -63,7 +63,7 @@ export default class Synchronizer {
   }
 
   sync({ serverTime }) {
-    let latency = (Date.now() - this._lastSyncTime) / 2;
+    let latency = (performance.now() - this._lastSyncTime) / 2;
     this.history.push(latency);
 
     // Truncate to only 10 latencies in history
@@ -77,7 +77,7 @@ export default class Synchronizer {
     }
 
     this.latency = avg(this.history);
-    this.serverOffset = Date.now() - (serverTime + this.latency)
+    this.serverOffset = performance.now() - (serverTime + this.latency)
 
     console.log("Sync function executed")
   }
