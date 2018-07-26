@@ -120,7 +120,7 @@ export default class ServerEngine {
         this.frame++
         Engine.update(this.engine, TIMESTEP);
 
-        let snapshot = generateSnapshot(chipInfo, pegInfo)
+        let snapshot = generateSnapshot(this.chips, this.pegs)
 
         this.messages.network += this.knownPlayers.length * (JSON.stringify(chipInfo) + JSON.stringify(pegInfo)).length
 
