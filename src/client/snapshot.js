@@ -43,7 +43,8 @@ export class SnapshotBuffer {
 }
 
 export class Snapshot {
-  constructor({ chips, pegs, timestamp }) {
+  constructor({ frame, chips, pegs, timestamp }) {
+    this.frame = frame;
     this.chips = chips;
     this.pegs = pegs;
     this.timestamp = timestamp;
