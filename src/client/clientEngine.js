@@ -212,9 +212,12 @@ export default class ClientEngine {
         snapshotFrame++;
         Engine.update(this.engine, TIMESTEP)
       }
+      document.body.querySelector('.canvas.container').style.background = "#FFAAAA"
 
       // this.pegs = currentSnapshot.pegs;
     } else {
+      document.body.querySelector('.canvas.container').style.background = "#E0E0E0"
+
       console.log("Used engine")
       Engine.update(this.engine, TIMESTEP);
     }

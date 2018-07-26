@@ -1,4 +1,4 @@
-import { World, Engine, Events } from 'matter-js';
+import { Body, World, Engine, Events } from 'matter-js';
 import { DROP_BOUNDARY, TIMESTEP } from '../shared/constants/game';
 import { CANVAS, ROWS, COLS, ROW_SPACING, COL_SPACING, VERTICAL_MARGIN, HORIZONTAL_OFFSET } from '../shared/constants/canvas';
 import Chip from '../shared/bodies/Chip';
@@ -37,8 +37,10 @@ export default class ServerEngine {
   init() {
     this.lastId = 0;
     this.chips = [];
+    this.chipsObject = {};
     this.pegs = [];
-    this.snapshots = [];
+    this.snapshots = {};
+    this.inputHistory = {};
     this.toBeDeleted = {};
     this.createEnvironment();
     this.registerPhysicsEvents();
@@ -97,9 +99,34 @@ export default class ServerEngine {
       // Events must be set on socket established through connection
       socket.on('new chip', (chipInfo) => {
         // Add a new chip to our world
+        let frame = chipInfo.frame;
+
+        console.log(frame)
+
+        let snapshot = this.snapshots[frame]
+        this.restoreWorldFromSnapshot(snapshot);
+
         let chip = new Chip({ id: chipInfo.id, ownerId: chipInfo.ownerId, x: chipInfo.x, y: chipInfo.y })
         chip.addToEngine(this.engine.world);
-        this.chips.push(chip)
+        this.chips.push(chip);
+
+        this.inputHistory[this.frame] = chipInfo;
+        this.chipsObject[String(chipInfo.ownerId) + String(chipInfo.id)]
+
+        console.log("\n\n=============== Starting reenactment ===============")
+        while (frame < this.frame) {
+          console.log("Reenactment step: ", frame)
+
+          if (this.inputHistory[frame]) {
+            let chipInfo = this.inputHistory[frame]
+            let chip = new Chip({ id: chipInfo.id, ownerId: chipInfo.ownerId, x: chipInfo.x, y: chipInfo.y })
+            chip.addToEngine(this.engine.world);
+            this.chips.push(chip);
+          }
+
+          Engine.update(this.engine, TIMESTEP)
+          frame++;
+        }
       })
 
       socket.on('pingMessage', () => {
@@ -142,20 +169,53 @@ export default class ServerEngine {
     clearInterval(this.loop);
   }
 
+  restoreWorldFromSnapshot(snapshot) {
+    let chips = snapshot.chips;
+    let pegs = snapshot.pegs;
+
+    let chipsThatExistAtSnapshot = []
+
+    chips.forEach(chipInfo => {
+      const { id, ownerId, x, y, angle, velocity, angularVelocity } = chipInfo;
+
+      let combinedId = String(ownerId) + String(id)
+      chipsThatExistAtSnapshot.push(combinedId)
+
+      if (typeof this.chips[combinedId] === 'undefined') {
+        const chip = new Chip({ id, ownerId, x, y });
+        chip.addToEngine(this.engine.world);
+        this.chips[combinedId] = chip;
+        this.chips.push(chip);
+      }
+
+      const chip = this.chips[combinedId];
+      const body = chip.body;
+
+      Body.setPosition(body, { x, y });
+      Body.setAngle(body, angle);
+      Body.setVelocity(body, velocity);
+      Body.setAngularVelocity(body, angularVelocity);
+    });
+
+    this.chips = this.chips.filter(chip => {
+      return chipsThatExistAtSnapshot.includes(String(chip.ownerId) + String(chip.id))
+    })
+  }
+
   generateSnapshot(chips, pegs) {
     const chipInfo = chips.map(chip => {
       return {
-               id: chip.id,
-               ownerId: chip.ownerId,
-               x: chip.body.position.x,
-               y: chip.body.position.y,
-               angle: chip.body.angle,
-               velocity: {
-                 x: chip.body.velocity.x,
-                 y: chip.body.velocity.y,
-               },
-               angularVelocity: chip.body.angularVelocity
-             };
+           id: chip.id,
+           ownerId: chip.ownerId,
+           x: chip.body.position.x,
+           y: chip.body.position.y,
+           angle: chip.body.angle,
+           velocity: {
+             x: chip.body.velocity.x,
+             y: chip.body.velocity.y,
+           },
+           angularVelocity: chip.body.angularVelocity
+         };
     });
 
     const pegInfo = pegs.map(peg => {
