@@ -1,4 +1,4 @@
-import { Engine, Render, Events, World } from 'matter-js';
+import { Body, Engine, Render, Events, World } from 'matter-js';
 import Renderer from './renderer';
 import Synchronizer from './synchronizer';
 import Chip from '../shared/bodies/Chip';
@@ -36,6 +36,7 @@ export default class ClientEngine {
   init() {
     this.chips = {};
     this.pegs = {};
+    this.isRunning = false;
     this.lastChipId = 0;
     this.newSnapshot = false;
     this.snapshotBuffer = new SnapshotBuffer();
@@ -93,9 +94,10 @@ export default class ClientEngine {
       const bodyA = pair.bodyA;
       const bodyB = pair.bodyB;
 
-      if (bodyA.label === 'peg' && bodyB.label === 'chip') {
-        this.updateScore(bodyA, bodyB);
-      }
+      // This is turned off till we update player-info owner on DOM element
+      //if (bodyA.label === 'peg' && bodyB.label === 'chip') {
+      //  this.updateScore(bodyA, bodyB);
+      //}
 
       if (bodyA.label === 'peg') {
         bodyA.parentObject.ownerId = bodyB.parentObject.ownerId;
@@ -149,9 +151,11 @@ export default class ClientEngine {
       this.startGame();
     })
 
-    // this.socket.on('snapshot', ({ pegs, chips }) => {
-    //   this.snapshotBuffer.push(new Snapshot({ pegs, chips, timestamp: performance.now() }));
-    // });
+    this.socket.on('snapshot', ({ frame, pegs, chips }) => {
+      if (this.isRunning) {
+        this.snapshotBuffer.push(new Snapshot({ frame, pegs, chips, timestamp: performance.now() }));
+      }
+    });
   }
 
   registerCanvasEvents() {
@@ -159,15 +163,63 @@ export default class ClientEngine {
     document.querySelector('canvas').addEventListener('click', this.onClick, false);
     // We prevent the default mousedown event so that when you spam chips,
     // random parts of the DOM might get highlighted due to double click
-    document.body.addEventListener('mousedown', (e) => { e.preventDefault() })
+    document.body.addEventListener('mousedown', (e) => { e.preventDefault() });
     // When the client moves the mouse, display a chip overlay
-    document.querySelector('canvas').addEventListener('mouseenter', this.onMouseEnter)
+    document.querySelector('canvas').addEventListener('mouseenter', this.onMouseEnter);
   }
 
   update() {
-    this.frame++
-    Engine.update(this.engine, TIMESTEP);
-    console.log("Frame from update(): ", this.frame)
+    this.frame++;
+
+    //chipInfo: {id: 0, ownerId: 1, x: 430.760975839034, y: 394.12498935187614, angle: -4.477432625733297}
+
+    // console.log(this.snapshotBuffer.shift());
+
+    while (!this.snapshotBuffer.isEmpty() && this.snapshotBuffer.first.frame !== this.frame) {
+      this.snapshotBuffer.shift();
+    }
+
+    if (!this.snapshotBuffer.isEmpty() && this.snapshotBuffer.first.frame === this.frame) {
+      console.log("Used snapshot");
+
+      const currentSnapshot = this.snapshotBuffer.shift();
+
+      let snapshotFrame = currentSnapshot.frame;
+
+      currentSnapshot.chips.forEach(chipInfo => {
+        const { id, ownerId, x, y, angle, velocity, angularVelocity } = chipInfo;
+
+        let combinedId = String(ownerId) + String(id)
+
+        if (typeof this.chips[combinedId] === 'undefined') {
+          const chip = new Chip({ id, ownerId, x, y });
+          chip.addToEngine(this.engine.world);
+          chip.addToRenderer(this.stage);
+          this.chips[combinedId] = chip;
+        }
+
+        const chip = this.chips[combinedId];
+        const body = chip.body;
+
+        Body.setPosition(body, { x, y });
+        Body.setAngle(body, angle);
+        Body.setVelocity(body, velocity);
+        Body.setAngularVelocity(body, angularVelocity);
+      });
+
+      // Catch up to current frame from snapshot
+      while (snapshotFrame < this.frame) {
+        snapshotFrame++;
+        Engine.update(this.engine, TIMESTEP)
+      }
+
+      // this.pegs = currentSnapshot.pegs;
+    } else {
+      console.log("Used engine")
+      Engine.update(this.engine, TIMESTEP);
+    }
+
+   //console.log("Frame from update(): ", this.frame)
   }
 
   animate(timestamp) {
@@ -194,6 +246,7 @@ export default class ClientEngine {
   startGame() {
     // Entry point for updates and rendering
     // Only gets called once
+    this.isRunning = true;
 
     requestAnimationFrame((timestamp) => {
       this.renderer.render(this.stage);
@@ -224,7 +277,7 @@ export default class ClientEngine {
     let chip = new Chip({ id, ownerId, x, y });
     chip.addToEngine(this.engine.world);
     chip.addToRenderer(this.stage);
-    this.chips[id] = chip;
+    this.chips[String(ownerId) + String(id)] = chip;
 
     this.socket.emit('new chip', { frame, id, x, y, ownerId });
   }

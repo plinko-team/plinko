@@ -97,7 +97,7 @@ export default class ServerEngine {
       // Events must be set on socket established through connection
       socket.on('new chip', (chipInfo) => {
         // Add a new chip to our world
-        let chip = new Chip({ id: this.lastId++, ownerId: chipInfo.ownerId, x: chipInfo.x, y: chipInfo.y })
+        let chip = new Chip({ id: chipInfo.id, ownerId: chipInfo.ownerId, x: chipInfo.x, y: chipInfo.y })
         chip.addToEngine(this.engine.world);
         this.chips.push(chip)
       })
@@ -120,12 +120,16 @@ export default class ServerEngine {
         this.frame++
         Engine.update(this.engine, TIMESTEP);
 
-        let snapshot = generateSnapshot(this.chips, this.pegs)
+        let snapshot = this.generateSnapshot(this.chips, this.pegs)
 
-        this.messages.network += this.knownPlayers.length * (JSON.stringify(chipInfo) + JSON.stringify(pegInfo)).length
+        //this.messages.network += this.knownPlayers.length * (JSON.stringify(chipInfo) + JSON.stringify(pegInfo)).length
 
         this.takeSnapshot(snapshot)
-        this.broadcastSnapshot(snapshot)
+
+        // % 4 => 15 snapshots per second
+        if (this.frame % 4 === 0) {
+          this.broadcastSnapshot(snapshot)
+        }
 
         this.chips = this.chips.filter(chip => {
           return !this.chipsToBeDeleted[chip.id];
@@ -150,6 +154,11 @@ export default class ServerEngine {
                x: chip.body.position.x,
                y: chip.body.position.y,
                angle: chip.body.angle,
+               velocity: {
+                 x: chip.body.velocity.x,
+                 y: chip.body.velocity.y,
+               },
+               angularVelocity: chip.body.angularVelocity
              };
     });
 
@@ -161,12 +170,12 @@ export default class ServerEngine {
   }
 
   takeSnapshot({ chips, pegs }) {
-    this.snapshots[this.frame] = { chips: chipInfo, pegs: pegInfo }
+    this.snapshots[this.frame] = { chips, pegs };
   }
 
   broadcastSnapshot({ chips, pegs }) {
     this.knownPlayers.forEach(socket => {
-      socket.emit('snapshot', { chips, pegs });
+      socket.emit('snapshot', { frame: this.frame, chips, pegs });
     })
   }
 
