@@ -111,11 +111,9 @@ export default class ClientEngine {
 
       if (bodyA.label === 'ground') {
         bodyB.parentObject.shrink(() => {
-          let chip = body.parentObject;
-          let body = chip.body;
-          let sprite = chip.sprite
-
-          let ownerId = chip.ownerId;
+          let body = bodyB;
+          let parent = body.parentObject;
+          let ownerId = parent.ownerId;
           let id = parent.id;
           body.isStatic = true;
 
@@ -123,7 +121,7 @@ export default class ClientEngine {
           delete this.chips[String(ownerId) + String(id)]
 
           World.remove(this.engine.world, body);
-          this.stage.removeChild(sprite);
+          this.stage.removeChild(body.sprite);
         })
       }
     }
