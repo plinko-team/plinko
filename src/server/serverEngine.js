@@ -21,6 +21,7 @@ export default class ServerEngine {
     this.engine = Engine.create();
     this.genesisTime = Date.now();
     this.frame = 0;
+
     this.inputBuffer = new InputBuffer();
     this.messages = {
       network: 0,
@@ -41,7 +42,8 @@ export default class ServerEngine {
     this.chips = [];
     this.chipsObject = {};
     this.pegs = [];
-    this.snapshots = {};
+    this.snapshotHistory = {};
+    // this.snapshotHistory = new SnapshotHistory();
     this.inputHistory = {};
     this.toBeDeleted = {};
     this.createEnvironment();
@@ -128,7 +130,10 @@ export default class ServerEngine {
           //this.messages.network += this.knownPlayers.length * (JSON.stringify(chipInfo) + JSON.stringify(pegInfo)).length
 
           this.takeSnapshot(snapshot);
-          this.broadcastSnapshot(snapshot);
+
+          if (this.frame % 4 === 0) {
+            this.broadcastSnapshot(snapshot);
+          }
 
           this.chips = this.chips.filter(chip => {
             return !this.chipsToBeDeleted[chip.id];
@@ -146,7 +151,7 @@ export default class ServerEngine {
             this.inputHistory[input.frame] = input;
           }
 
-          let snapshot = this.snapshots[frame];
+          let snapshot = this.snapshotHistory[frame];
 
           this.restoreWorldFromSnapshot(snapshot);
 
@@ -232,8 +237,9 @@ export default class ServerEngine {
     return { chips: chipInfo, pegs: pegInfo }
   }
 
-  takeSnapshot({ chips, pegs }) {
-    this.snapshots[this.frame] = { chips, pegs };
+  takeSnapshot(snapshot) {
+    // this.snapshotHistory[this.frame] = snapshot;
+    this.snapshotHistory.push(this.frame, snapshot);
   }
 
   broadcastSnapshot({ chips, pegs }) {
