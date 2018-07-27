@@ -171,10 +171,6 @@ export default class ClientEngine {
   update() {
     this.frame++;
 
-    //chipInfo: {id: 0, ownerId: 1, x: 430.760975839034, y: 394.12498935187614, angle: -4.477432625733297}
-
-    // console.log(this.snapshotBuffer.shift());
-
     while (!this.snapshotBuffer.isEmpty() && this.snapshotBuffer.first.frame !== this.frame) {
       this.snapshotBuffer.shift();
     }
@@ -221,11 +217,11 @@ export default class ClientEngine {
       console.log("Used engine")
       Engine.update(this.engine, TIMESTEP);
     }
-
-   //console.log("Frame from update(): ", this.frame)
   }
 
   animate(timestamp) {
+
+    // Wait for next rAF if not enough time passed for engine update
     if (timestamp < this.lastFrameTime + TIMESTEP) {
       this.frameID = requestAnimationFrame(this.animate.bind(this));
       return;
