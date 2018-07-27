@@ -6,6 +6,7 @@ import Peg from '../shared/bodies/Peg';
 import Triangle from '../shared/bodies/Triangle';
 import { VerticalWall, HorizontalWall, BucketWall } from '../shared/bodies/Wall';
 import EventEmitter from 'eventemitter3';
+import { Input, InputBuffer } from './inputBuffer';
 
 /**
 
@@ -20,6 +21,7 @@ export default class ServerEngine {
     this.engine = Engine.create();
     this.genesisTime = Date.now();
     this.frame = 0;
+    this.inputBuffer = new InputBuffer();
     this.messages = {
       network: 0,
     };
@@ -93,48 +95,21 @@ export default class ServerEngine {
     this.io.on('connection', socket => {
       this.knownPlayers.push(socket);
 
-      socket.emit('connection established', { playerId: playerId % 4 })
+      socket.emit('connection established', { playerId: playerId % 4 });
       playerId++;
 
       // Events must be set on socket established through connection
       socket.on('new chip', (chipInfo) => {
-        // Add a new chip to our world
-        let frame = chipInfo.frame;
-
-        console.log(frame)
-
-        let snapshot = this.snapshots[frame]
-        this.restoreWorldFromSnapshot(snapshot);
-
-        let chip = new Chip({ id: chipInfo.id, ownerId: chipInfo.ownerId, x: chipInfo.x, y: chipInfo.y })
-        chip.addToEngine(this.engine.world);
-        this.chips.push(chip);
-
-        this.inputHistory[this.frame] = chipInfo;
-        this.chipsObject[String(chipInfo.ownerId) + String(chipInfo.id)]
-
-        console.log("\n\n=============== Starting reenactment ===============")
-        while (frame < this.frame) {
-          console.log("Reenactment step: ", frame)
-
-          if (this.inputHistory[frame]) {
-            let chipInfo = this.inputHistory[frame]
-            let chip = new Chip({ id: chipInfo.id, ownerId: chipInfo.ownerId, x: chipInfo.x, y: chipInfo.y })
-            chip.addToEngine(this.engine.world);
-            this.chips.push(chip);
-          }
-
-          Engine.update(this.engine, TIMESTEP)
-          frame++;
-        }
+        let chip = new Input(chipInfo)
+        this.inputBuffer.insert(chip);
       })
 
       socket.on('pingMessage', () => {
-        socket.emit('pongMessage', { serverTime: Date.now() })
+        socket.emit('pongMessage', { serverTime: Date.now() });
       })
 
       socket.on('request server frame', () => {
-        socket.emit('server frame', { frame: this.frame })
+        socket.emit('server frame', { frame: this.frame });
       })
     });
   }
@@ -144,23 +119,55 @@ export default class ServerEngine {
 
     this.loop = setInterval(() => {
       while (Date.now() > this.nextTimestep) {
-        this.frame++
-        Engine.update(this.engine, TIMESTEP);
+        if (this.inputBuffer.isEmpty()) {
+          this.frame++
+          Engine.update(this.engine, TIMESTEP);
 
-        let snapshot = this.generateSnapshot(this.chips, this.pegs)
+          let snapshot = this.generateSnapshot(this.chips, this.pegs);
 
-        //this.messages.network += this.knownPlayers.length * (JSON.stringify(chipInfo) + JSON.stringify(pegInfo)).length
+          //this.messages.network += this.knownPlayers.length * (JSON.stringify(chipInfo) + JSON.stringify(pegInfo)).length
 
-        this.takeSnapshot(snapshot);
-        this.broadcastSnapshot(snapshot);
+          this.takeSnapshot(snapshot);
+          this.broadcastSnapshot(snapshot);
 
-        this.chips = this.chips.filter(chip => {
-          return !this.chipsToBeDeleted[chip.id];
-        })
+          this.chips = this.chips.filter(chip => {
+            return !this.chipsToBeDeleted[chip.id];
+          })
 
-        this.chipsToBeDeleted = {};
+          this.chipsToBeDeleted = {};
 
-        this.nextTimestep += TIMESTEP;
+          this.nextTimestep += TIMESTEP;
+        } else {
+
+          let frame = this.inputBuffer.first.frame;
+
+          while (!this.inputBuffer.isEmpty()) {
+            let input = this.inputBuffer.shift()
+            this.inputHistory[input.frame] = input;
+          }
+
+          let snapshot = this.snapshots[frame];
+
+          this.restoreWorldFromSnapshot(snapshot);
+
+          console.log("\n\n=============== Starting reenactment ===============")
+          while (frame < this.frame) {
+            console.log("Reenactment step: ", frame)
+
+            if (this.inputHistory[frame]) {
+              let chipInfo = this.inputHistory[frame]
+              let chip = new Chip({ id: chipInfo.id, ownerId: chipInfo.ownerId, x: chipInfo.x, y: chipInfo.y })
+              chip.addToEngine(this.engine.world);
+              this.chips.push(chip);
+            }
+
+            let generatedSnapshot = this.generateSnapshot(this.chips, this.pegs);
+            this.takeSnapshot(generatedSnapshot);
+
+            Engine.update(this.engine, TIMESTEP);
+            frame++;
+          }
+        }
       }
     }, 0)
   }
@@ -170,16 +177,16 @@ export default class ServerEngine {
   }
 
   restoreWorldFromSnapshot(snapshot) {
-    let chips = snapshot.chips;
+    let chips = snapshot.chips; // array
     let pegs = snapshot.pegs;
 
-    let chipsThatExistAtSnapshot = []
+    let chipsThatExistAtSnapshot = [];
 
     chips.forEach(chipInfo => {
       const { id, ownerId, x, y, angle, velocity, angularVelocity } = chipInfo;
 
-      let combinedId = String(ownerId) + String(id)
-      chipsThatExistAtSnapshot.push(combinedId)
+      let combinedId = String(ownerId) + String(id);
+      chipsThatExistAtSnapshot.push(combinedId);
 
       if (typeof this.chips[combinedId] === 'undefined') {
         const chip = new Chip({ id, ownerId, x, y });
@@ -198,7 +205,7 @@ export default class ServerEngine {
     });
 
     this.chips = this.chips.filter(chip => {
-      return chipsThatExistAtSnapshot.includes(String(chip.ownerId) + String(chip.id))
+      return chipsThatExistAtSnapshot.includes(String(chip.ownerId) + String(chip.id));
     })
   }
 
