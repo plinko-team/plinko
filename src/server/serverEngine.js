@@ -31,13 +31,11 @@ export default class ServerEngine {
 
   init() {
     this.lastId = 0;
-    this.chips = [];
-    this.chipsObject = {};
+    this.chips = {};
     this.pegs = [];
-    // this.snapshotHistory = {};
     this.snapshotHistory = new SnapshotHistory();
     this.inputHistory = {};
-    this.toBeDeleted = {};
+    this.chipsToBeDeleted = {};
     this.createEnvironment();
     this.registerPhysicsEvents();
     this.registerSocketEvents();
@@ -71,7 +69,7 @@ export default class ServerEngine {
       }
 
       if (bodyA.label === 'ground') {
-        this.toBeDeleted[bodyB.parentObject.id] = true;
+        this.chipsToBeDeleted[bodyB.parentObject.id] = true;
         World.remove(this.engine.world, bodyB);
       }
     }
@@ -116,6 +114,11 @@ export default class ServerEngine {
     this.nextTimestep = this.nextTimestep || Date.now();
 
     while (Date.now() > this.nextTimestep) {
+
+      Object.keys(this.chipsToBeDeleted).forEach((combinedId) => {
+        delete this.chips[combinedId];
+      });
+
       if (this.inputBuffer.isEmpty()) {
         // Tick engine forward as normal
 
@@ -126,16 +129,11 @@ export default class ServerEngine {
 
         this.takeSnapshot(snapshot);
 
-        if (this.frame % 4 === 0) {
+        if (this.frame % 30 === 0) {
           this.broadcastSnapshot(snapshot);
         }
 
-        this.chips = this.chips.filter(chip => {
-          return !this.chipsToBeDeleted[chip.id];
-        })
-
         this.chipsToBeDeleted = {};
-
         this.nextTimestep += TIMESTEP;
       } else {
         // Reenact steps from first input in InputBuffer
@@ -155,10 +153,12 @@ export default class ServerEngine {
           // console.log("Reenactment step: ", frame)
 
           if (this.inputHistory[frame]) {
-            let chipInfo = this.inputHistory[frame]
+            let chipInfo = this.inputHistory[frame];
             let chip = new Chip({ id: chipInfo.id, ownerId: chipInfo.ownerId, x: chipInfo.x, y: chipInfo.y })
             chip.addToEngine(this.engine.world);
-            this.chips.push(chip);
+
+            let combinedId = String(chipInfo.ownerId) + String(chipInfo.id)
+            this.chips[combinedId] = chip;
           }
 
           let generatedSnapshot = this.generateSnapshot(this.chips, this.pegs);
@@ -169,7 +169,6 @@ export default class ServerEngine {
         }
       }
     }
-
     setImmediate(this.startGame.bind(this))
   }
 
@@ -177,10 +176,12 @@ export default class ServerEngine {
     clearInterval(this.loop);
   }
 
+
+
   restoreWorldFromSnapshot(snapshot) {
     let chips = snapshot.chips; // array
     let pegs = snapshot.pegs;
-
+    console.log('From restore world from snapshot: ', chips)
     let chipsThatExistAtSnapshot = [];
 
     chips.forEach(chipInfo => {
@@ -193,7 +194,6 @@ export default class ServerEngine {
         const chip = new Chip({ id, ownerId, x, y });
         chip.addToEngine(this.engine.world);
         this.chips[combinedId] = chip;
-        this.chips.push(chip);
       }
 
       const chip = this.chips[combinedId];
@@ -205,12 +205,21 @@ export default class ServerEngine {
       Body.setAngularVelocity(body, angularVelocity);
     });
 
-    this.chips = this.chips.filter(chip => {
-      return chipsThatExistAtSnapshot.includes(String(chip.ownerId) + String(chip.id));
-    })
+    let dummyChips = {};
+
+    chipsThatExistAtSnapshot.forEach((combinedId) => {
+      dummyChips[combinedId] = this.chips[combinedId];
+    });
+
+    this.chips = dummyChips;
   }
 
   generateSnapshot(chips, pegs) {
+    // chips is an object with combinedId as the key and chip as values
+    // so we want to access the values
+    chips = Object.values(chips);
+    // console.log("From generate snapshot: ", chips)
+
     const chipInfo = chips.map(chip => {
       return {
            id: chip.id,

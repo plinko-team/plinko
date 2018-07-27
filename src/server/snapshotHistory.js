@@ -1,6 +1,6 @@
 export default class SnapshotHistory {
   constructor() {
-    this.MAX_LENGTH = 100
+    this.MAX_LENGTH = Infinity;
     this.history = {}
     this.firstFrame = null;
     this.lastFrame = null;
@@ -35,6 +35,7 @@ export default class SnapshotHistory {
 
   at(frame) {
     if (this.history[frame] === undefined) {
+      console.log(frame)
       throw new Error('Frame does not exist')
     }
 

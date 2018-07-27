@@ -36,6 +36,7 @@ export default class ClientEngine {
   init() {
     this.chips = {};
     this.pegs = {};
+    this.deletedChips = {};
     this.isRunning = false;
     this.lastChipId = 0;
     this.newSnapshot = false;
@@ -108,15 +109,21 @@ export default class ClientEngine {
         bodyB.sprite.tint = PLAYER_COLORS[bodyB.parentObject.ownerId];
       }
 
-      if (bodyB.label === 'ground') {
-        bodyA.parentObject.shrink(() => {
-          World.remove(this.engine.world, bodyA);
-          this.env === 'client' && this.stage.removeChild(bodyA.sprite);
-        })
-      } else if (bodyA.label === 'ground') {
+      if (bodyA.label === 'ground') {
         bodyB.parentObject.shrink(() => {
-          World.remove(this.engine.world, bodyB);
-          this.env === 'client' && this.stage.removeChild(bodyB.sprite);
+          let chip = body.parentObject;
+          let body = chip.body;
+          let sprite = chip.sprite
+
+          let ownerId = chip.ownerId;
+          let id = parent.id;
+          body.isStatic = true;
+
+          this.deletedChips[String(ownerId) + String(id)] = true;
+          delete this.chips[String(ownerId) + String(id)]
+
+          World.remove(this.engine.world, body);
+          this.stage.removeChild(sprite);
         })
       }
     }
@@ -143,9 +150,9 @@ export default class ClientEngine {
       let nextWholeFrame = Math.ceil(frameWithOffset)
       let delay = (nextWholeFrame - frameWithOffset) * TIMESTEP
 
-      console.log("Frame from server: ", frame)
-      console.log("Synchronizer latency: ", this.synchronizer.latency)
-      console.log("next whole frame: ", nextWholeFrame);
+      // console.log("Frame from server: ", frame)
+      // console.log("Synchronizer latency: ", this.synchronizer.latency)
+      // console.log("next whole frame: ", nextWholeFrame);
 
       this.frame = nextWholeFrame;
       this.startGame();
@@ -153,7 +160,8 @@ export default class ClientEngine {
 
     this.socket.on('snapshot', ({ frame, pegs, chips }) => {
       if (this.isRunning) {
-        this.snapshotBuffer.push(new Snapshot({ frame, pegs, chips, timestamp: performance.now() }));
+        // this.snapshotBuffer.push(new Snapshot({ frame, pegs, chips, timestamp: performance.now() }));
+        this.latestSnapshot = { frame, pegs, chips }
       }
     });
   }
@@ -168,27 +176,25 @@ export default class ClientEngine {
     document.querySelector('canvas').addEventListener('mouseenter', this.onMouseEnter);
   }
 
-  update() {
-    this.frame++;
+  frameSync() {
+    if (!this.latestSnapshot) { return }
 
-    while (!this.snapshotBuffer.isEmpty() && this.snapshotBuffer.first.frame !== this.frame) {
-      this.snapshotBuffer.shift();
-    }
+    // console.log("Used snapshot");
 
-    if (!this.snapshotBuffer.isEmpty() && this.snapshotBuffer.first.frame === this.frame) {
-      console.log("Used snapshot");
+    const currentSnapshot = this.latestSnapshot;
+    this.latestSnapshot = null;
 
-      const currentSnapshot = this.snapshotBuffer.shift();
+    let snapshotFrame = currentSnapshot.frame;
 
-      let snapshotFrame = currentSnapshot.frame;
+    currentSnapshot.chips.forEach(chipInfo => {
+      const { id, ownerId, x, y, angle, velocity, angularVelocity } = chipInfo;
 
-      currentSnapshot.chips.forEach(chipInfo => {
-        const { id, ownerId, x, y, angle, velocity, angularVelocity } = chipInfo;
+      let combinedId = String(ownerId) + String(id)
 
-        let combinedId = String(ownerId) + String(id)
-
+      if (!this.deletedChips[combinedId]) {
         if (typeof this.chips[combinedId] === 'undefined') {
           const chip = new Chip({ id, ownerId, x, y });
+
           chip.addToEngine(this.engine.world);
           chip.addToRenderer(this.stage);
           this.chips[combinedId] = chip;
@@ -201,26 +207,24 @@ export default class ClientEngine {
         Body.setAngle(body, angle);
         Body.setVelocity(body, velocity);
         Body.setAngularVelocity(body, angularVelocity);
-      });
-
-      // Catch up to current frame from snapshot
-      while (snapshotFrame < this.frame) {
-        snapshotFrame++;
-        Engine.update(this.engine, TIMESTEP)
       }
-      document.body.querySelector('.canvas.container').style.background = "#FFAAAA"
+    });
 
-      // this.pegs = currentSnapshot.pegs;
-    } else {
-      document.body.querySelector('.canvas.container').style.background = "#E0E0E0"
-
-      console.log("Used engine")
+    // Catch up to current frame from snapshot
+    while (snapshotFrame < this.frame) {
+      snapshotFrame++;
       Engine.update(this.engine, TIMESTEP);
     }
   }
 
-  animate(timestamp) {
+  update() {
+    this.frame++;
 
+    // console.log("Used engine")
+    Engine.update(this.engine, TIMESTEP);
+  }
+
+  animate(timestamp) {
     // Wait for next rAF if not enough time passed for engine update
     if (timestamp < this.lastFrameTime + TIMESTEP) {
       this.frameID = requestAnimationFrame(this.animate.bind(this));
@@ -232,6 +236,7 @@ export default class ClientEngine {
 
     while (this.delta >= TIMESTEP) {
       this.update();
+      this.frameSync();
       this.delta -= TIMESTEP;
     }
 
@@ -277,7 +282,6 @@ export default class ClientEngine {
     chip.addToEngine(this.engine.world);
     chip.addToRenderer(this.stage);
     this.chips[String(ownerId) + String(id)] = chip;
-
     this.socket.emit('new chip', { frame, id, x, y, ownerId });
   }
 

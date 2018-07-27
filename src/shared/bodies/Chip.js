@@ -90,7 +90,7 @@ export default class Chip extends GameObject {
           clearInterval(interval);
           callback();
         }
-      }, 50)
-    }, 500)
+      }, 10)
+    }, 50)
   }
 }

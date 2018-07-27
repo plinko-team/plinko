@@ -37,7 +37,6 @@ export class InputBuffer {
     } else {
       let first = this.first
       this.first = this.first.next;
-      this.first.previous = null;
       this.length--
 
       return first;
@@ -53,28 +52,22 @@ export class InputBuffer {
       // If input frame is larger than the last input,
       // input is new last input
       this.last.next = input;
-      input.previous = this.last;
       this.last = input;
     } else if (input.frame < this.first.frame) {
       // If input frame is smaller than the first input,
       // input is new first input
-      this.first.previous = input;
       input.next = this.first;
-
       this.first = input;
     } else {
       // Traverse to find appropriate spot for input by frame
       let currentInput = this.first;
 
-      while (!!currentInput && currentInput.frame < input.frame) {
+      while (!!currentInput && !!currentInput.next && input.frame > currentInput.next.frame) {
         currentInput = currentInput.next;
       }
 
-      const previous = currentInput.previous;
-
-      previous.next = input;
-      currentInput.previous = input;
-      input.next = currentInput;
+      input.next = currentInput.next
+      currentInput.next = input
     }
 
     this.length++;
@@ -88,7 +81,6 @@ export class Input {
   // will have a frame, x, y, ownerId, id
   constructor({ frame, x, y, ownerId, id }) {
     this.next = null;
-    this.previous = null;
     this.frame = frame;
     this.x = x;
     this.y = y;
@@ -96,3 +88,12 @@ export class Input {
     this.id = id;
   }
 }
+//
+// let inputs = []
+// let buffer = new InputBuffer()
+// for (let i = 0; i < 1000; i++) {
+//   let input = new Input({frame: Math.ceil(Math.random() * 10000 )})
+//   inputs.push(input)
+// }
+// inputs.forEach(input => buffer.insert(input))
+// buffer.traverse(i => console.log(i.frame))
