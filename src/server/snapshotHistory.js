@@ -35,7 +35,6 @@ export default class SnapshotHistory {
 
   at(frame) {
     if (this.history[frame] === undefined) {
-      console.log(frame)
       throw new Error('Frame does not exist')
     }
 
