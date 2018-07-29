@@ -10,8 +10,9 @@ import { PLAYER_COLORS } from '../shared/constants/colors';
 import { CANVAS, ROWS, ROW_SPACING, COLS, COL_SPACING, VERTICAL_MARGIN, HORIZONTAL_OFFSET } from '../shared/constants/canvas'
 import io from 'socket.io-client';
 import EventEmitter from 'eventemitter3';
-import { Snapshot, SnapshotBuffer } from './snapshot.js'
-import Serializer from '../server/serializer'
+import { Snapshot, SnapshotBuffer } from './snapshot.js';
+import Serializer from '../server/serializer';
+
 /**
 
   ClientEngine holds all of the logic for running the game loop, rendering
@@ -158,6 +159,19 @@ export default class ClientEngine {
       chip.sprite.position.y = y;
       chip.sprite.rotation = angle;
     });
+
+    currentSnapshot.pegs.forEach(pegInfo => {
+      const { id, ownerId } = pegInfo;
+
+
+      const peg = this.pegs[pegInfo.id];
+
+      peg.ownerId = pegInfo.ownerId;
+      console.log(peg.ownerId)
+      if (peg.ownerId > 0) {
+        peg.sprite.tint = PLAYER_COLORS[peg.ownerId]
+      }
+    });
   }
 
   update() {
@@ -231,6 +245,7 @@ export default class ClientEngine {
     const id = ownerId + this.lastChipId++;
 
     let frame = this.frame;
+    console.log("Frame from input: ", frame);
 
     let chip = new Chip({ id, ownerId, x, y });
 
