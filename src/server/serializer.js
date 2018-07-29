@@ -146,7 +146,9 @@ export default class Serializer {
   static decodeScore(encodedScore) {
     let score = {}
 
-    //console.log(encodedScore)
+
+    console.log(encodedScore)
+    
     score[0] = parseInt(encodedScore.substring(0, 6), 2);
     score[1] = parseInt(encodedScore.substring(6, 12), 2);
     score[2] = parseInt(encodedScore.substring(12, 18), 2);

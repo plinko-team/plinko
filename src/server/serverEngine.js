@@ -41,6 +41,7 @@ export default class ServerEngine {
     this.createEnvironment();
     this.registerPhysicsEvents();
     this.registerSocketEvents();
+    this.numBodies = -1;
 
     return this;
   }
@@ -83,8 +84,10 @@ export default class ServerEngine {
       }
 
       if (bodyA.label === 'ground') {
-        this.chipsToBeDeleted[bodyB.parentObject.id] = true;
-        World.remove(this.engine.world, bodyB);
+        let chip = bodyB.parentObject
+        this.chipsToBeDeleted[chip.id] = true;
+        World.remove(this.engine.world, chip.body);
+        delete this.chips[String(chip.ownerId) + String(chip.id)]
       }
     }
   }
@@ -133,6 +136,7 @@ export default class ServerEngine {
   }
 
   startGame() {
+
     this.nextTimestep = this.nextTimestep || Date.now();
 
     while (Date.now() > this.nextTimestep) {
@@ -213,7 +217,6 @@ export default class ServerEngine {
                       {x: 28, y: 173,  vertices: '50 150 85 75 50 0', side: 'left'},
                       {x: 28, y: 437,  vertices: '50 150 85 75 50 0', side: 'left'},
                     ];
-
 
     triangles.forEach(triangle => {
       let t = new Triangle(triangle);

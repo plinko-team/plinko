@@ -98,7 +98,6 @@ export default class ClientEngine {
       //console.log("Encoded: ", encodedSnapshot.substring(0, 10))
       let { chips, pegs, score } = Serializer.decode(encodedSnapshot)
 
-
       if (this.isRunning) {
         this.snapshotBuffer.push(new Snapshot({ frame, pegs, chips, score, timestamp: performance.now() }));
       }
@@ -143,7 +142,6 @@ export default class ClientEngine {
 
     currentSnapshot.pegs.forEach(pegInfo => {
       const { id, ownerId } = pegInfo;
-
 
       const peg = this.pegs[pegInfo.id];
 
