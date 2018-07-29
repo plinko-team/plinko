@@ -1,5 +1,5 @@
 import { Body, Bodies } from 'matter-js';
-import { PEG_FRICTION, PEG_RESTITUTION, PEG_RADIUS, PEG_DIAMETER } from '../constants/bodies';
+import { PEG } from '../constants/bodies';
 import { PEG_TINT } from '../constants/colors';
 import { PEG_SPRITE } from '../constants/sprites';
 import GameObject from './GameObject';
@@ -11,26 +11,34 @@ if (typeof window === 'object') {
 }
 
 export default class Peg extends GameObject {
-  constructor({ x, y }) {
-    super({ x, y });
+  constructor({ id, x, y }) {
+    super({ id, x, y });
+    this.ownerId = null;
     this.type = 'peg';
 
     this.createPhysics();
-    this.createSprite();
+    this.body.parentObject = this;
 
-    // Sprite and Body have references to each other so that we can
-    // change renderer properties based on physics collisions
-    this.body.sprite = this.sprite;
-    this.sprite.body = this.body;
+    if (typeof window === 'object') {
+      // Only set sprite properties in the browser
+      this.createSprite();
+
+      // Sprite and Body have references to each other so that we can
+      // change renderer properties based on physics collisions
+      this.body.sprite = this.sprite;
+      this.sprite.body = this.body;
+
+      this.sprite.parentObject = this;
+    }
   }
 
   createPhysics() {
     let options = {
-      friction: PEG_FRICTION,
-      restitution: PEG_RESTITUTION,
+      friction: PEG.FRICTION,
+      restitution: PEG.RESTITUTION,
     }
 
-    this.body = Bodies.circle(this.x, this.y, PEG_RADIUS, options);
+    this.body = Bodies.circle(this.x, this.y, PEG.RADIUS, options);
     Body.setDensity(this.body, 1)
     this.body.isStatic = true;
     this.body.position.x = this.x;
@@ -44,9 +52,9 @@ export default class Peg extends GameObject {
 
     peg.position.x = this.x;
     peg.position.y = this.y;
-    peg.height = PEG_DIAMETER;
-    peg.width = PEG_DIAMETER;
-    peg.tint = PEG_TINT
+    peg.height = PEG.DIAMETER;
+    peg.width = PEG.DIAMETER;
+    peg.tint = PEG_TINT;
     peg.anchor.set(0.5, 0.5);
 
     this.sprite = peg;
