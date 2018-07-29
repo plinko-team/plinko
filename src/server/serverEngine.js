@@ -37,6 +37,7 @@ export default class ServerEngine {
     this.snapshotHistory = new SnapshotHistory();
     this.inputHistory = {};
     this.chipsToBeDeleted = {};
+    this.score = { 0: 0, 1: 0, 2: 0, 3: 0 }
     this.createEnvironment();
     this.registerPhysicsEvents();
     this.registerSocketEvents();
@@ -46,12 +47,24 @@ export default class ServerEngine {
   }
 
   incrementScore(chipOwner) {
+    this.score[chipOwner] += 1;
   }
 
   decrementScore(formerPegOwner) {
+    this.score[formerPegOwner] -= 1;
   }
 
   updateScore = (peg, chip) => {
+    // Assuming pegs are always the bodyA and chips are always the bodyB (Matter.js implementation)
+    const formerPegOwner = peg.parentObject.ownerId;
+    const chipOwner = chip.parentObject.ownerId;
+    
+    if (chipOwner !== formerPegOwner) {
+      this.incrementScore(chipOwner);
+      
+      // Pegs initialize with owner set to null 
+      if (formerPegOwner) { this.decrementScore(formerPegOwner); }
+    }
   }
 
   onCollisionStart = (event) => {
@@ -133,7 +146,7 @@ export default class ServerEngine {
 
       Engine.update(this.engine, TIMESTEP);
 
-      let snapshot = this.generateSnapshot(this.chips, this.pegs);
+      let snapshot = this.generateSnapshot(this.chips, this.pegs, this.score);
       this.broadcastSnapshot(snapshot);
 
       this.nextTimestep += TIMESTEP;
@@ -146,7 +159,7 @@ export default class ServerEngine {
     clearInterval(this.loop);
   }
 
-  generateSnapshot(chips, pegs) {
+  generateSnapshot(chips, pegs, score) {
     // chips is an object with combinedId as the key and chip as values
     // so we want to access the values
     chips = Object.values(chips);
@@ -166,11 +179,12 @@ export default class ServerEngine {
       return { id: peg.id, ownerId: peg.ownerId };
     });
 
-    return { chips: chipInfo, pegs: pegInfo }
+    return { chips: chipInfo, pegs: pegInfo, score}
   }
 
-  broadcastSnapshot({ chips, pegs }) {
-    let encodedSnapshot = Serializer.encode({ chips, pegs })
+  broadcastSnapshot({ chips, pegs, score }) {
+    let encodedSnapshot = Serializer.encode({ chips, pegs, score })
+
     this.knownPlayers.forEach(socket => {
       socket.emit('snapshot', { frame: this.frame, encodedSnapshot });
     })

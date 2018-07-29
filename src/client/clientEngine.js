@@ -61,30 +61,12 @@ export default class ClientEngine {
   }
 
   incrementScore(chipOwner) {
-    const ownerScoreElement = '.player-' + chipOwner;
-    const chipOwnerScore  = +document.body.querySelector(ownerScoreElement).children[0].innerHTML;
-    const score = chipOwnerScore + 1;
-    document.body.querySelector(ownerScoreElement).children[0].innerHTML = score;
   }
 
   decrementScore(formerPegOwner) {
-    const formerPegOwnerElement = '.player-' + formerPegOwner;
-    const formerPegOwnerScore  = +document.body.querySelector(formerPegOwnerElement).children[0].innerHTML;
-    const score = formerPegOwnerScore - 1;
-    document.body.querySelector(formerPegOwnerElement).children[0].innerHTML = score;
   }
 
   updateScore = (peg, chip) => {
-    // Assuming pegs are always the bodyA and chips are always the bodyB (Matter.js implementation)
-    const formerPegOwner = peg.parentObject.ownerId;
-    const chipOwner = chip.parentObject.ownerId;
-
-    if (chipOwner !== formerPegOwner) {
-      this.incrementScore(chipOwner);
-
-      // Pegs initialize with owner set to null
-      if (formerPegOwner) { this.decrementScore(formerPegOwner); }
-    }
   }
 
   registerSocketEvents() {
@@ -113,11 +95,11 @@ export default class ClientEngine {
     })
 
     this.socket.on('snapshot', ({ frame, encodedSnapshot }) => {
-      console.log("Encoded: ", encodedSnapshot.substring(0, 10))
-      let { chips, pegs } = Serializer.decode(encodedSnapshot)
+      //console.log("Encoded: ", encodedSnapshot.substring(0, 10))
+      let { chips, pegs, score } = Serializer.decode(encodedSnapshot)
 
       if (this.isRunning) {
-        this.snapshotBuffer.push(new Snapshot({ frame, pegs, chips, timestamp: performance.now() }));
+        this.snapshotBuffer.push(new Snapshot({ frame, pegs, chips, score, timestamp: performance.now() }));
       }
     });
   }
@@ -147,7 +129,6 @@ export default class ClientEngine {
       if (typeof this.chips[combinedId] === 'undefined') {
         const chip = new Chip({ id, ownerId, x, y });
 
-
         chip.addToRenderer(this.stage);
         this.chips[combinedId] = chip;
       }
@@ -165,11 +146,20 @@ export default class ClientEngine {
       const peg = this.pegs[pegInfo.id];
 
       peg.ownerId = pegInfo.ownerId;
-      console.log(peg.ownerId)
+
       if (peg.ownerId > 0) {
         peg.sprite.tint = PLAYER_COLORS[peg.ownerId]
       }
     });
+
+    this.updateScoreboard(currentSnapshot.score);
+  }
+
+  updateScoreboard(score) {
+    for (let i = 0; i <= 3; i++) { 
+      let scoreElement = '.player-' + i;
+      document.body.querySelector(scoreElement).children[0].innerHTML = score[i];
+    }
   }
 
   update() {
@@ -243,7 +233,7 @@ export default class ClientEngine {
     const id = ownerId + this.lastChipId++;
 
     let frame = this.frame;
-    console.log("Frame from input: ", frame);
+    //console.log("Frame from input: ", frame);
 
     let chip = new Chip({ id, ownerId, x, y });
 
