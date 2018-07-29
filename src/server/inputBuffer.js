@@ -87,6 +87,7 @@
  export class Input {
   // A typical input is just dropping a chips
   // will have a frame, x, y, ownerId, id
+
   constructor({ frame, x, y, ownerId, id }) {
     if (typeof frame === 'undefined') { throw new Error("Must include a frame") }
 

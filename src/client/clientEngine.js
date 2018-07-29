@@ -220,6 +220,8 @@ export default class ClientEngine {
     e.preventDefault();
     e.stopPropagation();
 
+    if (!this.isRunning) { return }
+
     // Short circuit handler if outside of drop boundary
     if (e.offsetY > DROP_BOUNDARY) { return }
 

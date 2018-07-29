@@ -56,6 +56,11 @@ export default class Serializer {
     encoded += this.toBinary(chip.ownerId, 3);
     encoded += this.toBinary(Math.floor(chip.x), 10);
     encoded += this.toBinary(Math.floor(chip.y), 10);
+
+    if (chip.angle < 0) {
+      chip.angle = (2 * Math.PI) + chip.angle;
+    }
+
     encoded += this.toBinary(chip.angle.toFixed(3) * 1000, 10);
     // encoded += this.toBinary(chip.velocity.x, 8)
     // encoded += this.toBinary(chip.velocity.y, 8)
