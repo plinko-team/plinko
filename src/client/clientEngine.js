@@ -28,14 +28,12 @@ export default class ClientEngine {
     this.renderer = new Renderer();
     this.stage = this.renderer.stage;
     this.eventEmitter = new EventEmitter();
-    this.synchronizer = new Synchronizer(this.socket, this.eventEmitter).init();
-    console.log("Connecting to...", url)
+    // this.synchronizer = new Synchronizer(this.socket, this.eventEmitter).init();
   }
 
   init() {
     this.chips = {};
     this.pegs = {};
-    this.deletedChips = {};
     this.isRunning = false;
     this.lastChipId = 0;
     this.newSnapshot = false;
@@ -45,57 +43,41 @@ export default class ClientEngine {
     // this.registerPhysicsEvents();
     this.registerCanvasEvents();
     this.registerSocketEvents();
-    this.establishSynchronization();
+    // this.establishSynchronization();
 
     return this;
   }
 
-  establishSynchronization() {
-    this.synchronizer.handshake();
-
-    this.eventEmitter.once('handshake complete', () => {
-      console.log("========== handshake complete =============")
-
-      this.socket.emit('request server frame');
-    })
-  }
-
-  incrementScore(chipOwner) {
-  }
-
-  decrementScore(formerPegOwner) {
-  }
-
-  updateScore = (peg, chip) => {
-  }
+  // establishSynchronization() {
+  //   this.synchronizer.handshake();
+  //
+  //   this.eventEmitter.once('handshake complete', () => {
+  //     this.socket.emit('request server frame');
+  //   })
+  // }
 
   registerSocketEvents() {
     this.socket.on('connection established', ({ playerId }) => {
-      console.log('ESTABLISHED! Your player ID is: ', playerId);
       window.playerId = playerId;
-    })
-
-    this.socket.on('server frame', ({ frame }) => {
-      // Calculate next "whole" frame
-      // Calculate delay until next "whole" frame
-      // setTimeout for that delay to set this.frame to "whole" frame
-      // Initiate the game loop
-
-      let frameWithOffset = frame + this.synchronizer.latency / TIMESTEP
-      let nextWholeFrame = Math.ceil(frameWithOffset)
-      let delay = (nextWholeFrame - frameWithOffset) * TIMESTEP
-
-      // console.log("Frame from server: ", frame)
-      // console.log("Synchronizer latency: ", this.synchronizer.latency)
-      // console.log("next whole frame: ", nextWholeFrame);
-
-      this.frame = nextWholeFrame;
-
+      this.frame = 0;
       !this.isRunning && this.startGame();
     })
 
+    // this.socket.on('server frame', ({ frame }) => {
+    //   // Calculate next "whole" frame
+    //   // Calculate delay until next "whole" frame
+    //   // setTimeout for that delay to set this.frame to "whole" frame
+    //   // Initiate the game loop
+    //
+    //   let frameWithOffset = frame + this.synchronizer.latency / TIMESTEP
+    //   let nextWholeFrame = Math.ceil(frameWithOffset)
+    //   let delay = (nextWholeFrame - frameWithOffset) * TIMESTEP
+    //
+    //   this.frame = nextWholeFrame;
+    //
+    // })
+
     this.socket.on('snapshot', ({ frame, encodedSnapshot }) => {
-      //console.log("Encoded: ", encodedSnapshot.substring(0, 10))
       let { chips, pegs, score } = Serializer.decode(encodedSnapshot)
 
       if (this.isRunning) {
@@ -148,6 +130,7 @@ export default class ClientEngine {
 
     for (let id of Object.keys(this.chips)) {
       if (!chipsInCurrentSnapshot[id] && !this.chips[id].recentlyDropped) {
+        this.stage.removeChild(this.chips[id].sprite)
         delete this.chips[id]
       }
     }
@@ -159,11 +142,10 @@ export default class ClientEngine {
 
       peg.ownerId = pegInfo.ownerId;
 
-      peg.sprite.tint = PLAYER_COLORS[peg.ownerId]
-
+      if (peg.ownerid) {
+        peg.sprite.tint = PLAYER_COLORS[peg.ownerId];
+      }
     });
-
-
 
     this.updateScoreboard(currentSnapshot.score);
   }
@@ -181,8 +163,7 @@ export default class ClientEngine {
   }
 
   animate(timestamp) {
-    console.log("Chips: ", Object.keys(this.chips).length)
-    console.log("Chips to be deleted: ", Object.keys(this.deletedChips).length)
+
     if (timestamp < this.lastFrameTime + TIMESTEP) {
       this.frameID = requestAnimationFrame(this.animate.bind(this));
       return;
@@ -247,7 +228,6 @@ export default class ClientEngine {
     const id = ownerId + this.lastChipId++;
 
     let frame = this.frame;
-    //console.log("Frame from input: ", frame);
 
     let chip = new Chip({ id, ownerId, x, y });
     chip.recentlyDropped = true;
