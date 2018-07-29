@@ -106,112 +106,39 @@ export default class ServerEngine {
     });
   }
 
-  animate() {
-    process.nextTick(animate);
+  processInputBuffer() {
+    while (!this.inputBuffer.isEmpty()) {
+      let input = this.inputBuffer.shift()
+
+      let chip = new Chip({ id: input.id, ownerId: input.ownerId, x: input.x, y: input.y })
+      chip.addToEngine(this.engine.world);
+
+      let combinedId = String(input.ownerId) + String(input.id)
+      this.chips[combinedId] = chip;
+    }
   }
 
   startGame() {
     this.nextTimestep = this.nextTimestep || Date.now();
 
     while (Date.now() > this.nextTimestep) {
+      this.frame++
 
-      Object.keys(this.chipsToBeDeleted).forEach((combinedId) => {
-        delete this.chips[combinedId];
-      });
+      !this.inputBuffer.isEmpty() && this.processInputBuffer();
 
-      if (this.inputBuffer.isEmpty()) {
-        // Tick engine forward as normal
+      Engine.update(this.engine, TIMESTEP);
 
-        this.frame++
-        Engine.update(this.engine, TIMESTEP);
+      let snapshot = this.generateSnapshot(this.chips, this.pegs);
+      this.broadcastSnapshot(snapshot);
 
-        let snapshot = this.generateSnapshot(this.chips, this.pegs);
-
-        this.takeSnapshot(snapshot);
-
-        if (this.frame % 30 === 0) {
-          this.broadcastSnapshot(snapshot);
-        }
-
-        this.chipsToBeDeleted = {};
-        this.nextTimestep += TIMESTEP;
-      } else {
-        // Reenact steps from first input in InputBuffer
-
-        let frame = this.inputBuffer.first.frame;
-
-        while (!this.inputBuffer.isEmpty()) {
-          let input = this.inputBuffer.shift()
-          this.inputHistory[input.frame] = input;
-        }
-
-        let snapshot = this.snapshotHistory.at(frame)
-        this.restoreWorldFromSnapshot(snapshot);
-
-        // console.log("\n\n=============== Starting reenactment ===============")
-        while (frame < this.frame) {
-          // console.log("Reenactment step: ", frame)
-
-          if (this.inputHistory[frame]) {
-            let chipInfo = this.inputHistory[frame];
-            let chip = new Chip({ id: chipInfo.id, ownerId: chipInfo.ownerId, x: chipInfo.x, y: chipInfo.y })
-            chip.addToEngine(this.engine.world);
-
-            let combinedId = String(chipInfo.ownerId) + String(chipInfo.id)
-            this.chips[combinedId] = chip;
-          }
-
-          let generatedSnapshot = this.generateSnapshot(this.chips, this.pegs);
-          // this.takeSnapshot(generatedSnapshot);
-          this.snapshotHistory.update(frame, generatedSnapshot)
-          Engine.update(this.engine, TIMESTEP);
-          frame++;
-        }
-      }
+      this.nextTimestep += TIMESTEP;
     }
+
     setImmediate(this.startGame.bind(this))
   }
 
   stopGame() {
     clearInterval(this.loop);
-  }
-
-
-
-  restoreWorldFromSnapshot(snapshot) {
-    let chips = snapshot.chips; // array
-    let pegs = snapshot.pegs;
-    console.log('From restore world from snapshot: ', chips)
-    let chipsThatExistAtSnapshot = [];
-
-    chips.forEach(chipInfo => {
-      const { id, ownerId, x, y, angle, velocity, angularVelocity } = chipInfo;
-
-      let combinedId = String(ownerId) + String(id);
-      chipsThatExistAtSnapshot.push(combinedId);
-
-      if (typeof this.chips[combinedId] === 'undefined') {
-        const chip = new Chip({ id, ownerId, x, y });
-        chip.addToEngine(this.engine.world);
-        this.chips[combinedId] = chip;
-      }
-
-      const chip = this.chips[combinedId];
-      const body = chip.body;
-
-      Body.setPosition(body, { x, y });
-      Body.setAngle(body, angle);
-      Body.setVelocity(body, velocity);
-      Body.setAngularVelocity(body, angularVelocity);
-    });
-
-    let dummyChips = {};
-
-    chipsThatExistAtSnapshot.forEach((combinedId) => {
-      dummyChips[combinedId] = this.chips[combinedId];
-    });
-
-    this.chips = dummyChips;
   }
 
   generateSnapshot(chips, pegs) {

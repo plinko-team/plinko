@@ -23,12 +23,32 @@ export default class Synchronizer {
     this.handshakeComplete = false; // Will be set to true after 10 pings
 
     this.registerSocketEvents();
+    this.registerEmitterEvents();
 
     return this;
   }
 
+  reset() {
+    // Reset values needed for handshake
+    this.history = [];
+    this.handshakeComplete = false;
+  }
+
   registerSocketEvents() {
     this.socket.on('pongMessage', this.sync.bind(this));
+  }
+
+  registerEmitterEvents() {
+    this.eventEmitter.on('initiate sync', () => {
+      console.log("Initiated handshake after initial sync")
+      this.reset()
+      this.handshake()
+    })
+
+    this.eventEmitter.on('handshake complete', () => {
+      clearInterval(this.pingInterval);
+      this.handshakeComplete = true;
+    });
   }
 
   get localTime() {
@@ -50,16 +70,7 @@ export default class Synchronizer {
   }
 
   handshake() {
-    let interval = this.pingOnInterval(100);
-
-    this.eventEmitter.on('handshake complete', () => {
-      clearInterval(interval);
-      this.handshakeComplete = true;
-    });
-  }
-
-  startSyncing(pingInterval=1000) {
-    let interval = this.pingOnInterval(pingInterval);
+    this.pingInterval = this.pingOnInterval(100);
   }
 
   sync({ serverTime }) {
@@ -73,13 +84,15 @@ export default class Synchronizer {
     // Otherwise you will constantly filter out valid latencies
     if (this.history.length === 10) {
       !this.handshakeComplete && this.eventEmitter.emit('handshake complete');
-      this.history = this._filterStandardDeviationAroundMedian(this.history)
+      this.history = this._filterStandardDeviationAroundMedian(this.history);
+
+      this.latency = avg(this.history);
+      console.log("============================")
+      console.log("============================> New latency: ", this.latency)
+      console.log("============================")
+
+      this.serverOffset = performance.now() - (serverTime + this.latency)
     }
-
-    this.latency = avg(this.history);
-    this.serverOffset = performance.now() - (serverTime + this.latency)
-
-    console.log("Sync function executed")
   }
 
   _filterStandardDeviationAroundMedian(array) {

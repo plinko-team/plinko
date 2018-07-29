@@ -43,7 +43,7 @@ export default class ClientEngine {
     this.snapshotBuffer = new SnapshotBuffer();
 
     this.createEnvironment();
-    this.registerPhysicsEvents();
+    // this.registerPhysicsEvents();
     this.registerCanvasEvents();
     this.registerSocketEvents();
     this.establishSynchronization();
@@ -56,6 +56,7 @@ export default class ClientEngine {
 
     this.eventEmitter.once('handshake complete', () => {
       console.log("========== handshake complete =============")
+
       this.socket.emit('request server frame');
     })
   }
@@ -86,51 +87,51 @@ export default class ClientEngine {
       if (formerPegOwner) { this.decrementScore(formerPegOwner); }
     }
   }
-
-  onCollisionStart = (event) => {
-    const pairs = event.pairs;
-
-    for (let i = 0; i < pairs.length; i++) {
-      const pair = pairs[i];
-      const bodyA = pair.bodyA;
-      const bodyB = pair.bodyB;
-
-      // This is turned off till we update player-info owner on DOM element
-      //if (bodyA.label === 'peg' && bodyB.label === 'chip') {
-      //  this.updateScore(bodyA, bodyB);
-      //}
-
-      if (bodyA.label === 'peg') {
-        bodyA.parentObject.ownerId = bodyB.parentObject.ownerId;
-        bodyA.sprite.tint = PLAYER_COLORS[bodyA.parentObject.ownerId];
-      }
-      if (bodyB.label === 'peg') {
-        bodyB.parentObject.ownerId = bodyA.parentObject.ownerId;
-        bodyB.sprite.tint = PLAYER_COLORS[bodyB.parentObject.ownerId];
-      }
-
-      if (bodyA.label === 'ground') {
-        bodyB.parentObject.shrink(() => {
-          let body = bodyB;
-          let parent = body.parentObject;
-          let ownerId = parent.ownerId;
-          let id = parent.id;
-          body.isStatic = true;
-
-          this.deletedChips[String(ownerId) + String(id)] = true;
-          delete this.chips[String(ownerId) + String(id)]
-
-          World.remove(this.engine.world, body);
-          this.stage.removeChild(body.sprite);
-        })
-      }
-    }
-  }
-
-  registerPhysicsEvents() {
-    // Collision Events
-    Events.on(this.engine, 'collisionStart', this.onCollisionStart);
-  }
+  //
+  // onCollisionStart = (event) => {
+  //   const pairs = event.pairs;
+  //
+  //   for (let i = 0; i < pairs.length; i++) {
+  //     const pair = pairs[i];
+  //     const bodyA = pair.bodyA;
+  //     const bodyB = pair.bodyB;
+  //
+  //     // This is turned off till we update player-info owner on DOM element
+  //     //if (bodyA.label === 'peg' && bodyB.label === 'chip') {
+  //     //  this.updateScore(bodyA, bodyB);
+  //     //}
+  //
+  //     if (bodyA.label === 'peg') {
+  //       bodyA.parentObject.ownerId = bodyB.parentObject.ownerId;
+  //       bodyA.sprite.tint = PLAYER_COLORS[bodyA.parentObject.ownerId];
+  //     }
+  //     if (bodyB.label === 'peg') {
+  //       bodyB.parentObject.ownerId = bodyA.parentObject.ownerId;
+  //       bodyB.sprite.tint = PLAYER_COLORS[bodyB.parentObject.ownerId];
+  //     }
+  //
+  //     if (bodyA.label === 'ground') {
+  //       bodyB.parentObject.shrink(() => {
+  //         let body = bodyB;
+  //         let parent = body.parentObject;
+  //         let ownerId = parent.ownerId;
+  //         let id = parent.id;
+  //         body.isStatic = true;
+  //
+  //         this.deletedChips[String(ownerId) + String(id)] = true;
+  //         delete this.chips[String(ownerId) + String(id)]
+  //
+  //         World.remove(this.engine.world, body);
+  //         this.stage.removeChild(body.sprite);
+  //       })
+  //     }
+  //   }
+  // }
+  //
+  // registerPhysicsEvents() {
+  //   // Collision Events
+  //   Events.on(this.engine, 'collisionStart', this.onCollisionStart);
+  // }
 
   registerSocketEvents() {
     this.socket.on('connection established', ({ playerId }) => {
@@ -153,13 +154,15 @@ export default class ClientEngine {
       // console.log("next whole frame: ", nextWholeFrame);
 
       this.frame = nextWholeFrame;
-      this.startGame();
+
+      if (!this.isRunning) {
+        this.startGame();
+      };
     })
 
     this.socket.on('snapshot', ({ frame, pegs, chips }) => {
       if (this.isRunning) {
-        // this.snapshotBuffer.push(new Snapshot({ frame, pegs, chips, timestamp: performance.now() }));
-        this.latestSnapshot = { frame, pegs, chips }
+        this.snapshotBuffer.push(new Snapshot({ frame, pegs, chips, timestamp: performance.now() }));
       }
     });
   }
@@ -175,17 +178,14 @@ export default class ClientEngine {
   }
 
   frameSync() {
-    if (!this.latestSnapshot) { return }
+    let currentSnapshot = this.snapshotBuffer.shift();
 
-    // console.log("Used snapshot");
-
-    const currentSnapshot = this.latestSnapshot;
-    this.latestSnapshot = null;
+    if (!currentSnapshot) { return }
 
     let snapshotFrame = currentSnapshot.frame;
 
     currentSnapshot.chips.forEach(chipInfo => {
-      const { id, ownerId, x, y, angle, velocity, angularVelocity } = chipInfo;
+      const { id, ownerId, x, y, angle } = chipInfo;
 
       let combinedId = String(ownerId) + String(id)
 
@@ -203,31 +203,32 @@ export default class ClientEngine {
 
         Body.setPosition(body, { x, y });
         Body.setAngle(body, angle);
-        Body.setVelocity(body, velocity);
-        Body.setAngularVelocity(body, angularVelocity);
       }
     });
-
-    // Catch up to current frame from snapshot
-    while (snapshotFrame < this.frame) {
-      snapshotFrame++;
-      Engine.update(this.engine, TIMESTEP);
-    }
   }
 
   update() {
     this.frame++;
 
-    // console.log("Used engine")
     Engine.update(this.engine, TIMESTEP);
   }
 
   animate(timestamp) {
-    // Wait for next rAF if not enough time passed for engine update
     if (timestamp < this.lastFrameTime + TIMESTEP) {
       this.frameID = requestAnimationFrame(this.animate.bind(this));
       return;
     }
+
+    let timeSinceLastSync = timestamp - this.lastSyncTime
+
+    if (timeSinceLastSync > 6000) {
+      this.lastSyncTime = timestamp;
+    } else if (timeSinceLastSync > 5000) {
+      this.eventEmitter.emit('initiate sync');
+      this.lastSyncTime = timestamp;
+    }
+
+    // Wait for next rAF if not enough time passed for engine update
 
     this.delta += timestamp - this.lastFrameTime;
     this.lastFrameTime = timestamp;
@@ -251,6 +252,8 @@ export default class ClientEngine {
     this.isRunning = true;
 
     requestAnimationFrame((timestamp) => {
+      console.log("Initial last sync time: ", this.lastSyncTime)
+      this.lastSyncTime = timestamp;
       this.renderer.render(this.stage);
       this.lastFrameTime = timestamp;
       this.delta = 0;
@@ -277,7 +280,7 @@ export default class ClientEngine {
     let frame = this.frame;
 
     let chip = new Chip({ id, ownerId, x, y });
-    chip.addToEngine(this.engine.world);
+
     chip.addToRenderer(this.stage);
     this.chips[String(ownerId) + String(id)] = chip;
     this.socket.emit('new chip', { frame, id, x, y, ownerId });

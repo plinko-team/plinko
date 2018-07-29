@@ -3,7 +3,7 @@
 // go to frame 1
 // reenact all frames up to servers presentFrame
 
-export class InputBuffer {
+ export class InputBuffer {
   constructor() {
     this.first = null;
     this.last = null;
@@ -19,7 +19,7 @@ export class InputBuffer {
   }
 
   isEmpty() {
-    return this.length === 0;
+    return !this.first || this.length === 0;
   }
 
   shift() {
@@ -27,23 +27,31 @@ export class InputBuffer {
       return false
     }
 
+    let first = this.first
+
+    if (!first) {
+      throw new Error("No first input for some reason", first)
+    }
+
     if (this.length === 1) {
-      let first = this.first;
       this.first = null;
       this.last = null;
-      this.length--
-
-      return first;
     } else {
-      let first = this.first
       this.first = this.first.next;
-      this.length--
-
-      return first;
     }
+
+    this.length--;
+    return first;
   }
 
   insert(input) {
+    if (!input instanceof Input) {
+      throw new Error("Not an instance of input")
+    }
+    if (!input) {
+      throw new Error("You forgot to include an input, dummy")
+    }
+
     if (this.isEmpty()) {
       // If the buffer is empty, this is the first and last input
       this.first = input;
@@ -76,10 +84,12 @@ export class InputBuffer {
   }
 }
 
-export class Input {
+ export class Input {
   // A typical input is just dropping a chips
   // will have a frame, x, y, ownerId, id
   constructor({ frame, x, y, ownerId, id }) {
+    if (typeof frame === 'undefined') { throw new Error("Must include a frame") }
+
     this.next = null;
     this.frame = frame;
     this.x = x;
@@ -88,12 +98,3 @@ export class Input {
     this.id = id;
   }
 }
-//
-// let inputs = []
-// let buffer = new InputBuffer()
-// for (let i = 0; i < 1000; i++) {
-//   let input = new Input({frame: Math.ceil(Math.random() * 10000 )})
-//   inputs.push(input)
-// }
-// inputs.forEach(input => buffer.insert(input))
-// buffer.traverse(i => console.log(i.frame))
