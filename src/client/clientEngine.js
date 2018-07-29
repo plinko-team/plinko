@@ -159,9 +159,8 @@ export default class ClientEngine {
 
       peg.ownerId = pegInfo.ownerId;
 
-      if (peg.ownerId > 0) {
-        peg.sprite.tint = PLAYER_COLORS[peg.ownerId]
-      }
+      peg.sprite.tint = PLAYER_COLORS[peg.ownerId]
+
     });
 
 
