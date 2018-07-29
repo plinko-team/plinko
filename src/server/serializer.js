@@ -1,5 +1,5 @@
-// Leaving this code here just for testing
-
+// // Leaving this code here just for testing
+//
 // function rng(n) {
 //   return Math.floor(Math.random() * n)
 // }
@@ -10,24 +10,21 @@
 //     ownerId: rng(4),
 //     x: rng(600),
 //     y: rng(800),
-//     angle: Math.random(),
-//     velocity: {
-//       x: rng(255),
-//       y: rng(255),
-//     },
-//     angularVelocity: Math.random()
+//     angle: Math.random()
 //   }
 // }
 //
 // function generatePeg(id) {
-//   return { id, ownerId: rng(4) }
+//   let rand = rng(5);
+//   let ownerId = rand === 0 ? null : rand - 1;
+//   return { id, ownerId }
 // }
 //
 // function generateSnapshot() {
 //   let chips = [];
 //   let pegs = [];
 //
-//   for (let i = 0; i < 200; i++) {
+//   for (let i = 0; i < 5; i++) {
 //     chips.push(generateChip())
 //   }
 //
@@ -57,19 +54,18 @@ export default class Serializer {
 
     encoded += this.toBinary(chip.id, 8);
     encoded += this.toBinary(chip.ownerId, 3);
-    encoded += this.toBinary(chip.x, 10);
-    encoded += this.toBinary(chip.y, 10);
+    encoded += this.toBinary(Math.floor(chip.x), 10);
+    encoded += this.toBinary(Math.floor(chip.y), 10);
     encoded += this.toBinary(chip.angle.toFixed(3) * 1000, 10);
-    encoded += this.toBinary(chip.velocity.x, 8)
-    encoded += this.toBinary(chip.velocity.y, 8)
-    encoded += this.toBinary(chip.angularVelocity.toFixed(3) * 1000, 10);
+    // encoded += this.toBinary(chip.velocity.x, 8)
+    // encoded += this.toBinary(chip.velocity.y, 8)
+    // encoded += this.toBinary(chip.angularVelocity.toFixed(3) * 1000, 10);
 
     return encoded;
   }
 
   static decodeChip(encodedChip) {
     let chip = {
-      velocity: {}
     };
 
     let id = '';
@@ -77,9 +73,7 @@ export default class Serializer {
     let x = '';
     let y = '';
     let angle = '';
-    let velocityX = '';
-    let velocityY = '';
-    let angularVelocity = '';
+
 
     for (let i = 0; i < encodedChip.length; i++) {
       let char = encodedChip[i]
@@ -98,19 +92,11 @@ export default class Serializer {
       } else if (i < 41) {
         chip.y = parseInt(y, 2);
         angle += char
-      } else if (i < 49) {
-        chip.angle = parseInt(angle, 2) / 1000
-        velocityX += char
-      } else if (i < 57) {
-        chip.velocity.x = parseInt(velocityX, 2)
-        velocityY += char
-      } else if (i < 67) {
-        chip.velocity.y = parseInt(velocityY, 2)
-        angularVelocity += char
       }
+
+      chip.angle = parseInt(angle, 2) / 1000
     }
 
-    chip.angularVelocity = parseInt(angularVelocity, 2) / 1000
 
     return chip
   }
@@ -119,7 +105,12 @@ export default class Serializer {
     let output = '';
 
     output += this.toBinary(peg.id, 7);
-    output += this.toBinary(peg.ownerId, 2);
+
+    if (peg.ownerId === null) {
+      output += this.toBinary(0, 3);
+    } else {
+      output += this.toBinary(peg.ownerId + 1, 3);
+    }
 
     return output
   }
@@ -128,7 +119,13 @@ export default class Serializer {
     let peg = {};
 
     peg.id = parseInt(encodedPeg.slice(0, 7), 2)
-    peg.ownerId = parseInt(encodedPeg.slice(7, 9), 2)
+    let ownerId = parseInt(encodedPeg.slice(7, 10), 2)
+
+    if (ownerId === 0) {
+      peg.ownerId = null
+    } else {
+      peg.ownerId = ownerId - 1
+    }
 
     return peg
   }
@@ -156,8 +153,8 @@ export default class Serializer {
   }
 
   static decode(encodedSnapshot) {
-    const BITS_PER_CHIP = 67
-    const BITS_PER_PEG = 9
+    const BITS_PER_CHIP = 41
+    const BITS_PER_PEG = 10
 
     let numChips = parseInt(encodedSnapshot.substring(0, 8), 2)
     let chips = [];
@@ -179,3 +176,9 @@ export default class Serializer {
     return { chips, pegs }
   }
 }
+//
+//
+// let generated = { chips, pegs }
+// console.log(generated.pegs)
+// let encoded = Serializer.encode(generated)
+// console.log(Serializer.decode(encoded).pegs)

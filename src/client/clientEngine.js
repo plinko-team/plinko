@@ -12,7 +12,7 @@ import { CANVAS, ROWS, ROW_SPACING, COLS, COL_SPACING, VERTICAL_MARGIN, HORIZONT
 import io from 'socket.io-client';
 import EventEmitter from 'eventemitter3';
 import { Snapshot, SnapshotBuffer } from './snapshot.js'
-
+import Serializer from '../server/serializer'
 /**
 
   ClientEngine holds all of the logic for running the game loop, rendering
@@ -160,7 +160,10 @@ export default class ClientEngine {
       };
     })
 
-    this.socket.on('snapshot', ({ frame, pegs, chips }) => {
+    this.socket.on('snapshot', ({ frame, encodedSnapshot }) => {
+      let { chips, pegs } = Serializer.decode(encodedSnapshot)
+
+
       if (this.isRunning) {
         this.snapshotBuffer.push(new Snapshot({ frame, pegs, chips, timestamp: performance.now() }));
       }

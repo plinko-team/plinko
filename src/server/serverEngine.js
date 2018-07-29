@@ -8,6 +8,7 @@ import { VerticalWall, HorizontalWall, BucketWall } from '../shared/bodies/Wall'
 import EventEmitter from 'eventemitter3';
 import { Input, InputBuffer } from './inputBuffer';
 import SnapshotHistory from './snapshotHistory';
+import Serializer from './serializer'
 
 /**
 
@@ -153,12 +154,7 @@ export default class ServerEngine {
            ownerId: chip.ownerId,
            x: chip.body.position.x,
            y: chip.body.position.y,
-           angle: chip.body.angle,
-           velocity: {
-             x: chip.body.velocity.x,
-             y: chip.body.velocity.y,
-           },
-           angularVelocity: chip.body.angularVelocity
+           angle: chip.body.angle
          };
     });
 
@@ -169,16 +165,12 @@ export default class ServerEngine {
     return { chips: chipInfo, pegs: pegInfo }
   }
 
-  takeSnapshot(snapshot) {
-    // this.snapshotHistory[this.frame] = snapshot;
-    this.snapshotHistory.push(this.frame, snapshot);
-  }
-
   broadcastSnapshot({ chips, pegs }) {
-    this.knownPlayers.forEach(socket => {
-      socket.emit('snapshot', { frame: this.frame, chips, pegs });
-    })
+    let encodedSnapshot = Serializer.encode({ chips, pegs })
 
+    this.knownPlayers.forEach(socket => {
+      socket.emit('snapshot', { frame: this.frame, encodedSnapshot });
+    })
   }
 
   _createWalls() {
