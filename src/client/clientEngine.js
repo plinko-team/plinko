@@ -121,10 +121,14 @@ export default class ClientEngine {
 
     let snapshotFrame = currentSnapshot.frame;
 
+    let chipsInCurrentSnapshot = {}
+
     currentSnapshot.chips.forEach(chipInfo => {
       const { id, ownerId, x, y, angle } = chipInfo;
 
       let combinedId = String(ownerId) + String(id)
+
+      chipsInCurrentSnapshot[combinedId] = true
 
       if (typeof this.chips[combinedId] === 'undefined') {
         const chip = new Chip({ id, ownerId, x, y });
@@ -140,6 +144,12 @@ export default class ClientEngine {
       chip.sprite.rotation = angle;
     });
 
+    for (let id of Object.keys(this.chips)) {
+      if (!chipsInCurrentSnapshot[id]) {
+        delete this.chips[id]
+      }
+    }
+
     currentSnapshot.pegs.forEach(pegInfo => {
       const { id, ownerId } = pegInfo;
 
@@ -151,6 +161,8 @@ export default class ClientEngine {
         peg.sprite.tint = PLAYER_COLORS[peg.ownerId]
       }
     });
+
+
 
     this.updateScoreboard(currentSnapshot.score);
   }
@@ -169,7 +181,7 @@ export default class ClientEngine {
 
   animate(timestamp) {
     console.log("Chips: ", Object.keys(this.chips).length)
-    console.log("Chips to be deleted: ", Object.keys(this.chipsToBeDeleted).length)
+    console.log("Chips to be deleted: ", Object.keys(this.deletedChips).length)
     if (timestamp < this.lastFrameTime + TIMESTEP) {
       this.frameID = requestAnimationFrame(this.animate.bind(this));
       return;
