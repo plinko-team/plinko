@@ -58,11 +58,11 @@ export default class ServerEngine {
     // Assuming pegs are always the bodyA and chips are always the bodyB (Matter.js implementation)
     const formerPegOwner = peg.parentObject.ownerId;
     const chipOwner = chip.parentObject.ownerId;
-    
+    console.log(chipOwner);
     if (chipOwner !== formerPegOwner) {
       this.incrementScore(chipOwner);
-      
-      // Pegs initialize with owner set to null 
+
+      // Pegs initialize with owner set to null
       if (formerPegOwner) { this.decrementScore(formerPegOwner); }
     }
   }
@@ -98,7 +98,7 @@ export default class ServerEngine {
   }
 
   registerSocketEvents() {
-    let playerId = 1;
+    let playerId = 0;
     let i = 0;
 
     this.io.on('connection', socket => {

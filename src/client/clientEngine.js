@@ -156,7 +156,7 @@ export default class ClientEngine {
   }
 
   updateScoreboard(score) {
-    for (let i = 0; i <= 3; i++) { 
+    for (let i = 0; i <= 3; i++) {
       let scoreElement = '.player-' + i;
       document.body.querySelector(scoreElement).children[0].innerHTML = score[i];
     }
@@ -168,6 +168,8 @@ export default class ClientEngine {
   }
 
   animate(timestamp) {
+    console.log("Chips: ", Object.keys(this.chips).length)
+    console.log("Chips to be deleted: ", Object.keys(this.chipsToBeDeleted).length)
     if (timestamp < this.lastFrameTime + TIMESTEP) {
       this.frameID = requestAnimationFrame(this.animate.bind(this));
       return;
@@ -205,7 +207,6 @@ export default class ClientEngine {
     this.isRunning = true;
 
     requestAnimationFrame((timestamp) => {
-      console.log("Initial last sync time: ", this.lastSyncTime)
       this.lastSyncTime = timestamp;
       this.renderer.render(this.stage);
       this.lastFrameTime = timestamp;
