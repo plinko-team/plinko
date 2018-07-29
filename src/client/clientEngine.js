@@ -1,4 +1,3 @@
-import { Body, Engine, Render, Events, World } from 'matter-js';
 import Renderer from './renderer';
 import Synchronizer from './synchronizer';
 import Chip from '../shared/bodies/Chip';
@@ -27,7 +26,6 @@ export default class ClientEngine {
     this.socket = io.connect(url);
     this.renderer = new Renderer();
     this.stage = this.renderer.stage;
-    this.engine = Engine.create();
     this.eventEmitter = new EventEmitter();
     this.synchronizer = new Synchronizer(this.socket, this.eventEmitter).init();
     console.log("Connecting to...", url)
@@ -87,51 +85,6 @@ export default class ClientEngine {
       if (formerPegOwner) { this.decrementScore(formerPegOwner); }
     }
   }
-  //
-  // onCollisionStart = (event) => {
-  //   const pairs = event.pairs;
-  //
-  //   for (let i = 0; i < pairs.length; i++) {
-  //     const pair = pairs[i];
-  //     const bodyA = pair.bodyA;
-  //     const bodyB = pair.bodyB;
-  //
-  //     // This is turned off till we update player-info owner on DOM element
-  //     //if (bodyA.label === 'peg' && bodyB.label === 'chip') {
-  //     //  this.updateScore(bodyA, bodyB);
-  //     //}
-  //
-  //     if (bodyA.label === 'peg') {
-  //       bodyA.parentObject.ownerId = bodyB.parentObject.ownerId;
-  //       bodyA.sprite.tint = PLAYER_COLORS[bodyA.parentObject.ownerId];
-  //     }
-  //     if (bodyB.label === 'peg') {
-  //       bodyB.parentObject.ownerId = bodyA.parentObject.ownerId;
-  //       bodyB.sprite.tint = PLAYER_COLORS[bodyB.parentObject.ownerId];
-  //     }
-  //
-  //     if (bodyA.label === 'ground') {
-  //       bodyB.parentObject.shrink(() => {
-  //         let body = bodyB;
-  //         let parent = body.parentObject;
-  //         let ownerId = parent.ownerId;
-  //         let id = parent.id;
-  //         body.isStatic = true;
-  //
-  //         this.deletedChips[String(ownerId) + String(id)] = true;
-  //         delete this.chips[String(ownerId) + String(id)]
-  //
-  //         World.remove(this.engine.world, body);
-  //         this.stage.removeChild(body.sprite);
-  //       })
-  //     }
-  //   }
-  // }
-  //
-  // registerPhysicsEvents() {
-  //   // Collision Events
-  //   Events.on(this.engine, 'collisionStart', this.onCollisionStart);
-  // }
 
   registerSocketEvents() {
     this.socket.on('connection established', ({ playerId }) => {
@@ -155,12 +108,11 @@ export default class ClientEngine {
 
       this.frame = nextWholeFrame;
 
-      if (!this.isRunning) {
-        this.startGame();
-      };
+      !this.isRunning && this.startGame();
     })
 
     this.socket.on('snapshot', ({ frame, encodedSnapshot }) => {
+      console.log("Encoded: ", encodedSnapshot.substring(0, 10))
       let { chips, pegs } = Serializer.decode(encodedSnapshot)
 
 
@@ -192,28 +144,25 @@ export default class ClientEngine {
 
       let combinedId = String(ownerId) + String(id)
 
-      if (!this.deletedChips[combinedId]) {
-        if (typeof this.chips[combinedId] === 'undefined') {
-          const chip = new Chip({ id, ownerId, x, y });
+      if (typeof this.chips[combinedId] === 'undefined') {
+        const chip = new Chip({ id, ownerId, x, y });
 
-          chip.addToEngine(this.engine.world);
-          chip.addToRenderer(this.stage);
-          this.chips[combinedId] = chip;
-        }
 
-        const chip = this.chips[combinedId];
-        const body = chip.body;
-
-        Body.setPosition(body, { x, y });
-        Body.setAngle(body, angle);
+        chip.addToRenderer(this.stage);
+        this.chips[combinedId] = chip;
       }
+
+      const chip = this.chips[combinedId];
+
+      chip.sprite.position.x = x;
+      chip.sprite.position.y = y;
+      chip.sprite.rotation = angle;
     });
   }
 
   update() {
     this.frame++;
-
-    Engine.update(this.engine, TIMESTEP);
+    this.frameSync()
   }
 
   animate(timestamp) {
@@ -237,13 +186,12 @@ export default class ClientEngine {
     this.lastFrameTime = timestamp;
 
     while (this.delta >= TIMESTEP) {
-      this.update();
       this.frameSync();
       this.delta -= TIMESTEP;
     }
 
     // this.renderer.interpolate(this.chips, 1);
-    this.renderer.spriteUpdate(this.chips);
+    // this.renderer.spriteUpdate(this.chips);
     this.renderer.render(this.stage);
 
     this.frameID = requestAnimationFrame(this.animate.bind(this));
@@ -310,7 +258,6 @@ export default class ClientEngine {
       walls.forEach(wall => wall.addToRenderer(this.stage));
     }
 
-    walls.forEach(wall => wall.addToEngine(this.engine.world));
   }
 
 
@@ -319,7 +266,6 @@ export default class ClientEngine {
       let bucket = new BucketWall({ x: i * COL_SPACING });
 
       if (typeof window === 'object') { bucket.addToRenderer(this.stage) };
-      bucket.addToEngine(this.engine.world);
     }
   }
 
@@ -336,7 +282,6 @@ export default class ClientEngine {
 
     triangles.forEach(triangle => {
       let t = new Triangle(triangle);
-      t.addToEngine(this.engine.world);
       if (typeof window === 'object') { t.addToRenderer(this.stage) };
     });
   }
@@ -362,7 +307,7 @@ export default class ClientEngine {
         }
         let peg = new Peg({ id, x, y });
         this.pegs[id] = peg;
-        peg.addToEngine(this.engine.world);
+
         if (peg.sprite) { peg.addToRenderer(this.stage) };
 
         id++;

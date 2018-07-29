@@ -24,16 +24,11 @@ export default class Renderer {
   spriteUpdate(chips, interpolation=1) {
     for (let id of Object.keys(chips)) {
       let chip = chips[id];
-      let body = chip.body;
       let sprite = chip.sprite;
 
       // body.position.x = chip.lastX + (chip.nextX - chip.lastX) * interpolation
       // body.position.y = chip.lastY + (chip.nextY - chip.lastY) * interpolation
       // body.angle = chip.lastAngle + (chip.nextAngle - chip.lastAngle) * interpolation
-
-      sprite.position.x = body.position.x;
-      sprite.position.y = body.position.y;
-      sprite.rotation = body.angle;
     }
   }
 }

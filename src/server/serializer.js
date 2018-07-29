@@ -153,6 +153,7 @@ export default class Serializer {
   }
 
   static decode(encodedSnapshot) {
+    if (!encodedSnapshot) { throw new Error('Must supply encoded snapshot')}
     const BITS_PER_CHIP = 41
     const BITS_PER_PEG = 10
 
