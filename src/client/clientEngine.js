@@ -137,6 +137,8 @@ export default class ClientEngine {
         this.chips[combinedId] = chip;
       }
 
+      this.chips[combinedId].recentlyDropped = undefined;
+
       const chip = this.chips[combinedId];
 
       chip.sprite.position.x = x;
@@ -145,7 +147,7 @@ export default class ClientEngine {
     });
 
     for (let id of Object.keys(this.chips)) {
-      if (!chipsInCurrentSnapshot[id]) {
+      if (!chipsInCurrentSnapshot[id] && !this.chips[id].recentlyDropped) {
         delete this.chips[id]
       }
     }
@@ -249,7 +251,7 @@ export default class ClientEngine {
     //console.log("Frame from input: ", frame);
 
     let chip = new Chip({ id, ownerId, x, y });
-
+    chip.recentlyDropped = true;
     chip.addToRenderer(this.stage);
     this.chips[String(ownerId) + String(id)] = chip;
     this.socket.emit('new chip', { frame, id, x, y, ownerId });
