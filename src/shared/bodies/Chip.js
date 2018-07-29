@@ -55,7 +55,6 @@ export default class Chip extends GameObject {
 
   createPhysics() {
     Chip.count++
-    console.log(Chip.count)
 
     const options = {
       restitution: CHIP.RESTITUTION,

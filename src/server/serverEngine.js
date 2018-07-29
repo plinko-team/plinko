@@ -136,7 +136,6 @@ export default class ServerEngine {
   }
 
   startGame() {
-
     this.nextTimestep = this.nextTimestep || Date.now();
 
     while (Date.now() > this.nextTimestep) {

@@ -114,6 +114,9 @@ export default class ClientEngine {
 
       if (typeof this.chips[combinedId] === 'undefined') {
         const chip = new Chip({ id, ownerId, x, y });
+        console.log("Id: ", String(id))
+        console.log("ownerId: ", String(ownerId));
+        console.log("Combined: ", combinedId);
 
         chip.addToRenderer(this.stage);
         this.chips[combinedId] = chip;
@@ -225,7 +228,7 @@ export default class ClientEngine {
     const x = e.offsetX;
     const y = e.offsetY;
     const ownerId = window.playerId;
-    const id = ownerId + this.lastChipId++;
+    const id = this.lastChipId++ % 255;
 
     let frame = this.frame;
 
