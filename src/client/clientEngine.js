@@ -61,21 +61,7 @@ export default class ClientEngine {
       window.playerId = playerId;
       this.frame = 0;
       !this.isRunning && this.startGame();
-    })
-
-    // this.socket.on('server frame', ({ frame }) => {
-    //   // Calculate next "whole" frame
-    //   // Calculate delay until next "whole" frame
-    //   // setTimeout for that delay to set this.frame to "whole" frame
-    //   // Initiate the game loop
-    //
-    //   let frameWithOffset = frame + this.synchronizer.latency / TIMESTEP
-    //   let nextWholeFrame = Math.ceil(frameWithOffset)
-    //   let delay = (nextWholeFrame - frameWithOffset) * TIMESTEP
-    //
-    //   this.frame = nextWholeFrame;
-    //
-    // })
+    });
 
     this.socket.on('snapshot', ({ frame, encodedSnapshot }) => {
       let { chips, pegs, score } = Serializer.decode(encodedSnapshot)
@@ -83,6 +69,13 @@ export default class ClientEngine {
       if (this.isRunning) {
         this.snapshotBuffer.push(new Snapshot({ frame, pegs, chips, score, timestamp: performance.now() }));
       }
+    });
+
+    this.socket.on('end game', ({ score }) => {
+      console.log('game over!');
+      console.log('final score: ', score);
+      this.highlightWinner(score);
+      this.stopGame();
     });
   }
 
@@ -151,6 +144,26 @@ export default class ClientEngine {
     });
 
     this.updateScoreboard(currentSnapshot.score);
+  }
+
+  highlightWinner(score) {
+    let winner;
+    let playerElement;
+    let highScore = 0;
+    let scores = Object.values(score);
+
+    scores.map(score => parseInt(score, 10));
+    scores.forEach((playerScores, id) => {
+      if (playerScores > highScore) {
+        highScore = playerScores;
+        winner = id;
+      }
+    });
+    
+    playerElement = '.player-' + winner;
+    document.body.querySelector(playerElement).style.color = 'yellow';
+    console.log('winner: ', winner);
+    console.log('score: ', highScore);
   }
 
   updateScoreboard(score) {
