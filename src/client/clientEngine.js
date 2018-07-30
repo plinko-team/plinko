@@ -64,7 +64,7 @@ export default class ClientEngine {
     });
 
     this.socket.on('snapshot', ({ frame, encodedSnapshot }) => {
-      let { chips, pegs, score } = Serializer.decode(encodedSnapshot)
+      let { chips, pegs, score } = Serializer.decode(encodedSnapshot);
 
       if (this.isRunning) {
         this.snapshotBuffer.push(new Snapshot({ frame, pegs, chips, score, timestamp: performance.now() }));
@@ -138,7 +138,7 @@ export default class ClientEngine {
 
       peg.ownerId = pegInfo.ownerId;
 
-      if (peg.ownerid) {
+      if (peg.ownerId !== null) {
         peg.sprite.tint = PLAYER_COLORS[peg.ownerId];
       }
     });
@@ -159,7 +159,7 @@ export default class ClientEngine {
         winner = id;
       }
     });
-    
+
     playerElement = '.player-' + winner;
     document.body.querySelector(playerElement).style.color = 'yellow';
     console.log('winner: ', winner);
