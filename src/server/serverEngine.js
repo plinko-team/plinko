@@ -135,7 +135,23 @@ export default class ServerEngine {
     }
   }
 
+  startGameClockCountdown() {
+    const GAME_LENGTH = 30000;
+    this.startGameClock = true;
+
+    setTimeout(() => {
+      this.knownPlayers.forEach(socket => {
+        socket.emit('end game', { score: this.score });
+      });
+      this.stopGame();
+    }, GAME_LENGTH);
+  }
+
   startGame() {
+    if (!this.startGameClock) {
+      this.startGameClockCountdown();
+    }
+
     this.nextTimestep = this.nextTimestep || Date.now();
 
     while (Date.now() > this.nextTimestep) {
