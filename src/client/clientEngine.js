@@ -12,6 +12,7 @@ import { CANVAS, ROWS, ROW_SPACING, COLS, COL_SPACING, VERTICAL_MARGIN, HORIZONT
 import io from 'socket.io-client';
 import EventEmitter from 'eventemitter3';
 import { Snapshot, SnapshotBuffer } from './snapshot.js'
+import Serializer from '../shared/serializer'
 
 /**
 
@@ -156,11 +157,11 @@ export default class ClientEngine {
       this.startGame();
     })
 
-    this.socket.on('snapshot', ({ frame, pegs, chips }) => {
-      if (this.isRunning) {
-        // this.snapshotBuffer.push(new Snapshot({ frame, pegs, chips, timestamp: performance.now() }));
-        this.latestSnapshot = { frame, pegs, chips }
-      }
+
+    this.socket.on('snapshot', (encodedSnapshot) => {
+      let { chips, pegs } = Serializer.decode(encodedSnapshot);
+      console.log({ chips, pegs })
+      this.snapshotBuffer.push(new Snapshot({ pegs, chips, timestamp: performance.now() }));
     });
   }
 

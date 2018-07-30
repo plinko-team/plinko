@@ -8,6 +8,8 @@ import { VerticalWall, HorizontalWall, BucketWall } from '../shared/bodies/Wall'
 import EventEmitter from 'eventemitter3';
 import { Input, InputBuffer } from './inputBuffer';
 import SnapshotHistory from './snapshotHistory';
+import Serializer from '../shared/serializer'
+
 
 /**
 
@@ -125,9 +127,11 @@ export default class ServerEngine {
         this.frame++
         Engine.update(this.engine, TIMESTEP);
 
-        let snapshot = this.generateSnapshot(this.chips, this.pegs);
+
+        let snapshot = this.generateSnapshot(this.chips, this.pegs)
 
         this.takeSnapshot(snapshot);
+        this.broadcastSnapshot(snapshot);
 
         if (this.frame % 30 === 0) {
           this.broadcastSnapshot(snapshot);
@@ -222,6 +226,7 @@ export default class ServerEngine {
 
     const chipInfo = chips.map(chip => {
       return {
+
            id: chip.id,
            ownerId: chip.ownerId,
            x: chip.body.position.x,
@@ -248,8 +253,9 @@ export default class ServerEngine {
   }
 
   broadcastSnapshot({ chips, pegs }) {
+    let serializedSnapshot = Serializer.encode({ chips, pegs })
     this.knownPlayers.forEach(socket => {
-      socket.emit('snapshot', { frame: this.frame, chips, pegs });
+      socket.emit('snapshot', serializedSnapshot);
     })
 
   }
