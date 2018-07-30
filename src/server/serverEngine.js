@@ -42,6 +42,7 @@ export default class ServerEngine {
     this.registerPhysicsEvents();
     this.registerSocketEvents();
     this.numBodies = -1;
+    this.winner = false;
 
     return this;
   }
@@ -75,7 +76,7 @@ export default class ServerEngine {
       const bodyA = pair.bodyA;
       const bodyB = pair.bodyB;
 
-      if (bodyA.label === 'peg' && bodyB.label === 'chip') {
+      if ((bodyA.label === 'peg' && bodyB.label === 'chip') && (!this.winner)) {
         this.updateScore(bodyA, bodyB);
       }
 
@@ -135,21 +136,23 @@ export default class ServerEngine {
     }
   }
 
-  startGameClockCountdown() {
-    const GAME_LENGTH = 30000;
-    this.startGameClock = true;
-
-    setTimeout(() => {
+  detectWinner() {
+    let scores = Object.values(this.score);
+    let winningScore = 35;
+    let winningPlayer = scores.some(score => score >= winningScore);
+    
+    if (winningPlayer) {
       this.knownPlayers.forEach(socket => {
         socket.emit('end game', { score: this.score });
       });
+      this.winner = true;
       this.stopGame();
-    }, GAME_LENGTH);
+    }
   }
 
   startGame() {
-    if (!this.startGameClock) {
-      this.startGameClockCountdown();
+    if (!this.winner) {
+      this.detectWinner();
     }
 
     this.nextTimestep = this.nextTimestep || Date.now();

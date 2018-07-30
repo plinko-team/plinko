@@ -148,6 +148,7 @@ export default class ClientEngine {
 
   highlightWinner(score) {
     let winner;
+    let winnerElement;
     let playerElement;
     let highScore = 0;
     let scores = Object.values(score);
@@ -160,10 +161,14 @@ export default class ClientEngine {
       }
     });
 
+    winnerElement = document.createElement('div');
+    winnerElement.setAttribute('id', 'winner-element');
+    let infoContainer = document.querySelector('.game-info');
+    winnerElement.textContent = `Winner is player ${winner + 1}`;
+    infoContainer.appendChild(winnerElement);
+
     playerElement = '.player-' + winner;
     document.body.querySelector(playerElement).style.color = 'yellow';
-    console.log('winner: ', winner);
-    console.log('score: ', highScore);
   }
 
   updateScoreboard(score) {
