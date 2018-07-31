@@ -146,24 +146,27 @@ export default class ClientEngine {
     this.updateScoreboard(currentSnapshot.score);
   }
 
-  highlightWinner(score) {
-    let winner;
+  highlightWinner(scores) {
+    let winnerId;
     let playerElement;
     let highScore = 0;
-    let scores = Object.values(score);
+    let infoContainer = document.querySelector('.game-info');
+    let winnerBanner = document.createElement('div');
 
-    scores.map(score => parseInt(score, 10));
-    scores.forEach((playerScores, id) => {
-      if (playerScores > highScore) {
-        highScore = playerScores;
-        winner = id;
-      }
+    Object.values(scores).map(score => parseInt(score, 10))
+          .forEach((score, id) => {
+            if (score > highScore) {
+              highScore = score;
+              winnerId = id;
+            }
     });
 
-    playerElement = '.player-' + winner;
+    winnerBanner.setAttribute('id', 'winner-element');
+    winnerBanner.textContent = `Winner is player ${winnerId + 1}`;
+    infoContainer.appendChild(winnerBanner);
+
+    playerElement = '.player-' + winnerId;
     document.body.querySelector(playerElement).style.color = 'yellow';
-    console.log('winner: ', winner);
-    console.log('score: ', highScore);
   }
 
   updateScoreboard(score) {
