@@ -34,6 +34,7 @@ export default class ServerEngine {
     this.lastId = 0;
     this.chips = {};
     this.pegs = [];
+    this.winner = false;
     this.snapshotHistory = new SnapshotHistory();
     this.inputHistory = {};
     this.chipsToBeDeleted = {};
@@ -42,7 +43,6 @@ export default class ServerEngine {
     this.registerPhysicsEvents();
     this.registerSocketEvents();
     this.numBodies = -1;
-    this.winner = false;
 
     return this;
   }
@@ -137,34 +137,32 @@ export default class ServerEngine {
   }
 
   detectWinner() {
-    let scores = Object.values(this.score);
     let winningScore = 35;
+    let scores = Object.values(this.score);
     let winningPlayer = scores.some(score => score >= winningScore);
-    
-    if (winningPlayer) {
-      this.knownPlayers.forEach(socket => {
-        socket.emit('end game', { score: this.score });
-      });
+
+    if (winningPlayer) { 
       this.winner = true;
-      this.stopGame();
+
+      // this may need to move once we change game ending mechanisms
+      this.stopGame(); 
     }
   }
 
   startGame() {
-    if (!this.winner) {
-      this.detectWinner();
-    }
-
     this.nextTimestep = this.nextTimestep || Date.now();
-
+    
     while (Date.now() > this.nextTimestep) {
       this.frame++
-
+      
       !this.inputBuffer.isEmpty() && this.processInputBuffer();
-
+      
+      
       Engine.update(this.engine, TIMESTEP);
+      
+      if (!this.winner) { this.detectWinner() }
 
-      let snapshot = this.generateSnapshot(this.chips, this.pegs, this.score);
+      let snapshot = this.generateSnapshot(this.chips, this.pegs, this.score, this.winner);
       this.broadcastSnapshot(snapshot);
 
       this.nextTimestep += TIMESTEP;
@@ -177,7 +175,7 @@ export default class ServerEngine {
     clearInterval(this.loop);
   }
 
-  generateSnapshot(chips, pegs, score) {
+  generateSnapshot(chips, pegs, score, winner) {
     // chips is an object with combinedId as the key and chip as values
     // so we want to access the values
     chips = Object.values(chips);
@@ -196,11 +194,11 @@ export default class ServerEngine {
       return { id: peg.id, ownerId: peg.ownerId };
     });
 
-    return { chips: chipInfo, pegs: pegInfo, score}
+    return { chips: chipInfo, pegs: pegInfo, score, winner: winner }
   }
 
-  broadcastSnapshot({ chips, pegs, score }) {
-    let encodedSnapshot = Serializer.encode({ chips, pegs, score })
+  broadcastSnapshot({ chips, pegs, score, winner }) {
+    let encodedSnapshot = Serializer.encode({ chips, pegs, score, winner })
 
     this.knownPlayers.forEach(socket => {
       socket.emit('snapshot', { frame: this.frame, encodedSnapshot });

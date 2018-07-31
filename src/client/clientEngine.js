@@ -64,18 +64,11 @@ export default class ClientEngine {
     });
 
     this.socket.on('snapshot', ({ frame, encodedSnapshot }) => {
-      let { chips, pegs, score } = Serializer.decode(encodedSnapshot);
+      let { chips, pegs, score, winner } = Serializer.decode(encodedSnapshot);
 
       if (this.isRunning) {
-        this.snapshotBuffer.push(new Snapshot({ frame, pegs, chips, score, timestamp: performance.now() }));
+        this.snapshotBuffer.push(new Snapshot({ frame, pegs, chips, score, winner, timestamp: performance.now() }));
       }
-    });
-
-    this.socket.on('end game', ({ score }) => {
-      console.log('game over!');
-      console.log('final score: ', score);
-      this.highlightWinner(score);
-      this.stopGame();
     });
   }
 
@@ -93,6 +86,8 @@ export default class ClientEngine {
     let currentSnapshot = this.snapshotBuffer.shift();
 
     if (!currentSnapshot) { return }
+
+    if (currentSnapshot.winner === true) { this.highlightWinner(currentSnapshot.score) };
 
     let snapshotFrame = currentSnapshot.frame;
 

@@ -154,7 +154,21 @@ export default class Serializer {
     return score;
   }
 
-  static encode({ chips, pegs, score }) {
+  static encodeWinner(winner) {
+    let output = '';
+    let winnerFlag = winner === true ? '1' : '0';
+
+    output += this.toBinary(winnerFlag, 1);
+
+    return output;
+  }
+
+  static decodeWinner(encodedWinner) {
+    let winner = encodedWinner === '1' ? true : false;
+    return winner;   
+  }
+
+  static encode({ chips, pegs, score, winner }) {
     let encoded = '';
 
     // Prepend the number of chips that need to be decoded
@@ -173,6 +187,8 @@ export default class Serializer {
       encoded += this.encodePeg(peg)
     }
 
+    encoded += this.encodeWinner(winner);
+
     encoded += this.encodeScore(score)
 
     return encoded
@@ -180,9 +196,10 @@ export default class Serializer {
 
   static decode(encodedSnapshot) {
     if (!encodedSnapshot) { throw new Error('Must supply encoded snapshot')}
-    const BITS_PER_CHIP = 41
-    const BITS_PER_PEG = 10
-    const BITS_FOR_SCORE = 24
+    const BITS_PER_CHIP = 41;
+    const BITS_PER_PEG = 10;
+    const BITS_FOR_SCORE = 24;
+    const BITS_FOR_WINNER = 1;
 
     let numChips = parseInt(encodedSnapshot.substring(0, 8), 2)
     let chips = [];
@@ -201,9 +218,12 @@ export default class Serializer {
       pegs.push(this.decodePeg(encodedSnapshot.substring(pegStart, pegStart + BITS_PER_PEG)))
     }
 
-    let scoreStart = 8 + numChips * BITS_PER_CHIP + 7 + numPegs * BITS_PER_PEG
+    let winnerStart = 8 + numChips * BITS_PER_CHIP + 7 + numPegs * BITS_PER_PEG;
+    let winner = this.decodeWinner(encodedSnapshot.substring(winnerStart, winnerStart + BITS_FOR_WINNER)); 
+
+    let scoreStart = 8 + numChips * BITS_PER_CHIP + 7 + numPegs * BITS_PER_PEG + BITS_FOR_WINNER;
     let score = this.decodeScore(encodedSnapshot.substring(scoreStart, scoreStart + BITS_FOR_SCORE))
 
-    return { chips, pegs, score }
+    return { chips, pegs, score, winner }
   }
 }
