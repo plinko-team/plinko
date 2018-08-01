@@ -1,14 +1,31 @@
 import EventEmitter from 'eventemitter3';
 import { Body, World, Engine, Events } from 'matter-js';
 import { DROP_BOUNDARY, TIMESTEP, TARGET_SCORE } from '../shared/constants/game';
-import '../shared/constants/events';
-import { CANVAS } from '../shared/constants/canvas'
 import Chip from '../shared/bodies/Chip';
 import Peg from '../shared/bodies/Peg';
 import Triangle from '../shared/bodies/Triangle';
 import { VerticalWall, HorizontalWall, BucketWall } from '../shared/bodies/Wall';
 import { Input, InputBuffer } from './inputBuffer';
 import Serializer from './serializer';
+
+import { CANVAS,
+         ROWS,
+         COLS,
+         ROW_SPACING,
+         COL_SPACING,
+         VERTICAL_MARGIN,
+         HORIZONTAL_OFFSET } from '../shared/constants/canvas'
+
+import { CONNECTION,
+         CONNECTION_ESTABLISHED,
+         NEW_CHIP,
+         PING_MESSAGE,
+         PONG_MESSAGE,
+         SERVER_FRAME,
+         REQUEST_SERVER_FRAME,
+         SNAPSHOT,
+         INITIATE_SYNC,
+         HANDSHAKE_COMPLETE } from '../shared/constants/events'
 
 /**
 
@@ -222,8 +239,8 @@ export default class ServerEngine {
   }
 
   _createBucketWalls() {
-    for (let i = 1; i < CANVAS.COLS; i++) {
-      let bucket = new BucketWall({ x: i * CANVAS.COL_SPACING });
+    for (let i = 1; i < COLS; i++) {
+      let bucket = new BucketWall({ x: i * COL_SPACING });
       bucket.addToEngine(this.engine.world);
     }
   }
@@ -246,23 +263,23 @@ export default class ServerEngine {
   }
 
   _createPegs() {
-    const verticalOffset = CANVAS.ROW_SPACING / 2;
-    const horizontalOffset = CANVAS.COL_SPACING / 2;
+    const verticalOffset = ROW_SPACING / 2;
+    const horizontalOffset = COL_SPACING / 2;
 
     let id = 0;
 
-    for (let row = 0; row < CANVAS.ROWS; row++) {
-      for (let col = 1; col < CANVAS.COLS; col++) {
-        let x = col * CANVAS.COL_SPACING;
+    for (let row = 0; row < ROWS; row++) {
+      for (let col = 1; col < COLS; col++) {
+        let x = col * COL_SPACING;
         // leave extra space at top of frame to drop chips
-        let y = CANVAS.VERTICAL_MARGIN + (row * CANVAS.ROW_SPACING);
+        let y = VERTICAL_MARGIN + (row * ROW_SPACING);
 
-        if (row % 2 === 1 && col === CANVAS.COLS - 1) {
+        if (row % 2 === 1 && col === COLS - 1) {
           // skip last peg on odd rows
           break;
         } else if (row % 2 === 1) {
           // offset columns in odd rows by half
-          x += CANVAS.HORIZONTAL_OFFSET;
+          x += HORIZONTAL_OFFSET;
         }
 
         let peg = new Peg({ id, x, y });

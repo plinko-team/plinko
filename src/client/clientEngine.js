@@ -7,12 +7,29 @@ import { VerticalWall, HorizontalWall, BucketWall } from '../shared/bodies/Wall'
 import HoverChip from '../shared/bodies/HoverChip';
 import { DROP_BOUNDARY, TIMESTEP } from '../shared/constants/game'
 import { PLAYER_COLORS } from '../shared/constants/colors';
-import { CANVAS } from '../shared/constants/canvas';
-import '../shared/constants/events';
 import io from 'socket.io-client';
 import EventEmitter from 'eventemitter3';
 import { Snapshot, SnapshotBuffer } from './snapshot.js';
 import Serializer from '../server/serializer';
+
+import { CONNECTION,
+         CONNECTION_ESTABLISHED,
+         NEW_CHIP,
+         PING_MESSAGE,
+         PONG_MESSAGE,
+         SERVER_FRAME,
+         REQUEST_SERVER_FRAME,
+         SNAPSHOT,
+         INITIATE_SYNC,
+         HANDSHAKE_COMPLETE } from '../shared/constants/events'
+
+import { CANVAS,
+         ROWS,
+         COLS,
+         ROW_SPACING,
+         COL_SPACING,
+         VERTICAL_MARGIN,
+         HORIZONTAL_OFFSET } from '../shared/constants/canvas'
 
 /**
 
@@ -280,8 +297,8 @@ export default class ClientEngine {
   }
 
   _createBucketWalls() {
-    for (let i = 1; i < CANVAS.COLS; i++) {
-      let bucket = new BucketWall({ x: i * CANVAS.COL_SPACING });
+    for (let i = 1; i < COLS; i++) {
+      let bucket = new BucketWall({ x: i * COL_SPACING });
 
       bucket.addToRenderer(this.stage)
     }
@@ -307,22 +324,23 @@ export default class ClientEngine {
   _createPegs() {
     let id = 0;
 
-    for (let row = 0; row < CANVAS.ROWS; row++) {
-      for (let col = 1; col < CANVAS.COLS; col++) {
-        let x = col * CANVAS.COL_SPACING;
+    for (let row = 0; row < ROWS; row++) {
+      for (let col = 1; col < COLS; col++) {
+        let x = col * COL_SPACING;
         // leave extra space at top of frame to drop chips
-        let y = CANVAS.VERTICAL_MARGIN + (row * CANVAS.ROW_SPACING);
+        let y = VERTICAL_MARGIN + (row * ROW_SPACING);
 
-        if (row % 2 === 1 && col === CANVAS.COLS - 1) {
+        if (row % 2 === 1 && col === COLS - 1) {
           // skip last peg on odd rows
           break;
         } else if (row % 2 === 1) {
           // offset columns in odd rows by half
-          x += CANVAS.HORIZONTAL_OFFSET;
+          x += HORIZONTAL_OFFSET;
         }
 
-        const peg = new Peg({ id++, x, y });
+        const peg = new Peg({ id, x, y });
         this.pegs[id] = peg;
+        id++;
 
         peg.addToRenderer(this.stage)
       }
