@@ -7,7 +7,7 @@ import { VerticalWall, HorizontalWall, BucketWall } from '../shared/bodies/Wall'
 import HoverChip from '../shared/bodies/HoverChip';
 import { DROP_BOUNDARY, TIMESTEP } from '../shared/constants/game'
 import { PLAYER_COLORS } from '../shared/constants/colors';
-import { CANVAS, ROWS, ROW_SPACING, COLS, COL_SPACING, VERTICAL_MARGIN, HORIZONTAL_OFFSET } from '../shared/constants/canvas'
+import { CANVAS } from '../shared/constants/canvas'
 import io from 'socket.io-client';
 import EventEmitter from 'eventemitter3';
 import { Snapshot, SnapshotBuffer } from './snapshot.js';
@@ -83,7 +83,7 @@ export default class ClientEngine {
 
   frameSync() {
 
-    //if we have too many snapshots shorten it 
+    //if we have too many snapshots shorten it
     while (this.snapshotBuffer.length > 5) {
       this.snapshotBuffer.shift();
     }
@@ -125,7 +125,7 @@ export default class ClientEngine {
     });
 
     for (let id of Object.keys(this.chips)) {
-      // this removes chips that the server has created (and returned to the client) 
+      // this removes chips that the server has created (and returned to the client)
       // and have reached the bottom
       if (!chipsInCurrentSnapshot[id] && !this.chips[id].recentlyDropped) {
         this.stage.removeChild(this.chips[id].sprite)
@@ -188,21 +188,21 @@ export default class ClientEngine {
       this.frameID = requestAnimationFrame(this.animate.bind(this));
       return;
     }
-    
+
     let timeSinceLastSync = timestamp - this.lastSyncTime
-    
+
     if (timeSinceLastSync > 6000) {
       this.lastSyncTime = timestamp;
     } else if (timeSinceLastSync > 5000) {
       this.eventEmitter.emit('initiate sync');
       this.lastSyncTime = timestamp;
     }
-    
+
     // Wait for next rAF if not enough time passed for engine update
-    
+
     this.delta += timestamp - this.lastFrameTime;
     this.lastFrameTime = timestamp;
-    
+
     while (this.delta >= TIMESTEP) {
       this.frameSync();
       this.delta -= TIMESTEP;
@@ -280,8 +280,8 @@ export default class ClientEngine {
   }
 
   _createBucketWalls() {
-    for (let i = 1; i < COLS; i++) {
-      let bucket = new BucketWall({ x: i * COL_SPACING });
+    for (let i = 1; i < CANVAS.COLS; i++) {
+      let bucket = new BucketWall({ x: i * CANVAS.COL_SPACING });
 
       if (typeof window === 'object') { bucket.addToRenderer(this.stage) };
     }
@@ -291,11 +291,11 @@ export default class ClientEngine {
     // Positional calculations and vertices for the wall triangles.
     let triangles = [
                 {x: 772, y: 290, side: 'right'},
-                {x: 772, y: 158, vertices: '50 150 15 75 50 0', side: 'right'},
-                {x: 772, y: 422, vertices: '50 150 15 75 50 0', side: 'right'},
-                {x: 28, y: 305,  vertices: '50 150 85 75 50 0', side: 'left'},
-                {x: 28, y: 173,  vertices: '50 150 85 75 50 0', side: 'left'},
-                {x: 28, y: 437,  vertices: '50 150 85 75 50 0', side: 'left'},
+                {x: 772, y: 158, side: 'right'},
+                {x: 772, y: 422, side: 'right'},
+                {x: 28,  y: 305, side: 'left'},
+                {x: 28,  y: 173, side: 'left'},
+                {x: 28,  y: 437, side: 'left'},
               ];
 
     triangles.forEach(triangle => {
@@ -305,23 +305,23 @@ export default class ClientEngine {
   }
 
   _createPegs() {
-    const verticalOffset = ROW_SPACING / 2;
-    const horizontalOffset = COL_SPACING / 2;
+    const verticalOffset = CANVAS.ROW_SPACING / 2;
+    const horizontalOffset = CANVAS.COL_SPACING / 2;
 
     let id = 0;
 
-    for (let row = 0; row < ROWS; row++) {
-      for (let col = 1; col < COLS; col++) {
-        let x = col * COL_SPACING;
+    for (let row = 0; row < CANVAS.ROWS; row++) {
+      for (let col = 1; col < CANVAS.COLS; col++) {
+        let x = col * CANVAS.COL_SPACING;
         // leave extra space at top of frame to drop chips
-        let y = VERTICAL_MARGIN + (row * ROW_SPACING);
+        let y = CANVAS.VERTICAL_MARGIN + (row * CANVAS.ROW_SPACING);
 
         if (row % 2 === 1 && col === COLS - 1) {
           // skip last peg on odd rows
           break;
         } else if (row % 2 === 1) {
           // offset columns in odd rows by half
-          x += HORIZONTAL_OFFSET;
+          x += CANVAS.HORIZONTAL_OFFSET;
         }
         let peg = new Peg({ id, x, y });
         this.pegs[id] = peg;
