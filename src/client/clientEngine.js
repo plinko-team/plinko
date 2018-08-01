@@ -63,10 +63,10 @@ export default class ClientEngine {
     });
 
     this.socket.on('snapshot', ({ frame, encodedSnapshot }) => {
-      let { chips, pegs, score, winner } = Serializer.decode(encodedSnapshot);
+      let { chips, pegs, score, winner, targetScore } = Serializer.decode(encodedSnapshot);
 
       if (this.isRunning) {
-        this.snapshotBuffer.push(new Snapshot({ frame, pegs, chips, score, winner, timestamp: performance.now() }));
+        this.snapshotBuffer.push(new Snapshot({ frame, pegs, chips, score, winner, targetScore, timestamp: performance.now() }));
       }
     });
   }
@@ -92,8 +92,10 @@ export default class ClientEngine {
 
     if (!currentSnapshot) { return }
 
-    if (currentSnapshot.winner === true) { this.highlightWinner(currentSnapshot.score) };
-
+    if (!currentSnapshot.winner) { this.updateTargetScore(currentSnapshot.targetScore) }
+    
+    if (currentSnapshot.winner) { this.highlightWinner(currentSnapshot.score) }
+    
     let snapshotFrame = currentSnapshot.frame;
 
     let chipsInCurrentSnapshot = {}
@@ -145,6 +147,10 @@ export default class ClientEngine {
     });
 
     this.updateScoreboard(currentSnapshot.score);
+  }
+
+  updateTargetScore(targetScore) {
+    document.body.querySelector('.peg-target').innerText = targetScore;
   }
 
   highlightWinner(scores) {
@@ -207,7 +213,7 @@ export default class ClientEngine {
       this.frameSync();
       this.delta -= TIMESTEP;
     }
-    console.log('buffer size', this.snapshotBuffer.length);
+    //console.log('buffer size', this.snapshotBuffer.length);
 
     // this.renderer.interpolate(this.chips, 1);
     // this.renderer.spriteUpdate(this.chips);
