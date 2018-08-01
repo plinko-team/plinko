@@ -7,7 +7,8 @@ import { VerticalWall, HorizontalWall, BucketWall } from '../shared/bodies/Wall'
 import HoverChip from '../shared/bodies/HoverChip';
 import { DROP_BOUNDARY, TIMESTEP } from '../shared/constants/game'
 import { PLAYER_COLORS } from '../shared/constants/colors';
-import { CANVAS } from '../shared/constants/canvas'
+import { CANVAS } from '../shared/constants/canvas';
+import '../shared/constants/events';
 import io from 'socket.io-client';
 import EventEmitter from 'eventemitter3';
 import { Snapshot, SnapshotBuffer } from './snapshot.js';
@@ -48,19 +49,19 @@ export default class ClientEngine {
   // establishSynchronization() {
   //   this.synchronizer.handshake();
   //
-  //   this.eventEmitter.once('handshake complete', () => {
-  //     this.socket.emit('request server frame');
+  //   this.eventEmitter.once(HANDSHAKE_COMPLETE, () => {
+  //     this.socket.emit(REQUEST_SERVER_FRAME);
   //   })
   // }
 
   registerSocketEvents() {
-    this.socket.on('connection established', ({ playerId }) => {
+    this.socket.on(CONNECTION_ESTABLISHED, ({ playerId }) => {
       window.playerId = playerId;
       this.frame = 0;
       !this.isRunning && this.startGame();
     });
 
-    this.socket.on('snapshot', ({ frame, encodedSnapshot }) => {
+    this.socket.on(SNAPSHOT, ({ frame, encodedSnapshot }) => {
       let { chips, pegs, score, winner } = Serializer.decode(encodedSnapshot);
 
       if (this.isRunning) {
@@ -193,7 +194,7 @@ export default class ClientEngine {
     if (timeSinceLastSync > 6000) {
       this.lastSyncTime = timestamp;
     } else if (timeSinceLastSync > 5000) {
-      this.eventEmitter.emit('initiate sync');
+      this.eventEmitter.emit(INITIATE_SYNC);
       this.lastSyncTime = timestamp;
     }
 
@@ -254,7 +255,7 @@ export default class ClientEngine {
     chip.recentlyDropped = true;
     chip.addToRenderer(this.stage);
     this.chips[String(ownerId) + String(id)] = chip;
-    this.socket.emit('new chip', { frame, id, x, y, ownerId });
+    this.socket.emit(NEW_CHIP, { frame, id, x, y, ownerId });
   }
 
   onMouseEnter = (e) => {

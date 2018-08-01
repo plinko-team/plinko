@@ -1,0 +1,10 @@
+const CONNECTION = 'connection';
+const CONNECTION_ESTABLISHED = 'connection established';
+const NEW_CHIP = 'new chip';
+const PING_MESSAGE = 'pingMessage';
+const PONG_MESSAGE = 'pongMessage';
+const SERVER_FRAME = 'server frame';
+const REQUEST_SERVER_FRAME = 'request server frame';
+const SNAPSHOT = 'snapshot';
+const INITIATE_SYNC = 'initiate sync'
+const HANDSHAKE_COMPLETE = 'handshake complete';
