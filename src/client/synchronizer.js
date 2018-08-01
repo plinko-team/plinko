@@ -1,5 +1,5 @@
 import { avg, median, sum, standardDeviation } from '../utils/math.js';
-
+import '../shared/constants/events';
 /**
 
   The synchronizer is a class that communicate to the server
@@ -35,17 +35,17 @@ export default class Synchronizer {
   }
 
   registerSocketEvents() {
-    this.socket.on('pongMessage', this.sync.bind(this));
+    this.socket.on(PONG_MESSAGE, this.sync.bind(this));
   }
 
   registerEmitterEvents() {
-    this.eventEmitter.on('initiate sync', () => {
+    this.eventEmitter.on(INITIATE_SYNC, () => {
       console.log("Initiated handshake after initial sync")
       this.reset()
       this.handshake()
     })
 
-    this.eventEmitter.on('handshake complete', () => {
+    this.eventEmitter.on(HANDSHAKE_COMPLETE, () => {
       clearInterval(this.pingInterval);
       this.handshakeComplete = true;
     });
@@ -56,13 +56,13 @@ export default class Synchronizer {
   }
 
   get actualTime() {
-    return Date.now() + this.serverOffset
+    return Date.now() + this.serverOffset;
   }
 
   pingOnInterval(intervalTime) {
     let interval = setInterval(() => {
       this._lastSyncTime = performance.now();
-      this.socket.emit('pingMessage', { ping: true })
+      this.socket.emit(PING_MESSAGE, { ping: true })
 
     }, intervalTime)
 
@@ -83,7 +83,7 @@ export default class Synchronizer {
     // Don't filter around median unless history buffer is full
     // Otherwise you will constantly filter out valid latencies
     if (this.history.length === 10) {
-      !this.handshakeComplete && this.eventEmitter.emit('handshake complete');
+      !this.handshakeComplete && this.eventEmitter.emit(HANDSHAKE_COMPLETE);
       this.history = this._filterStandardDeviationAroundMedian(this.history);
 
       this.latency = avg(this.history);
@@ -91,7 +91,7 @@ export default class Synchronizer {
       console.log("============================> New latency: ", this.latency)
       console.log("============================")
 
-      this.serverOffset = performance.now() - (serverTime + this.latency)
+      this.serverOffset = performance.now() - (serverTime + this.latency);
     }
   }
 

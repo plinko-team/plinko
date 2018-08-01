@@ -1,14 +1,31 @@
+import EventEmitter from 'eventemitter3';
 import { Body, World, Engine, Events } from 'matter-js';
-import { DROP_BOUNDARY, TIMESTEP } from '../shared/constants/game';
-import { CANVAS, ROWS, COLS, ROW_SPACING, COL_SPACING, VERTICAL_MARGIN, HORIZONTAL_OFFSET } from '../shared/constants/canvas';
+import { DROP_BOUNDARY, TIMESTEP, TARGET_SCORE } from '../shared/constants/game';
 import Chip from '../shared/bodies/Chip';
 import Peg from '../shared/bodies/Peg';
 import Triangle from '../shared/bodies/Triangle';
 import { VerticalWall, HorizontalWall, BucketWall } from '../shared/bodies/Wall';
-import EventEmitter from 'eventemitter3';
 import { Input, InputBuffer } from './inputBuffer';
-import SnapshotHistory from './snapshotHistory';
-import Serializer from './serializer'
+import Serializer from './serializer';
+
+import { CANVAS,
+         ROWS,
+         COLS,
+         ROW_SPACING,
+         COL_SPACING,
+         VERTICAL_MARGIN,
+         HORIZONTAL_OFFSET } from '../shared/constants/canvas'
+
+import { CONNECTION,
+         CONNECTION_ESTABLISHED,
+         NEW_CHIP,
+         PING_MESSAGE,
+         PONG_MESSAGE,
+         SERVER_FRAME,
+         REQUEST_SERVER_FRAME,
+         SNAPSHOT,
+         INITIATE_SYNC,
+         HANDSHAKE_COMPLETE } from '../shared/constants/events'
 
 /**
 
@@ -21,13 +38,8 @@ export default class ServerEngine {
     this.knownPlayers = [];
     this.io = io;
     this.engine = Engine.create();
-    this.genesisTime = Date.now();
     this.frame = 0;
-
     this.inputBuffer = new InputBuffer();
-    this.messages = {
-      network: 0,
-    };
   }
 
   init() {
@@ -35,18 +47,18 @@ export default class ServerEngine {
     this.chips = {};
     this.pegs = [];
     this.winner = false;
-    this.snapshotHistory = new SnapshotHistory();
-    this.inputHistory = {};
-    this.chipsToBeDeleted = {};
-    this.targetScore = 63;
-    this.targetScoreInterval = false;
-    this.score = { 0: 0, 1: 0, 2: 0, 3: 0 }
+    this.initializeScore();
     this.createEnvironment();
     this.registerPhysicsEvents();
     this.registerSocketEvents();
-    this.numBodies = -1;
 
     return this;
+  }
+
+  initializeScore() {
+    this.targetScore = TARGET_SCORE;
+    this.targetScoreInterval = false;
+    this.score = { 0: 0, 1: 0, 2: 0, 3: 0 };
   }
 
   incrementScore(chipOwner) {
@@ -78,7 +90,7 @@ export default class ServerEngine {
       const bodyA = pair.bodyA;
       const bodyB = pair.bodyB;
 
-      if ((bodyA.label === 'peg' && bodyB.label === 'chip') && (!this.winner)) {
+      if (bodyA.label === 'peg' && bodyB.label === 'chip' && !this.winner) {
         this.updateScore(bodyA, bodyB);
       }
 
@@ -87,13 +99,15 @@ export default class ServerEngine {
       }
 
       if (bodyA.label === 'ground') {
-        let chip = bodyB.parentObject
-        this.chipsToBeDeleted[chip.id] = true;
+        const chip = bodyB.parentObject;
+        const combinedId = String(chip.ownerId) + String(chip.id);
+
         World.remove(this.engine.world, chip.body);
-        delete this.chips[String(chip.ownerId) + String(chip.id)]
+        delete this.chips[combinedId];
       }
     }
   }
+
 
   registerPhysicsEvents() {
     // Collision Events
@@ -104,24 +118,23 @@ export default class ServerEngine {
     let playerId = 0;
     let i = 0;
 
-    this.io.on('connection', socket => {
+    this.io.on(CONNECTION, socket => {
       this.knownPlayers.push(socket);
 
-      socket.emit('connection established', { playerId: playerId % 4 });
+      socket.emit(CONNECTION_ESTABLISHED, { playerId: playerId % 4 });
       playerId++;
 
       // Events must be set on socket established through connection
-      socket.on('new chip', (chipInfo) => {
-        let chip = new Input(chipInfo)
-        this.inputBuffer.insert(chip);
+      socket.on(NEW_CHIP, (chipInfo) => {
+        this.inputBuffer.insert(new Input(chipInfo));
       })
 
-      socket.on('pingMessage', () => {
-        socket.emit('pongMessage', { serverTime: Date.now() });
+      socket.on(PING_MESSAGE, () => {
+        socket.emit(PONG_MESSAGE, { serverTime: Date.now() });
       })
 
-      socket.on('request server frame', () => {
-        socket.emit('server frame', { frame: this.frame });
+      socket.on(REQUEST_SERVER_FRAME, () => {
+        socket.emit(SERVER_FRAME, { frame: this.frame });
       })
     });
   }
@@ -142,11 +155,11 @@ export default class ServerEngine {
     let scores = Object.values(this.score);
     let winningPlayer = scores.some(score => score >= this.targetScore);
 
-    if (winningPlayer) { 
+    if (winningPlayer) {
       this.winner = true;
 
       // this may need to move once we change game ending mechanisms
-      this.stopGame(); 
+      this.stopGame();
     }
   }
 
@@ -155,20 +168,20 @@ export default class ServerEngine {
     setInterval(() => {
       this.targetScore -= 1;
       console.log(this.targetScore);
-    }, 2000);
+    }, 1000);
   }
 
   startGame() {
     this.nextTimestep = this.nextTimestep || Date.now();
-    
+
     while (Date.now() > this.nextTimestep) {
       this.frame++
-      
+
       !this.inputBuffer.isEmpty() && this.processInputBuffer();
-      
-      
+
+
       Engine.update(this.engine, TIMESTEP);
-      
+
       if (!this.winner) { this.detectWinner() }
       if (!this.targetScoreInterval) { this.reduceTargetScoreInterval() }
 
@@ -213,7 +226,7 @@ export default class ServerEngine {
     let encodedSnapshot = Serializer.encode({ chips, pegs, score, winner, targetScore })
 
     this.knownPlayers.forEach(socket => {
-      socket.emit('snapshot', { frame: this.frame, encodedSnapshot });
+      socket.emit(SNAPSHOT, { frame: this.frame, encodedSnapshot });
     })
   }
 
@@ -225,7 +238,6 @@ export default class ServerEngine {
     [leftWall, rightWall, ground].forEach(wall => wall.addToEngine(this.engine.world));
   }
 
-
   _createBucketWalls() {
     for (let i = 1; i < COLS; i++) {
       let bucket = new BucketWall({ x: i * COL_SPACING });
@@ -234,15 +246,14 @@ export default class ServerEngine {
   }
 
   _createTriangles() {
-
     // Positional calculations and vertices for the wall triangles.
-    let triangles = [
-                      {x: 772, y: 290, side: 'right'},
-                      {x: 772, y: 158, vertices: '50 150 15 75 50 0', side: 'right'},
-                      {x: 772, y: 422, vertices: '50 150 15 75 50 0', side: 'right'},
-                      {x: 28, y: 305,  vertices: '50 150 85 75 50 0', side: 'left'},
-                      {x: 28, y: 173,  vertices: '50 150 85 75 50 0', side: 'left'},
-                      {x: 28, y: 437,  vertices: '50 150 85 75 50 0', side: 'left'},
+    const triangles = [
+                      { x: 772, y: 290, side: 'right' },
+                      { x: 772, y: 158, side: 'right' },
+                      { x: 772, y: 422, side: 'right' },
+                      { x: 28,  y: 305, side: 'left' },
+                      { x: 28,  y: 173, side: 'left' },
+                      { x: 28,  y: 437, side: 'left' },
                     ];
 
     triangles.forEach(triangle => {

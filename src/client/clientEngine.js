@@ -7,11 +7,29 @@ import { VerticalWall, HorizontalWall, BucketWall } from '../shared/bodies/Wall'
 import HoverChip from '../shared/bodies/HoverChip';
 import { DROP_BOUNDARY, TIMESTEP } from '../shared/constants/game'
 import { PLAYER_COLORS } from '../shared/constants/colors';
-import { CANVAS, ROWS, ROW_SPACING, COLS, COL_SPACING, VERTICAL_MARGIN, HORIZONTAL_OFFSET } from '../shared/constants/canvas'
 import io from 'socket.io-client';
 import EventEmitter from 'eventemitter3';
 import { Snapshot, SnapshotBuffer } from './snapshot.js';
 import Serializer from '../server/serializer';
+
+import { CONNECTION,
+         CONNECTION_ESTABLISHED,
+         NEW_CHIP,
+         PING_MESSAGE,
+         PONG_MESSAGE,
+         SERVER_FRAME,
+         REQUEST_SERVER_FRAME,
+         SNAPSHOT,
+         INITIATE_SYNC,
+         HANDSHAKE_COMPLETE } from '../shared/constants/events'
+
+import { CANVAS,
+         ROWS,
+         COLS,
+         ROW_SPACING,
+         COL_SPACING,
+         VERTICAL_MARGIN,
+         HORIZONTAL_OFFSET } from '../shared/constants/canvas'
 
 /**
 
@@ -23,11 +41,10 @@ import Serializer from '../server/serializer';
 
 export default class ClientEngine {
   constructor({ url }) {
-    this.env = 'client';
     this.socket = io.connect(url);
     this.renderer = new Renderer();
-    this.stage = this.renderer.stage;
     this.eventEmitter = new EventEmitter();
+    this.stage = this.renderer.stage;
     // this.synchronizer = new Synchronizer(this.socket, this.eventEmitter).init();
   }
 
@@ -36,7 +53,6 @@ export default class ClientEngine {
     this.pegs = {};
     this.isRunning = false;
     this.lastChipId = 0;
-    this.newSnapshot = false;
     this.snapshotBuffer = new SnapshotBuffer();
 
     this.createEnvironment();
@@ -50,20 +66,20 @@ export default class ClientEngine {
   // establishSynchronization() {
   //   this.synchronizer.handshake();
   //
-  //   this.eventEmitter.once('handshake complete', () => {
-  //     this.socket.emit('request server frame');
+  //   this.eventEmitter.once(HANDSHAKE_COMPLETE, () => {
+  //     this.socket.emit(REQUEST_SERVER_FRAME);
   //   })
   // }
 
   registerSocketEvents() {
-    this.socket.on('connection established', ({ playerId }) => {
+    this.socket.on(CONNECTION_ESTABLISHED, ({ playerId }) => {
       window.playerId = playerId;
       this.frame = 0;
       !this.isRunning && this.startGame();
     });
 
-    this.socket.on('snapshot', ({ frame, encodedSnapshot }) => {
-      let { chips, pegs, score, winner, targetScore } = Serializer.decode(encodedSnapshot);
+    this.socket.on(SNAPSHOT, ({ frame, encodedSnapshot }) => {
+      let { chips, pegs, score, winner } = Serializer.decode(encodedSnapshot);
 
       if (this.isRunning) {
         this.snapshotBuffer.push(new Snapshot({ frame, pegs, chips, score, winner, targetScore, timestamp: performance.now() }));
@@ -127,7 +143,8 @@ export default class ClientEngine {
     });
 
     for (let id of Object.keys(this.chips)) {
-      // this removes chips that the server has created (and returned to the client) 
+
+      // this removes chips that the server has created (and returned to the client)
       // and have reached the bottom
       if (!chipsInCurrentSnapshot[id] && !this.chips[id].recentlyDropped) {
         this.stage.removeChild(this.chips[id].sprite)
@@ -157,6 +174,7 @@ export default class ClientEngine {
     let winnerId;
     let playerElement;
     let highScore = 0;
+
     let infoContainer = document.querySelector('.game-info');
     let winnerBanner = document.createElement('div');
 
@@ -200,7 +218,7 @@ export default class ClientEngine {
     if (timeSinceLastSync > 6000) {
       this.lastSyncTime = timestamp;
     } else if (timeSinceLastSync > 5000) {
-      this.eventEmitter.emit('initiate sync');
+      this.eventEmitter.emit(INITIATE_SYNC);
       this.lastSyncTime = timestamp;
     }
     
@@ -213,6 +231,7 @@ export default class ClientEngine {
       this.frameSync();
       this.delta -= TIMESTEP;
     }
+
     //console.log('buffer size', this.snapshotBuffer.length);
 
     // this.renderer.interpolate(this.chips, 1);
@@ -232,6 +251,7 @@ export default class ClientEngine {
       this.renderer.render(this.stage);
       this.lastFrameTime = timestamp;
       this.delta = 0;
+
       requestAnimationFrame(this.animate.bind(this));
     })
   }
@@ -260,7 +280,7 @@ export default class ClientEngine {
     chip.recentlyDropped = true;
     chip.addToRenderer(this.stage);
     this.chips[String(ownerId) + String(id)] = chip;
-    this.socket.emit('new chip', { frame, id, x, y, ownerId });
+    this.socket.emit(NEW_CHIP, { frame, id, x, y, ownerId });
   }
 
   onMouseEnter = (e) => {
@@ -280,40 +300,35 @@ export default class ClientEngine {
     const ground = new HorizontalWall();
     const walls = [leftWall, rightWall, ground];
 
-    if (typeof window === 'object') {
-      walls.forEach(wall => wall.addToRenderer(this.stage));
-    }
+    walls.forEach(w => w.addToRenderer(this.stage));
   }
 
   _createBucketWalls() {
     for (let i = 1; i < COLS; i++) {
       let bucket = new BucketWall({ x: i * COL_SPACING });
 
-      if (typeof window === 'object') { bucket.addToRenderer(this.stage) };
+      bucket.addToRenderer(this.stage)
     }
   }
 
   _createTriangles() {
     // Positional calculations and vertices for the wall triangles.
-    let triangles = [
-                {x: 772, y: 290, side: 'right'},
-                {x: 772, y: 158, vertices: '50 150 15 75 50 0', side: 'right'},
-                {x: 772, y: 422, vertices: '50 150 15 75 50 0', side: 'right'},
-                {x: 28, y: 305,  vertices: '50 150 85 75 50 0', side: 'left'},
-                {x: 28, y: 173,  vertices: '50 150 85 75 50 0', side: 'left'},
-                {x: 28, y: 437,  vertices: '50 150 85 75 50 0', side: 'left'},
+    const triangles = [
+                { x: 772, y: 290, side: 'right' },
+                { x: 772, y: 158, side: 'right' },
+                { x: 772, y: 422, side: 'right' },
+                { x: 28,  y: 305, side: 'left' },
+                { x: 28,  y: 173, side: 'left' },
+                { x: 28,  y: 437, side: 'left' },
               ];
 
     triangles.forEach(triangle => {
       let t = new Triangle(triangle);
-      if (typeof window === 'object') { t.addToRenderer(this.stage) };
+      t.addToRenderer(this.stage);
     });
   }
 
   _createPegs() {
-    const verticalOffset = ROW_SPACING / 2;
-    const horizontalOffset = COL_SPACING / 2;
-
     let id = 0;
 
     for (let row = 0; row < ROWS; row++) {
@@ -329,12 +344,12 @@ export default class ClientEngine {
           // offset columns in odd rows by half
           x += HORIZONTAL_OFFSET;
         }
-        let peg = new Peg({ id, x, y });
+
+        const peg = new Peg({ id, x, y });
         this.pegs[id] = peg;
-
-        if (peg.sprite) { peg.addToRenderer(this.stage) };
-
         id++;
+
+        peg.addToRenderer(this.stage)
       }
     }
   }

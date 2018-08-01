@@ -1,4 +1,5 @@
 import io from 'socket.io-client';
+import '../shared/constants/events'
 
 /**
 
@@ -9,7 +10,7 @@ import io from 'socket.io-client';
 function openSocketConnection(url) {
   const socket = io.connect(url);
 
-  socket.on('connection established', ({ playerId }) => {
+  socket.on(CONNECTION_ESTABLISHED, ({ playerId }) => {
     console.log('ESTABLISHED! Your player ID is: ', playerId);
     window.playerId = playerId;
   })
