@@ -1,14 +1,14 @@
+import EventEmitter from 'eventemitter3';
 import { Body, World, Engine, Events } from 'matter-js';
-import { DROP_BOUNDARY, TIMESTEP } from '../shared/constants/game';
-import { CANVAS, ROWS, COLS, ROW_SPACING, COL_SPACING, VERTICAL_MARGIN, HORIZONTAL_OFFSET } from '../shared/constants/canvas';
+import { DROP_BOUNDARY, TIMESTEP, TARGET_SCORE } from '../shared/constants/game';
+import { CANVAS } from '../shared/constants/canvas'
 import Chip from '../shared/bodies/Chip';
 import Peg from '../shared/bodies/Peg';
 import Triangle from '../shared/bodies/Triangle';
 import { VerticalWall, HorizontalWall, BucketWall } from '../shared/bodies/Wall';
-import EventEmitter from 'eventemitter3';
 import { Input, InputBuffer } from './inputBuffer';
 import SnapshotHistory from './snapshotHistory';
-import Serializer from './serializer'
+import Serializer from './serializer';
 
 /**
 
@@ -21,13 +21,9 @@ export default class ServerEngine {
     this.knownPlayers = [];
     this.io = io;
     this.engine = Engine.create();
-    this.genesisTime = Date.now();
     this.frame = 0;
-
     this.inputBuffer = new InputBuffer();
-    this.messages = {
-      network: 0,
-    };
+
   }
 
   init() {
@@ -37,8 +33,8 @@ export default class ServerEngine {
     this.winner = false;
     this.snapshotHistory = new SnapshotHistory();
     this.inputHistory = {};
-    this.chipsToBeDeleted = {};
-    this.targetScore = 63;
+
+    this.targetScore = TARGET_SCORE;
     this.targetScoreInterval = false;
     this.score = { 0: 0, 1: 0, 2: 0, 3: 0 }
     this.createEnvironment();
@@ -88,7 +84,7 @@ export default class ServerEngine {
 
       if (bodyA.label === 'ground') {
         let chip = bodyB.parentObject
-        this.chipsToBeDeleted[chip.id] = true;
+
         World.remove(this.engine.world, chip.body);
         delete this.chips[String(chip.ownerId) + String(chip.id)]
       }
@@ -142,11 +138,11 @@ export default class ServerEngine {
     let scores = Object.values(this.score);
     let winningPlayer = scores.some(score => score >= this.targetScore);
 
-    if (winningPlayer) { 
+    if (winningPlayer) {
       this.winner = true;
 
       // this may need to move once we change game ending mechanisms
-      this.stopGame(); 
+      this.stopGame();
     }
   }
 
@@ -160,15 +156,15 @@ export default class ServerEngine {
 
   startGame() {
     this.nextTimestep = this.nextTimestep || Date.now();
-    
+
     while (Date.now() > this.nextTimestep) {
       this.frame++
-      
+
       !this.inputBuffer.isEmpty() && this.processInputBuffer();
-      
-      
+
+
       Engine.update(this.engine, TIMESTEP);
-      
+
       if (!this.winner) { this.detectWinner() }
       if (!this.targetScoreInterval) { this.reduceTargetScoreInterval() }
 
@@ -224,24 +220,22 @@ export default class ServerEngine {
     [leftWall, rightWall, ground].forEach(wall => wall.addToEngine(this.engine.world));
   }
 
-
   _createBucketWalls() {
-    for (let i = 1; i < COLS; i++) {
-      let bucket = new BucketWall({ x: i * COL_SPACING });
+    for (let i = 1; i < CANVAS.COLS; i++) {
+      let bucket = new BucketWall({ x: i * CANVAS.COL_SPACING });
       bucket.addToEngine(this.engine.world);
     }
   }
 
   _createTriangles() {
-
     // Positional calculations and vertices for the wall triangles.
-    let triangles = [
-                      {x: 772, y: 290, side: 'right'},
-                      {x: 772, y: 158, vertices: '50 150 15 75 50 0', side: 'right'},
-                      {x: 772, y: 422, vertices: '50 150 15 75 50 0', side: 'right'},
-                      {x: 28, y: 305,  vertices: '50 150 85 75 50 0', side: 'left'},
-                      {x: 28, y: 173,  vertices: '50 150 85 75 50 0', side: 'left'},
-                      {x: 28, y: 437,  vertices: '50 150 85 75 50 0', side: 'left'},
+    const triangles = [
+                      { x: 772, y: 290, side: 'right' },
+                      { x: 772, y: 158, side: 'right' },
+                      { x: 772, y: 422, side: 'right' },
+                      { x: 28,  y: 305, side: 'left' },
+                      { x: 28,  y: 173, side: 'left' },
+                      { x: 28,  y: 437, side: 'left' },
                     ];
 
     triangles.forEach(triangle => {
@@ -251,23 +245,23 @@ export default class ServerEngine {
   }
 
   _createPegs() {
-    const verticalOffset = ROW_SPACING / 2;
-    const horizontalOffset = COL_SPACING / 2;
+    const verticalOffset = CANVAS.ROW_SPACING / 2;
+    const horizontalOffset = CANVAS.COL_SPACING / 2;
 
     let id = 0;
 
-    for (let row = 0; row < ROWS; row++) {
-      for (let col = 1; col < COLS; col++) {
-        let x = col * COL_SPACING;
+    for (let row = 0; row < CANVAS.ROWS; row++) {
+      for (let col = 1; col < CANVAS.COLS; col++) {
+        let x = col * CANVAS.COL_SPACING;
         // leave extra space at top of frame to drop chips
-        let y = VERTICAL_MARGIN + (row * ROW_SPACING);
+        let y = CANVAS.VERTICAL_MARGIN + (row * CANVAS.ROW_SPACING);
 
-        if (row % 2 === 1 && col === COLS - 1) {
+        if (row % 2 === 1 && col === CANVAS.COLS - 1) {
           // skip last peg on odd rows
           break;
         } else if (row % 2 === 1) {
           // offset columns in odd rows by half
-          x += HORIZONTAL_OFFSET;
+          x += CANVAS.HORIZONTAL_OFFSET;
         }
 
         let peg = new Peg({ id, x, y });

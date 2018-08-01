@@ -23,11 +23,10 @@ import Serializer from '../server/serializer';
 
 export default class ClientEngine {
   constructor({ url }) {
-    this.env = 'client';
     this.socket = io.connect(url);
     this.renderer = new Renderer();
-    this.stage = this.renderer.stage;
     this.eventEmitter = new EventEmitter();
+    this.stage = this.renderer.stage;
     // this.synchronizer = new Synchronizer(this.socket, this.eventEmitter).init();
   }
 
@@ -36,7 +35,6 @@ export default class ClientEngine {
     this.pegs = {};
     this.isRunning = false;
     this.lastChipId = 0;
-    this.newSnapshot = false;
     this.snapshotBuffer = new SnapshotBuffer();
 
     this.createEnvironment();
@@ -151,8 +149,9 @@ export default class ClientEngine {
     let winnerId;
     let playerElement;
     let highScore = 0;
-    let infoContainer = document.querySelector('.game-info');
-    let winnerBanner = document.createElement('div');
+
+    const infoContainer = document.querySelector('.game-info');
+    const winnerBanner = document.createElement('div');
 
     Object.values(scores)
       .map(score => parseInt(score, 10))
@@ -226,6 +225,7 @@ export default class ClientEngine {
       this.renderer.render(this.stage);
       this.lastFrameTime = timestamp;
       this.delta = 0;
+
       requestAnimationFrame(this.animate.bind(this));
     })
   }
@@ -274,40 +274,36 @@ export default class ClientEngine {
     const ground = new HorizontalWall();
     const walls = [leftWall, rightWall, ground];
 
-    if (typeof window === 'object') {
-      walls.forEach(wall => wall.addToRenderer(this.stage));
-    }
+    walls.forEach(w => w.addToRenderer(this.stage));
+
   }
 
   _createBucketWalls() {
     for (let i = 1; i < CANVAS.COLS; i++) {
       let bucket = new BucketWall({ x: i * CANVAS.COL_SPACING });
 
-      if (typeof window === 'object') { bucket.addToRenderer(this.stage) };
+      bucket.addToRenderer(this.stage)
     }
   }
 
   _createTriangles() {
     // Positional calculations and vertices for the wall triangles.
-    let triangles = [
-                {x: 772, y: 290, side: 'right'},
-                {x: 772, y: 158, side: 'right'},
-                {x: 772, y: 422, side: 'right'},
-                {x: 28,  y: 305, side: 'left'},
-                {x: 28,  y: 173, side: 'left'},
-                {x: 28,  y: 437, side: 'left'},
+    const triangles = [
+                { x: 772, y: 290, side: 'right' },
+                { x: 772, y: 158, side: 'right' },
+                { x: 772, y: 422, side: 'right' },
+                { x: 28,  y: 305, side: 'left' },
+                { x: 28,  y: 173, side: 'left' },
+                { x: 28,  y: 437, side: 'left' },
               ];
 
     triangles.forEach(triangle => {
       let t = new Triangle(triangle);
-      if (typeof window === 'object') { t.addToRenderer(this.stage) };
+      t.addToRenderer(this.stage);
     });
   }
 
   _createPegs() {
-    const verticalOffset = CANVAS.ROW_SPACING / 2;
-    const horizontalOffset = CANVAS.COL_SPACING / 2;
-
     let id = 0;
 
     for (let row = 0; row < CANVAS.ROWS; row++) {
@@ -316,19 +312,18 @@ export default class ClientEngine {
         // leave extra space at top of frame to drop chips
         let y = CANVAS.VERTICAL_MARGIN + (row * CANVAS.ROW_SPACING);
 
-        if (row % 2 === 1 && col === COLS - 1) {
+        if (row % 2 === 1 && col === CANVAS.COLS - 1) {
           // skip last peg on odd rows
           break;
         } else if (row % 2 === 1) {
           // offset columns in odd rows by half
           x += CANVAS.HORIZONTAL_OFFSET;
         }
-        let peg = new Peg({ id, x, y });
+
+        const peg = new Peg({ id++, x, y });
         this.pegs[id] = peg;
 
-        if (peg.sprite) { peg.addToRenderer(this.stage) };
-
-        id++;
+        peg.addToRenderer(this.stage)
       }
     }
   }

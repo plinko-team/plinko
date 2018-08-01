@@ -1,9 +1,10 @@
-import * as PIXI from 'pixi.js'
-import { CANVAS_COLOR } from '../shared/constants/colors'
+import * as PIXI from 'pixi.js';
+import { CANVAS_COLOR } from '../shared/constants/colors';
+import { CANVAS } from '../shared/constants/canvas';
 
 const defaultOptions = {
-  width: 800,
-  height: 600,
+  width: CANVAS.WIDTH,
+  height: CANVAS.HEIGHT,
   backgroundColor: CANVAS_COLOR,
   antialias: false,
   resolution: 2,

@@ -91,7 +91,7 @@ export default class Synchronizer {
       console.log("============================> New latency: ", this.latency)
       console.log("============================")
 
-      this.serverOffset = performance.now() - (serverTime + this.latency)
+      this.serverOffset = performance.now() - (serverTime + this.latency);
     }
   }
 
