@@ -137,7 +137,7 @@ export default class ServerEngine {
   }
 
   detectWinner() {
-    let winningScore = 35;
+    let winningScore = 64;
     let scores = Object.values(this.score);
     let winningPlayer = scores.some(score => score >= winningScore);
 
