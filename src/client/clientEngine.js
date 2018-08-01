@@ -40,7 +40,6 @@ export default class ClientEngine {
     this.snapshotBuffer = new SnapshotBuffer();
 
     this.createEnvironment();
-    // this.registerPhysicsEvents();
     this.registerCanvasEvents();
     this.registerSocketEvents();
     // this.establishSynchronization();
@@ -64,10 +63,10 @@ export default class ClientEngine {
     });
 
     this.socket.on('snapshot', ({ frame, encodedSnapshot }) => {
-      let { chips, pegs, score, winner } = Serializer.decode(encodedSnapshot);
+      let { chips, pegs, score, winner, targetScore } = Serializer.decode(encodedSnapshot);
 
       if (this.isRunning) {
-        this.snapshotBuffer.push(new Snapshot({ frame, pegs, chips, score, winner, timestamp: performance.now() }));
+        this.snapshotBuffer.push(new Snapshot({ frame, pegs, chips, score, winner, targetScore, timestamp: performance.now() }));
       }
     });
   }
@@ -83,12 +82,20 @@ export default class ClientEngine {
   }
 
   frameSync() {
+
+    //if we have too many snapshots shorten it 
+    while (this.snapshotBuffer.length > 5) {
+      this.snapshotBuffer.shift();
+    }
+
     let currentSnapshot = this.snapshotBuffer.shift();
 
     if (!currentSnapshot) { return }
 
-    if (currentSnapshot.winner === true) { this.highlightWinner(currentSnapshot.score) };
-
+    if (!currentSnapshot.winner) { this.updateTargetScore(currentSnapshot.targetScore) }
+    
+    if (currentSnapshot.winner) { this.highlightWinner(currentSnapshot.score) }
+    
     let snapshotFrame = currentSnapshot.frame;
 
     let chipsInCurrentSnapshot = {}
@@ -120,6 +127,8 @@ export default class ClientEngine {
     });
 
     for (let id of Object.keys(this.chips)) {
+      // this removes chips that the server has created (and returned to the client) 
+      // and have reached the bottom
       if (!chipsInCurrentSnapshot[id] && !this.chips[id].recentlyDropped) {
         this.stage.removeChild(this.chips[id].sprite)
         delete this.chips[id]
@@ -128,7 +137,6 @@ export default class ClientEngine {
 
     currentSnapshot.pegs.forEach(pegInfo => {
       const { id, ownerId } = pegInfo;
-
       const peg = this.pegs[pegInfo.id];
 
       peg.ownerId = pegInfo.ownerId;
@@ -141,6 +149,10 @@ export default class ClientEngine {
     this.updateScoreboard(currentSnapshot.score);
   }
 
+  updateTargetScore(targetScore) {
+    document.body.querySelector('.peg-target').innerText = targetScore;
+  }
+
   highlightWinner(scores) {
     let winnerId;
     let playerElement;
@@ -148,12 +160,13 @@ export default class ClientEngine {
     let infoContainer = document.querySelector('.game-info');
     let winnerBanner = document.createElement('div');
 
-    Object.values(scores).map(score => parseInt(score, 10))
-          .forEach((score, id) => {
-            if (score > highScore) {
-              highScore = score;
-              winnerId = id;
-            }
+    Object.values(scores)
+      .map(score => parseInt(score, 10))
+      .forEach((score, id) => {
+        if (score > highScore) {
+          highScore = score;
+          winnerId = id;
+        }
     });
 
     winnerBanner.setAttribute('id', 'winner-element');
@@ -177,30 +190,30 @@ export default class ClientEngine {
   }
 
   animate(timestamp) {
-
     if (timestamp < this.lastFrameTime + TIMESTEP) {
       this.frameID = requestAnimationFrame(this.animate.bind(this));
       return;
     }
-
+    
     let timeSinceLastSync = timestamp - this.lastSyncTime
-
+    
     if (timeSinceLastSync > 6000) {
       this.lastSyncTime = timestamp;
     } else if (timeSinceLastSync > 5000) {
       this.eventEmitter.emit('initiate sync');
       this.lastSyncTime = timestamp;
     }
-
+    
     // Wait for next rAF if not enough time passed for engine update
-
+    
     this.delta += timestamp - this.lastFrameTime;
     this.lastFrameTime = timestamp;
-
+    
     while (this.delta >= TIMESTEP) {
       this.frameSync();
       this.delta -= TIMESTEP;
     }
+    //console.log('buffer size', this.snapshotBuffer.length);
 
     // this.renderer.interpolate(this.chips, 1);
     // this.renderer.spriteUpdate(this.chips);
@@ -270,9 +283,7 @@ export default class ClientEngine {
     if (typeof window === 'object') {
       walls.forEach(wall => wall.addToRenderer(this.stage));
     }
-
   }
-
 
   _createBucketWalls() {
     for (let i = 1; i < COLS; i++) {

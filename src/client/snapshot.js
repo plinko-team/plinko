@@ -43,12 +43,13 @@ export class SnapshotBuffer {
 }
 
 export class Snapshot {
-  constructor({ frame, chips, pegs, score, winner, timestamp }) {
+  constructor({ frame, chips, pegs, score, winner, targetScore, timestamp }) {
     this.frame = frame;
     this.chips = chips;
     this.pegs = pegs;
     this.score = score;
     this.winner = winner;
+    this.targetScore = targetScore;
     this.timestamp = timestamp;
     this.next = null;
   }
