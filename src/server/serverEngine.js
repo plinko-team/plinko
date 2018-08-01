@@ -38,6 +38,8 @@ export default class ServerEngine {
     this.snapshotHistory = new SnapshotHistory();
     this.inputHistory = {};
     this.chipsToBeDeleted = {};
+    this.targetScore = 63;
+    this.targetScoreInterval = false;
     this.score = { 0: 0, 1: 0, 2: 0, 3: 0 }
     this.createEnvironment();
     this.registerPhysicsEvents();
@@ -137,9 +139,8 @@ export default class ServerEngine {
   }
 
   detectWinner() {
-    let winningScore = 64;
     let scores = Object.values(this.score);
-    let winningPlayer = scores.some(score => score >= winningScore);
+    let winningPlayer = scores.some(score => score >= this.targetScore);
 
     if (winningPlayer) { 
       this.winner = true;
@@ -147,6 +148,14 @@ export default class ServerEngine {
       // this may need to move once we change game ending mechanisms
       this.stopGame(); 
     }
+  }
+
+  reduceTargetScoreInterval() {
+    this.targetScoreInterval = true;
+    setInterval(() => {
+      this.targetScore -= 1;
+      console.log(this.targetScore);
+    }, 1000);
   }
 
   startGame() {
@@ -161,6 +170,8 @@ export default class ServerEngine {
       Engine.update(this.engine, TIMESTEP);
       
       if (!this.winner) { this.detectWinner() }
+      if (!this.targetScoreInterval) { this.reduceTargetScoreInterval() }
+
 
       let snapshot = this.generateSnapshot(this.chips, this.pegs, this.score, this.winner);
       this.broadcastSnapshot(snapshot);
