@@ -10,7 +10,9 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "compile": "babel -presets es2015 -d lib/ src/",
     "build": "npx webpack && npm run compile",
-    "start": "node lib/server/server.js"
+    "start": "concurrently \"npm run server\" \"npm run client\"",
+    "server": "node lib/server/server.js",
+    "client": "node start-client.js"
   },
   "repository": {
     "type": "git",
@@ -29,6 +31,7 @@
     "babel-plugin-transform-class-properties": "^6.24.1",
     "babel-preset-env": "^1.7.0",
     "babel-preset-es2015": "^6.24.1",
+    "concurrently": "^3.6.1",
     "express": "^4.16.3",
     "http": "0.0.0",
     "localtunnel": "^1.9.0",

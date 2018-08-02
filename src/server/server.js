@@ -15,6 +15,6 @@ app.use(express.static('public'));
 const serverEngine = new ServerEngine({ io }).init();
 serverEngine.startGame();
 
-startLocalTunnel();
+// startLocalTunnel();
 
-server.listen(3000)
+server.listen(3001)
