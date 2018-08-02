@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 
+import io from 'socket.io-client';
+
 import Game from './Game';
 import Lobby from './Lobby';
 
@@ -9,6 +11,7 @@ export default class GameContainer extends Component {
   // some of whom may be waiting for the next game to start, and
   // "currently playing players," who are all playing now
   state = {
+    socket: undefined,
     userId: undefined,
     gameInProgress: false, // a game is currently running
     userInGame: false,     // the user is part of the currently running game
@@ -17,8 +20,15 @@ export default class GameContainer extends Component {
   }
 
   componentDidMount() {
+    const socket = io.connect('localhost:3001');
+
+    socket.on('connection established', () => {
+      console.log('connection established')
+    })
+
     this.setState(() => {
       return {
+        socket: socket,
         userId: "81340",
         userName: '',
         gameInProgress: false,
