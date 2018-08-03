@@ -85,3 +85,13 @@ span {
   padding: 2px 5px;
   float: right;
 }
+
+#winner-element {
+  position: absolute;
+  top: 350px;
+  left: 310px;
+  color: white;
+  background-color: #96e6ff;
+  padding: 50px;
+  font-size: 64px;
+}
