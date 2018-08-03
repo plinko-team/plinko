@@ -41,7 +41,7 @@ export default class ServerEngine {
     this.frame = 0;
     this.inputBuffer = new InputBuffer();
   }
-
+  
   init() {
     this.lastId = 0;
     this.chips = {};
@@ -51,10 +51,10 @@ export default class ServerEngine {
     this.createEnvironment();
     this.registerPhysicsEvents();
     this.registerSocketEvents();
-
+    
     return this;
   }
-
+  
   initializeScore() {
     this.targetScore = TARGET_SCORE;
     this.targetScoreInterval = false;
@@ -151,23 +151,25 @@ export default class ServerEngine {
     }
   }
 
-  detectWinner() {
-    let scores = Object.values(this.score);
-    let winningPlayer = scores.some(score => score >= this.targetScore);
+  clearTargetScoreInterval() {
+    clearInterval(this.targetScoreInterval);
+  }
 
-    if (winningPlayer) {
-      this.winner = true;
+  detectGameEnding() {
+    const scores = Object.values(this.score);
+    const scoresAboveZero = scores.some(score => score > 0);
+    const winningPlayer = scores.some(score => score >= this.targetScore);
 
-      // this may need to move once we change game ending mechanisms
-      this.stopGame();
-    }
+    // ADD NO PLAYERS CONNECTED CHECK LATER
+    return (this.targetScore === 0 && !scoresAboveZero) || winningPlayer; ß
   }
 
   reduceTargetScoreInterval() {
-    this.targetScoreInterval = true;
-    setInterval(() => {
+    //this.targetScoreInterval = true;
+
+    this.targetScoreInterval = setInterval(() => {
       this.targetScore -= 1;
-    }, 5000);
+    }, 1000);
   }
 
   startGame() {
@@ -181,7 +183,14 @@ export default class ServerEngine {
 
       Engine.update(this.engine, TIMESTEP);
 
-      if (!this.winner) { this.detectWinner() }
+      if (!this.winner && this.detectGameEnding()) { 
+        this.winner = true;
+        this.clearTargetScoreInterval();
+        
+        // not wired up yet
+        this.stopGame();
+      };
+
       if (!this.targetScoreInterval) { this.reduceTargetScoreInterval() }
 
       let snapshot = this.generateSnapshot(this.chips, this.pegs, this.score,
