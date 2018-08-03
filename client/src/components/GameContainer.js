@@ -64,6 +64,8 @@ export default class GameContainer extends Component {
   connectToSocket = () => {
     const socket = openSocketConnection('localhost:3001');
     this.setState({ socket });
+
+    return socket;
   }
 
   disconnectFromSocket = () => {
@@ -81,8 +83,13 @@ export default class GameContainer extends Component {
     this.setState({userInGame: true});
   }
 
-  handleNameSubmit = (name) => {
+  handlePlayerJoin = (name) => {
     console.log(`This should submit the new name "${name}" to the server from GameContainer, which should broadcast updated player lists to all players in lobby, which should close the form`)
+    const socket = this.connectToSocket();
+
+    socket.on('connection established', ({ uuid }) => {
+      socket.emit('new player', { uuid, name })
+    })
   }
 
   render() {
@@ -103,7 +110,7 @@ export default class GameContainer extends Component {
           gameInProgress={this.state.gameInProgress}
           isNameFormOpen={this.state.isNameFormOpen}
           handleStartGameClick={this.handleStartGameClick}
-          handleNameSubmit={this.handleNameSubmit}
+          handlePlayerJoin={this.handlePlayerJoin}
         />
       )
     }

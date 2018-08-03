@@ -7,6 +7,9 @@ import Triangle from '../shared/bodies/Triangle';
 import { VerticalWall, HorizontalWall, BucketWall } from '../shared/bodies/Wall';
 import { Input, InputBuffer } from './inputBuffer';
 import Serializer from '../shared/serializer';
+import Player from './player';
+import Players from './players';
+import WaitingQueue from 'waitingQueue';
 
 import { CANVAS,
          ROWS,
@@ -35,11 +38,12 @@ import { CONNECTION,
 
 export default class ServerEngine {
   constructor({ io }) {
-    this.knownPlayers = [];
+    this.players = new Players();
     this.io = io;
     this.engine = Engine.create();
     this.frame = 0;
     this.inputBuffer = new InputBuffer();
+    this.waitingQueue = new WaitingQueue();
   }
 
   init() {
@@ -119,10 +123,16 @@ export default class ServerEngine {
     let i = 0;
 
     this.io.on(CONNECTION, socket => {
-      this.knownPlayers.push(socket);
+      let player = new Player({ socket });
+      this.players.add(player);
+      this.waitingQueue.enqueue(player);
 
-      socket.emit(CONNECTION_ESTABLISHED, { playerId: playerId % 4 });
-      playerId++;
+      socket.emit(CONNECTION_ESTABLISHED, { uuid: player.uuid });
+
+      socket.on('new player', ({ uuid, name }) => {
+        let player = this.players.getByUUID(uuid)
+        player.name = name;
+      })
 
       // Events must be set on socket established through connection
       socket.on(NEW_CHIP, (chipInfo) => {
@@ -224,7 +234,8 @@ export default class ServerEngine {
   broadcastSnapshot({ chips, pegs, score, winner, targetScore }) {
     let encodedSnapshot = Serializer.encode({ chips, pegs, score, winner, targetScore })
 
-    this.knownPlayers.forEach(socket => {
+    this.players.forEachActive(player => {
+      let socket = player.socket;
       socket.emit(SNAPSHOT, { frame: this.frame, encodedSnapshot, score, targetScore });
     })
   }

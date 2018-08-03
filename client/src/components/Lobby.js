@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import Header from './Header';
-import PlayerNameForm from './PlayerNameForm';
+import PlayerJoinForm from './PlayerJoinForm';
 import StartGameButton from './StartGameButton';
 
 export default class Lobby extends Component {
@@ -12,7 +12,7 @@ export default class Lobby extends Component {
     waitingPlayers: PropTypes.object,
     gameInProgress: PropTypes.bool,
     handleStartGameClick: PropTypes.func,
-    handleNameSubmit: PropTypes.func,
+    handlePlayerJoin: PropTypes.func,
     isNameFormOpen: PropTypes.bool,
   }
 
@@ -27,7 +27,7 @@ export default class Lobby extends Component {
     return (
       <div className="active-players row">
         <div className="players-container four columns">
-          <h2>You've got next</h2>
+          <h2>{"You've got next"}</h2>
           <ul>
             {this.playerItems(this.props.activePlayers, true)}
           </ul>
@@ -100,9 +100,9 @@ export default class Lobby extends Component {
     });
   }
 
-  handleNameSubmit = () => {
+  handlePlayerJoin = () => {
     // validation logic and error notice here
-    this.props.handleNameSubmit(this.state.userName.trim());
+    this.props.handlePlayerJoin(this.state.userName.trim());
   }
 
   render() {
@@ -110,10 +110,9 @@ export default class Lobby extends Component {
       <main>
         <Header />
         <div className="main-content lobby">
-          {this.isNameFormOpen() && <PlayerNameForm userName={this.state.userName} handleSubmit={this.handleNameSubmit} handleChange={this.handleNameChange} />}
+          {this.isNameFormOpen() && <PlayerNameForm userName={this.state.userName} handleSubmit={this.handlePlayerJoin} handleChange={this.handleNameChange} />}
 
           {Object.keys(this.props.activePlayers).length && this.activePlayerList()}
-
           {Object.keys(this.props.waitingPlayers).length && this.waitingPlayerList()}
         </div>
       </main>
