@@ -182,13 +182,25 @@ export default class ServerEngine {
   detectGameEnding() {
     this.detectNoScoreEnding();
     this.detectWinner();
+    this.noPlayersConnected();
+  }
+
+  noPlayersConnected() {
+    // this needs to be written for when we get connections working
+    // currently does nothing aside from end the game
+
+    if (false) {
+      this.winner = true;
+      this.clearTargetScoreInterval();
+      console('all players have disconnected');
+    }
   }
 
   reduceTargetScoreInterval() {
     //this.targetScoreInterval = true;
 
     this.targetScoreInterval = setInterval(() => {
-      this.targetScore -= 3;
+      this.targetScore -= 1;
     }, 1000);
   }
 
