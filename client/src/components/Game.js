@@ -25,11 +25,16 @@ export default class Game extends Component {
   componentDidMount() {
     // this.setState({targetScore: 50, someoneWon: true});
 
-    this.client = new ClientEngine({ url: 'http://localhost:3000' });
+    this.setState({players: this.props.players});
+    this.client = new ClientEngine({ socket: this.props.socket });
+    this.registerSocketEvents();
     this.client.init();
     this.client.startGame();
-    this.registerSocketEvents();
-    this.setState({players: this.props.players});
+  }
+
+  componentWillUnmount() {
+    // unregister socket events on unmount
+    this.props.socket.off(SNAPSHOT);
   }
 
   registerSocketEvents = () => {
