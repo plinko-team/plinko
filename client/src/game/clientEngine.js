@@ -33,8 +33,8 @@ import { CANVAS,
 **/
 
 export default class ClientEngine {
-  constructor({ url }) {
-    this.socket = io.connect(url);
+  constructor({ socket }) {
+    this.socket = socket;
     this.renderer = new Renderer();
     this.eventEmitter = new EventEmitter();
     this.stage = this.renderer.stage;

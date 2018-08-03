@@ -1,17 +1,13 @@
 import React, { Component } from 'react';
-
-import openSocketConnection from '../game/socket';
+import PropTypes from 'prop-types';
 
 import Game from './Game';
 import Lobby from './Lobby';
 
+import openSocketConnection from '../game/socket';
+
 export default class GameContainer extends Component {
-  // these will likely change after integration
-  // e.g. we may need to differentiate between "active players" (top 4),
-  // some of whom may be waiting for the next game to start, and
-  // "currently playing players," who are all playing now
   state = {
-    socket: undefined,
     userId: undefined,
     gameInProgress: false, // a game is currently running
     userInGame: false,     // the user is part of the currently running game
@@ -19,12 +15,13 @@ export default class GameContainer extends Component {
     waitingPlayers: {},    // users below top 4, may include this user
   }
 
+  socket = {}
+
   componentDidMount() {
-    const socket = openSocketConnection('localhost:3001');
+    this.connect();
 
     this.setState(() => {
       return {
-        socket: socket,
         userId: "0",
         userName: '',
         gameInProgress: false,
@@ -62,6 +59,19 @@ export default class GameContainer extends Component {
     });
   }
 
+  componentWillUnmount() {
+    this.disconnect();
+  }
+
+  connect = () => {
+    this.socket = openSocketConnection('localhost:3001');
+  }
+
+  disconnect = () => {
+    this.socket.disconnect(true);
+    console.log('Disconnected!');
+  }
+
   handleEndGameClick = () => {
     console.log('This should stop the current game and return users to lobby');
     this.setState({userInGame: false});
@@ -80,7 +90,7 @@ export default class GameContainer extends Component {
     if (this.state.userInGame) {
       return (
         <Game
-          socket={this.state.socket}
+          socket={this.socket}
           players={this.state.activePlayers}
           handleEndGameClick={this.handleEndGameClick}
         />
