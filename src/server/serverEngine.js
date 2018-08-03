@@ -151,49 +151,17 @@ export default class ServerEngine {
     }
   }
 
-  detectWinner() {
-    let scores = Object.values(this.score);
-    let winningPlayer = scores.some(score => score >= this.targetScore);
-
-    if (winningPlayer) {
-      this.winner = true;
-
-      this.clearTargetScoreInterval();
-
-      // this may need to move once we change game ending mechanisms
-      this.stopGame();
-    }
-  }
-
-  detectNoScoreEnding() {
-    const scores = Object.values(this.score);
-    const scoresAboveZero = scores.some(score => score > 0);
-    if (this.targetScore === 0 && !scoresAboveZero) {
-      this.winner = true;
-      this.clearTargetScoreInterval();
-      console.log('there was no winner!!!');
-    }
-  }
-
   clearTargetScoreInterval() {
     clearInterval(this.targetScoreInterval);
   }
 
   detectGameEnding() {
-    this.detectNoScoreEnding();
-    this.detectWinner();
-    this.noPlayersConnected();
-  }
+    const scores = Object.values(this.score);
+    const scoresAboveZero = scores.some(score => score > 0);
+    const winningPlayer = scores.some(score => score >= this.targetScore);
 
-  noPlayersConnected() {
-    // this needs to be written for when we get connections working
-    // currently does nothing aside from end the game
-
-    if (false) {
-      this.winner = true;
-      this.clearTargetScoreInterval();
-      console('all players have disconnected');
-    }
+    // ADD NO PLAYERS CONNECTED CHECK LATER
+    return (this.targetScore === 0 && !scoresAboveZero) || winningPlayer; ß
   }
 
   reduceTargetScoreInterval() {
@@ -215,7 +183,14 @@ export default class ServerEngine {
 
       Engine.update(this.engine, TIMESTEP);
 
-      if (!this.winner) { this.detectGameEnding() }
+      if (!this.winner && this.detectGameEnding()) { 
+        this.winner = true;
+        this.clearTargetScoreInterval();
+        
+        // not wired up yet
+        this.stopGame();
+      };
+
       if (!this.targetScoreInterval) { this.reduceTargetScoreInterval() }
 
       let snapshot = this.generateSnapshot(this.chips, this.pegs, this.score,
