@@ -7,6 +7,7 @@ import openSocketConnection from '../game/socket';
 
 export default class GameContainer extends Component {
   state = {
+    socket: {},
     userId: undefined,
     gameInProgress: false, // a game is currently running
     userInGame: false,     // the user is part of the currently running game
@@ -14,10 +15,8 @@ export default class GameContainer extends Component {
     waitingPlayers: {},    // users below top 4, may include this user
   }
 
-  socket = {}
-
   componentDidMount() {
-    this.connect();
+    this.connectToSocket();
 
     this.setState(() => {
       return {
@@ -59,15 +58,16 @@ export default class GameContainer extends Component {
   }
 
   componentWillUnmount() {
-    this.disconnect();
+    this.disconnectFromSocket();
   }
 
-  connect = () => {
-    this.socket = openSocketConnection('localhost:3001');
+  connectToSocket = () => {
+    const socket = openSocketConnection('localhost:3001');
+    this.setState({ socket });
   }
 
-  disconnect = () => {
-    this.socket.disconnect(true);
+  disconnectFromSocket = () => {
+    this.state.socket.disconnect(true);
     console.log('Disconnected!');
   }
 
@@ -89,7 +89,7 @@ export default class GameContainer extends Component {
     if (this.state.userInGame) {
       return (
         <Game
-          socket={this.socket}
+          socket={this.state.socket}
           players={this.state.activePlayers}
           handleEndGameClick={this.handleEndGameClick}
         />
