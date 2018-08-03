@@ -7,8 +7,8 @@ import Triangle from '../shared/bodies/Triangle';
 import { VerticalWall, HorizontalWall, BucketWall } from '../shared/bodies/Wall';
 import { Input, InputBuffer } from './inputBuffer';
 import Serializer from '../shared/serializer';
-import Player from './player';
-import Players from './players';
+import User from './user';
+import Users from './users';
 import WaitingQueue from 'waitingQueue';
 
 import { CANVAS,
@@ -38,7 +38,7 @@ import { CONNECTION,
 
 export default class ServerEngine {
   constructor({ io }) {
-    this.players = new Players();
+    this.users = new Users();
     this.io = io;
     this.engine = Engine.create();
     this.frame = 0;
@@ -112,7 +112,6 @@ export default class ServerEngine {
     }
   }
 
-
   registerPhysicsEvents() {
     // Collision Events
     Events.on(this.engine, 'collisionStart', this.onCollisionStart);
@@ -123,15 +122,15 @@ export default class ServerEngine {
     let i = 0;
 
     this.io.on(CONNECTION, socket => {
-      let player = new Player({ socket });
-      this.players.add(player);
-      this.waitingQueue.enqueue(player);
+      let user = new User({ socket });
+      this.users.add(user);
+      this.waitingQueue.enqueue(user);
 
-      socket.emit(CONNECTION_ESTABLISHED, { uuid: player.uuid });
+      socket.emit(CONNECTION_ESTABLISHED, { uuid: user.uuid });
 
-      socket.on('new player', ({ uuid, name }) => {
-        let player = this.players.getByUUID(uuid)
-        player.name = name;
+      socket.on('new user', ({ uuid, name }) => {
+        let user = this.users.getByUUID(uuid)
+        user.name = name;
       })
 
       // Events must be set on socket established through connection
@@ -234,8 +233,8 @@ export default class ServerEngine {
   broadcastSnapshot({ chips, pegs, score, winner, targetScore }) {
     let encodedSnapshot = Serializer.encode({ chips, pegs, score, winner, targetScore })
 
-    this.players.forEachActive(player => {
-      let socket = player.socket;
+    this.users.forEachActive(user => {
+      let socket = user.socket;
       socket.emit(SNAPSHOT, { frame: this.frame, encodedSnapshot, score, targetScore });
     })
   }

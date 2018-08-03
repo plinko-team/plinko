@@ -1,8 +1,8 @@
-export default class Player {
+export default class User {
   constructor({ name, socket }) {
     this.name = name;
     this.socket = socket;
-    this.playerId = null;
+    this.userId = null;
     this.status = null;
   }
 
@@ -18,7 +18,7 @@ export default class Player {
     this.status = null;
   }
 
-  setPlayerId(id) {
-    this.playerId = id;
+  setUserId(id) {
+    this.userId = id;
   }
 }
