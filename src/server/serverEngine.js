@@ -6,7 +6,7 @@ import Peg from '../shared/bodies/Peg';
 import Triangle from '../shared/bodies/Triangle';
 import { VerticalWall, HorizontalWall, BucketWall } from '../shared/bodies/Wall';
 import { Input, InputBuffer } from './inputBuffer';
-import Serializer from './serializer';
+import Serializer from '../shared/serializer';
 
 import { CANVAS,
          ROWS,
@@ -41,7 +41,7 @@ export default class ServerEngine {
     this.frame = 0;
     this.inputBuffer = new InputBuffer();
   }
-
+  
   init() {
     this.lastId = 0;
     this.chips = {};
@@ -51,10 +51,10 @@ export default class ServerEngine {
     this.createEnvironment();
     this.registerPhysicsEvents();
     this.registerSocketEvents();
-
+    
     return this;
   }
-
+  
   initializeScore() {
     this.targetScore = TARGET_SCORE;
     this.targetScoreInterval = false;
@@ -158,16 +158,38 @@ export default class ServerEngine {
     if (winningPlayer) {
       this.winner = true;
 
+      this.clearTargetScoreInterval();
+
       // this may need to move once we change game ending mechanisms
       this.stopGame();
     }
   }
 
+  detectNoScoreEnding() {
+    const scores = Object.values(this.score);
+    const scoresAboveZero = scores.some(score => score > 0);
+    if (this.targetScore === 0 && !scoresAboveZero) {
+      this.winner = true;
+      this.clearTargetScoreInterval();
+      console.log('there was no winner!!!');
+    }
+  }
+
+  clearTargetScoreInterval() {
+    clearInterval(this.targetScoreInterval);
+  }
+
+  detectGameEnding() {
+    this.detectNoScoreEnding();
+    this.detectWinner();
+  }
+
   reduceTargetScoreInterval() {
-    this.targetScoreInterval = true;
-    setInterval(() => {
-      this.targetScore -= 1;
-    }, 5000);
+    //this.targetScoreInterval = true;
+
+    this.targetScoreInterval = setInterval(() => {
+      this.targetScore -= 3;
+    }, 1000);
   }
 
   startGame() {
@@ -181,7 +203,7 @@ export default class ServerEngine {
 
       Engine.update(this.engine, TIMESTEP);
 
-      if (!this.winner) { this.detectWinner() }
+      if (!this.winner) { this.detectGameEnding() }
       if (!this.targetScoreInterval) { this.reduceTargetScoreInterval() }
 
       let snapshot = this.generateSnapshot(this.chips, this.pegs, this.score,

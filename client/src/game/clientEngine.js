@@ -100,7 +100,7 @@ export default class ClientEngine {
     let currentSnapshot = this.snapshotBuffer.shift();
 
     if (!currentSnapshot) { return }
-
+    //console.log('current snapshot: ', currentSnapshot);
     // if (!currentSnapshot.winner) { this.updateTargetScore(currentSnapshot.targetScore) }
 
     // if (currentSnapshot.winner) { this.highlightWinner(currentSnapshot.score) }
