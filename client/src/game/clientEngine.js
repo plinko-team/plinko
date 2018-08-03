@@ -10,11 +10,15 @@ import io from 'socket.io-client';
 import EventEmitter from 'eventemitter3';
 import { Snapshot, SnapshotBuffer } from './snapshot.js';
 import Serializer from '../shared/serializer';
+import Synchronizer from './synchronizer';
 
 import { CONNECTION_ESTABLISHED,
          NEW_CHIP,
          SNAPSHOT,
-         INITIATE_SYNC } from '../shared/constants/events'
+         INITIATE_SYNC,
+         HANDSHAKE_COMPLETE,
+         SERVER_FRAME,
+         REQUEST_SERVER_FRAME } from '../shared/constants/events'
 
 import { CANVAS,
          ROWS,
@@ -37,8 +41,8 @@ export default class ClientEngine {
     this.socket = socket;
     this.renderer = new Renderer();
     this.eventEmitter = new EventEmitter();
-    this.stage = this.renderer.stage;
-    // this.synchronizer = new Synchronizer(this.socket, this.eventEmitter).init();
+    this.synchronizer = new Synchronizer(this.socket, this.eventEmitter).init();
+    this.snapshotBuffer = new SnapshotBuffer();
   }
 
   init() {
@@ -46,29 +50,31 @@ export default class ClientEngine {
     this.pegs = {};
     this.isRunning = false;
     this.lastChipId = 0;
-    this.snapshotBuffer = new SnapshotBuffer();
+    this.stage = this.renderer.stage;
 
     this.createEnvironment();
     this.registerCanvasEvents();
     this.registerSocketEvents();
-    // this.establishSynchronization();
+
+    // Wait 250ms so that the socket.io connection can complete
+    setTimeout(this.establishSynchronization.bind(this), 250)
 
     return this;
   }
 
-  // establishSynchronization() {
-  //   this.synchronizer.handshake();
-  //
-  //   this.eventEmitter.once(HANDSHAKE_COMPLETE, () => {
-  //     this.socket.emit(REQUEST_SERVER_FRAME);
-  //   })
-  // }
+  establishSynchronization() {
+    this.synchronizer.handshake();
+
+    this.eventEmitter.once(HANDSHAKE_COMPLETE, () => {
+      console.log("Handshake complete, your latency is: ", this.synchronizer.latency)
+      !this.isRunning && this.startGame();
+    })
+  }
 
   registerSocketEvents() {
     this.socket.on(CONNECTION_ESTABLISHED, ({ playerId }) => {
       window.playerId = playerId;
       this.frame = 0;
-      !this.isRunning && this.startGame();
     });
 
     this.socket.on(SNAPSHOT, ({ frame, encodedSnapshot }) => {
@@ -116,9 +122,6 @@ export default class ClientEngine {
 
       if (typeof this.chips[combinedId] === 'undefined') {
         const chip = new Chip({ id, ownerId, x, y });
-        console.log("Id: ", String(id))
-        console.log("ownerId: ", String(ownerId));
-        console.log("Combined: ", combinedId);
 
         chip.addToRenderer(this.stage);
         this.chips[combinedId] = chip;
@@ -203,14 +206,16 @@ export default class ClientEngine {
       return;
     }
 
-    let timeSinceLastSync = timestamp - this.lastSyncTime
+    // This code is used for repeated synchronization handshakes
 
-    if (timeSinceLastSync > 6000) {
-      this.lastSyncTime = timestamp;
-    } else if (timeSinceLastSync > 5000) {
-      this.eventEmitter.emit(INITIATE_SYNC);
-      this.lastSyncTime = timestamp;
-    }
+    // let timeSinceLastSync = timestamp - this.lastSyncTime
+    //
+    // if (timeSinceLastSync > 6000) {
+    //   this.lastSyncTime = timestamp;
+    // } else if (timeSinceLastSync > 5000) {
+    //   this.eventEmitter.emit(INITIATE_SYNC);
+    //   this.lastSyncTime = timestamp;
+    // }
 
     // Wait for next rAF if not enough time passed for engine update
 
@@ -222,7 +227,6 @@ export default class ClientEngine {
       this.delta -= TIMESTEP;
     }
 
-    //console.log('buffer size', this.snapshotBuffer.length);
 
     // this.renderer.interpolate(this.chips, 1);
     // this.renderer.spriteUpdate(this.chips);
@@ -232,6 +236,7 @@ export default class ClientEngine {
   }
 
   startGame() {
+    console.log("Game started!")
     // Entry point for updates and rendering
     // Only gets called once
     this.isRunning = true;
