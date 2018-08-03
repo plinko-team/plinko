@@ -13,7 +13,7 @@ const io = socket(server)
 app.use(express.static('public'));
 
 const serverEngine = new ServerEngine({ io }).init();
-// serverEngine.startGame();
+serverEngine.startGame();
 
 // startLocalTunnel();
 
