@@ -41,8 +41,8 @@ export default class ClientEngine {
     this.socket = io.connect(url);
     this.renderer = new Renderer();
     this.eventEmitter = new EventEmitter();
-    this.stage = this.renderer.stage;
     this.synchronizer = new Synchronizer(this.socket, this.eventEmitter).init();
+    this.snapshotBuffer = new SnapshotBuffer();
   }
 
   init() {
@@ -50,12 +50,14 @@ export default class ClientEngine {
     this.pegs = {};
     this.isRunning = false;
     this.lastChipId = 0;
-    this.snapshotBuffer = new SnapshotBuffer();
+    this.stage = this.renderer.stage;
 
     this.createEnvironment();
     this.registerCanvasEvents();
     this.registerSocketEvents();
-    this.establishSynchronization();
+
+    // Wait 250ms so that the socket.io connection can complete
+    setTimeout(this.establishSynchronization.bind(this), 250)
 
     return this;
   }
@@ -64,8 +66,8 @@ export default class ClientEngine {
     this.synchronizer.handshake();
 
     this.eventEmitter.once(HANDSHAKE_COMPLETE, () => {
-      // this.socket.emit(REQUEST_SERVER_FRAME);
       console.log("Handshake complete, your latency is: ", this.synchronizer.latency)
+      !this.isRunning && this.startGame();
     })
   }
 
@@ -73,7 +75,6 @@ export default class ClientEngine {
     this.socket.on(CONNECTION_ESTABLISHED, ({ playerId }) => {
       window.playerId = playerId;
       this.frame = 0;
-      !this.isRunning && this.startGame();
     });
 
     this.socket.on(SNAPSHOT, ({ frame, encodedSnapshot }) => {
@@ -205,14 +206,16 @@ export default class ClientEngine {
       return;
     }
 
-    let timeSinceLastSync = timestamp - this.lastSyncTime
+    // This code is used for repeated synchronization handshakes
 
-    if (timeSinceLastSync > 6000) {
-      this.lastSyncTime = timestamp;
-    } else if (timeSinceLastSync > 5000) {
-      this.eventEmitter.emit(INITIATE_SYNC);
-      this.lastSyncTime = timestamp;
-    }
+    // let timeSinceLastSync = timestamp - this.lastSyncTime
+    //
+    // if (timeSinceLastSync > 6000) {
+    //   this.lastSyncTime = timestamp;
+    // } else if (timeSinceLastSync > 5000) {
+    //   this.eventEmitter.emit(INITIATE_SYNC);
+    //   this.lastSyncTime = timestamp;
+    // }
 
     // Wait for next rAF if not enough time passed for engine update
 
@@ -233,6 +236,7 @@ export default class ClientEngine {
   }
 
   startGame() {
+    console.log("Game started!")
     // Entry point for updates and rendering
     // Only gets called once
     this.isRunning = true;

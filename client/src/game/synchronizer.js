@@ -25,7 +25,7 @@ export default class Synchronizer {
     this.latency = null;
     this.history = [];
     this.handshakeComplete = false; // Will be set to true after 10 pings
-
+    this.pingEmitTimes = [];
     this.registerSocketEvents();
     this.registerEmitterEvents();
 
@@ -45,8 +45,8 @@ export default class Synchronizer {
   registerEmitterEvents() {
     this.eventEmitter.on(INITIATE_SYNC, () => {
       console.log("Initiated handshake after initial sync")
-      this.reset()
-      this.handshake()
+      this.reset();
+      this.handshake();
     })
 
     this.eventEmitter.on(HANDSHAKE_COMPLETE, () => {
@@ -65,7 +65,9 @@ export default class Synchronizer {
 
   pingOnInterval(intervalTime) {
     let interval = setInterval(() => {
-      this._lastSyncTime = performance.now();
+      this.pingEmitTimes.push(performance.now());
+      console.log("pET: ", this.pingEmitTimes)
+
       this.socket.emit(PING_MESSAGE, { ping: true })
 
     }, intervalTime)
@@ -74,11 +76,11 @@ export default class Synchronizer {
   }
 
   handshake() {
-    this.pingInterval = this.pingOnInterval(100);
+    this.pingInterval = this.pingOnInterval(150);
   }
 
   sync({ serverTime }) {
-    let latency = (performance.now() - this._lastSyncTime) / 2;
+    let latency = (performance.now() - this.pingEmitTimes.shift()) / 2;
     this.history.push(latency);
 
     // Truncate to only 10 latencies in history
@@ -87,11 +89,14 @@ export default class Synchronizer {
     // Don't filter around median unless history buffer is full
     // Otherwise you will constantly filter out valid latencies
     if (this.history.length === 10) {
-      !this.handshakeComplete && this.eventEmitter.emit(HANDSHAKE_COMPLETE);
+      console.log(this.history)
       this.history = this._filterStandardDeviationAroundMedian(this.history);
 
       this.latency = avg(this.history);
-      console.log("========> New latency: ", this.latency)
+      console.log("========> New latency: ", this.latency);
+
+      !this.handshakeComplete && this.eventEmitter.emit(HANDSHAKE_COMPLETE);
+
 
       this.serverOffset = performance.now() - (serverTime + this.latency);
     }
