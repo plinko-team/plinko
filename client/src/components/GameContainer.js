@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import io from 'socket.io-client';
+import openSocketConnection from '../game/socket';
 
 import Game from './Game';
 import Lobby from './Lobby';
@@ -20,37 +20,33 @@ export default class GameContainer extends Component {
   }
 
   componentDidMount() {
-    const socket = io.connect('localhost:3001');
-
-    socket.on('connection established', () => {
-      console.log('connection established')
-    })
+    const socket = openSocketConnection('localhost:3001');
 
     this.setState(() => {
       return {
         socket: socket,
-        userId: "81340",
+        userId: "0",
         userName: '',
         gameInProgress: false,
         activePlayers: {
-          81340: {
+          0: {
             name: 'Branko',
-            score: 36,
+            score: 0,
             colorId: 0,
           },
-          34059: {
+          1: {
             name: 'Josh',
-            score: 50,
+            score: 0,
             colorId: 1,
           },
-          53452: {
+          2: {
             name: 'Ryann',
-            score: 29,
+            score: 0,
             colorId: 2,
           },
-          21432: {
+          3: {
             name: 'Longest Name 15',
-            score: 12,
+            score: 0,
             colorId: 3,
           },
         },
@@ -84,6 +80,7 @@ export default class GameContainer extends Component {
     if (this.state.userInGame) {
       return (
         <Game
+          socket={this.state.socket}
           players={this.state.activePlayers}
           handleEndGameClick={this.handleEndGameClick}
         />

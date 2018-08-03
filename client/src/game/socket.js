@@ -1,5 +1,6 @@
 import io from 'socket.io-client';
-import '../shared/constants/events'
+
+import { CONNECTION_ESTABLISHED } from '../shared/constants/events'
 
 /**
 

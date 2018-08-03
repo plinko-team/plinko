@@ -5,27 +5,64 @@ import Header from './Header';
 import EndGameButton from './EndGameButton';
 import WinnerBanner from './WinnerBanner';
 
+import ClientEngine from '../game/clientEngine';
+import { SNAPSHOT } from '../shared/constants/events';
+import Serializer from '../shared/serializer';
+
 export default class Game extends Component {
   static propTypes = {
+    socket: PropTypes.object,
     players: PropTypes.object,
-    winnerId: PropTypes.string,
     handleEndGameClick: PropTypes.func,
   }
 
   state = {
     someoneWon: false,
     targetScore: 63,
+    players: {},
   }
 
-  ComponentDidMount() {
-    this.setState({targetScore: 50, someoneWon: true});
+  componentDidMount() {
+    // this.setState({targetScore: 50, someoneWon: true});
+
+    this.client = new ClientEngine({ url: 'http://localhost:3000' });
+    this.client.init();
+    this.client.startGame();
+    this.registerSocketEvents();
+    this.setState({players: this.props.players});
+  }
+
+  registerSocketEvents = () => {
+    this.props.socket.on(SNAPSHOT, ({ score, targetScore }) => {
+      this.setState((prevState) => {
+        const newPlayers = {};
+        let someoneWon = false;
+
+        Object.keys(prevState.players).map(id => {
+          let player = prevState.players[id];
+          let playerScore = score[id];
+
+          if (playerScore >= targetScore) {
+            someoneWon = true;
+          }
+
+          newPlayers[id] = Object.assign({}, player, { score: playerScore })
+        });
+
+        return {
+          targetScore,
+          players: newPlayers,
+          someoneWon
+        }
+      })
+    });
   }
 
   winnerBanner = (winnerId) => {
     return (
       <WinnerBanner
-        winnerName={this.props.players[winnerId].name}
-        winnerColorId={this.props.players[winnerId].colorId}
+        winnerName={this.state.players[winnerId].name}
+        winnerColorId={this.state.players[winnerId].colorId}
         handleNewGameClick={this.props.handleEndGameClick}
       />
     )
@@ -35,8 +72,8 @@ export default class Game extends Component {
     let winnerId;
 
     if (this.state.someoneWon) {
-      const userIds = Object.keys(this.props.activePlayers);
-      winnerId = userIds.find(id => this.props.activePlayers[id].score >= this.state.targetScore);
+      const userIds = Object.keys(this.state.players);
+      winnerId = userIds.find(id => this.state.players[id].score >= this.state.targetScore);
     }
 
     console.log("Game winnerId", winnerId)
@@ -45,7 +82,7 @@ export default class Game extends Component {
     return (
       <main>
         <Header
-          players={this.props.players}
+          players={this.state.players}
           targetScore={this.state.targetScore}
           winnerId={winnerId}
         />

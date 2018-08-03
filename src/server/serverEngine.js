@@ -167,8 +167,7 @@ export default class ServerEngine {
     this.targetScoreInterval = true;
     setInterval(() => {
       this.targetScore -= 1;
-      console.log(this.targetScore);
-    }, 1000);
+    }, 5000);
   }
 
   startGame() {
@@ -185,7 +184,7 @@ export default class ServerEngine {
       if (!this.winner) { this.detectWinner() }
       if (!this.targetScoreInterval) { this.reduceTargetScoreInterval() }
 
-      let snapshot = this.generateSnapshot(this.chips, this.pegs, this.score, 
+      let snapshot = this.generateSnapshot(this.chips, this.pegs, this.score,
                                            this.winner, this.targetScore);
 
       this.broadcastSnapshot(snapshot);
@@ -226,7 +225,7 @@ export default class ServerEngine {
     let encodedSnapshot = Serializer.encode({ chips, pegs, score, winner, targetScore })
 
     this.knownPlayers.forEach(socket => {
-      socket.emit(SNAPSHOT, { frame: this.frame, encodedSnapshot });
+      socket.emit(SNAPSHOT, { frame: this.frame, encodedSnapshot, score, targetScore });
     })
   }
 

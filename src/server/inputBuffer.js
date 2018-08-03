@@ -89,7 +89,7 @@
   // will have a frame, x, y, ownerId, id
 
   constructor({ frame, x, y, ownerId, id }) {
-    if (typeof frame === 'undefined') { throw new Error("Must include a frame") }
+    // if (typeof frame === 'undefined') { throw new Error("Must include a frame") }
 
     this.next = null;
     this.frame = frame;

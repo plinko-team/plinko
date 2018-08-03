@@ -74,7 +74,6 @@ export default class Chip extends GameObject {
 
   shrink(callback) {
     setTimeout(() => {
-      const startTime = Date.now()
       const SHRINK_FACTOR = 0.95
       const interval = setInterval(() => {
         Body.scale(this.body, SHRINK_FACTOR, SHRINK_FACTOR)

@@ -1,5 +1,9 @@
-import { avg, median, sum, standardDeviation } from '../utils/math.js';
-import '../shared/constants/events';
+import { avg, median, sum, standardDeviation } from '../shared/utils/math.js';
+import { PING_MESSAGE,
+         PONG_MESSAGE,
+         INITIATE_SYNC,
+         HANDSHAKE_COMPLETE } from '../shared/constants/events';
+
 /**
 
   The synchronizer is a class that communicate to the server

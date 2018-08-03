@@ -1,5 +1,4 @@
 import Renderer from './renderer';
-import Synchronizer from './synchronizer';
 import Chip from '../shared/bodies/Chip';
 import Peg from '../shared/bodies/Peg';
 import Triangle from '../shared/bodies/Triangle';
@@ -10,18 +9,12 @@ import { PLAYER_COLORS } from '../shared/constants/colors';
 import io from 'socket.io-client';
 import EventEmitter from 'eventemitter3';
 import { Snapshot, SnapshotBuffer } from './snapshot.js';
-import Serializer from '../server/serializer';
+import Serializer from '../shared/serializer';
 
-import { CONNECTION,
-         CONNECTION_ESTABLISHED,
+import { CONNECTION_ESTABLISHED,
          NEW_CHIP,
-         PING_MESSAGE,
-         PONG_MESSAGE,
-         SERVER_FRAME,
-         REQUEST_SERVER_FRAME,
          SNAPSHOT,
-         INITIATE_SYNC,
-         HANDSHAKE_COMPLETE } from '../shared/constants/events'
+         INITIATE_SYNC } from '../shared/constants/events'
 
 import { CANVAS,
          ROWS,
@@ -79,7 +72,7 @@ export default class ClientEngine {
     });
 
     this.socket.on(SNAPSHOT, ({ frame, encodedSnapshot }) => {
-      let { chips, pegs, score, winner } = Serializer.decode(encodedSnapshot);
+      let { chips, pegs, score, winner, targetScore } = Serializer.decode(encodedSnapshot);
 
       if (this.isRunning) {
         this.snapshotBuffer.push(new Snapshot({ frame, pegs, chips, score, winner, targetScore, timestamp: performance.now() }));
@@ -99,7 +92,7 @@ export default class ClientEngine {
 
   frameSync() {
 
-    //if we have too many snapshots shorten it 
+    //if we have too many snapshots shorten it
     while (this.snapshotBuffer.length > 5) {
       this.snapshotBuffer.shift();
     }
@@ -108,11 +101,9 @@ export default class ClientEngine {
 
     if (!currentSnapshot) { return }
 
-    if (!currentSnapshot.winner) { this.updateTargetScore(currentSnapshot.targetScore) }
-    
-    if (currentSnapshot.winner) { this.highlightWinner(currentSnapshot.score) }
-    
-    let snapshotFrame = currentSnapshot.frame;
+    // if (!currentSnapshot.winner) { this.updateTargetScore(currentSnapshot.targetScore) }
+
+    // if (currentSnapshot.winner) { this.highlightWinner(currentSnapshot.score) }
 
     let chipsInCurrentSnapshot = {}
 
@@ -153,7 +144,6 @@ export default class ClientEngine {
     }
 
     currentSnapshot.pegs.forEach(pegInfo => {
-      const { id, ownerId } = pegInfo;
       const peg = this.pegs[pegInfo.id];
 
       peg.ownerId = pegInfo.ownerId;
@@ -163,7 +153,7 @@ export default class ClientEngine {
       }
     });
 
-    this.updateScoreboard(currentSnapshot.score);
+    // this.updateScoreboard(currentSnapshot.score);
   }
 
   updateTargetScore(targetScore) {
@@ -212,21 +202,21 @@ export default class ClientEngine {
       this.frameID = requestAnimationFrame(this.animate.bind(this));
       return;
     }
-    
+
     let timeSinceLastSync = timestamp - this.lastSyncTime
-    
+
     if (timeSinceLastSync > 6000) {
       this.lastSyncTime = timestamp;
     } else if (timeSinceLastSync > 5000) {
       this.eventEmitter.emit(INITIATE_SYNC);
       this.lastSyncTime = timestamp;
     }
-    
+
     // Wait for next rAF if not enough time passed for engine update
-    
+
     this.delta += timestamp - this.lastFrameTime;
     this.lastFrameTime = timestamp;
-    
+
     while (this.delta >= TIMESTEP) {
       this.frameSync();
       this.delta -= TIMESTEP;

@@ -21,15 +21,4 @@ export default class Renderer {
   render(stage=this.stage) {
     this.renderer.render(stage)
   }
-
-  spriteUpdate(chips, interpolation=1) {
-    for (let id of Object.keys(chips)) {
-      let chip = chips[id];
-      let sprite = chip.sprite;
-
-      // body.position.x = chip.lastX + (chip.nextX - chip.lastX) * interpolation
-      // body.position.y = chip.lastY + (chip.nextY - chip.lastY) * interpolation
-      // body.angle = chip.lastAngle + (chip.nextAngle - chip.lastAngle) * interpolation
-    }
-  }
 }

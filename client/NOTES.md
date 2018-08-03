@@ -22,5 +22,8 @@ TODO:
 -validation and error notification on name form
 -research:
   -cookies/persistent user ids
--fix props not coming in/rendering in Header
 -vertical alignment for score list when players < 4
+-handle game over
+  -stop bar moving
+-on new game clear out the old game
+-animate score bars/target
