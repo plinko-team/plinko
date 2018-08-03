@@ -1,0 +1,10 @@
+export const CONNECTION = 'connection';
+export const CONNECTION_ESTABLISHED = 'connection established';
+export const NEW_CHIP = 'new chip';
+export const PING_MESSAGE = 'pingMessage';
+export const PONG_MESSAGE = 'pongMessage';
+export const SERVER_FRAME = 'server frame';
+export const REQUEST_SERVER_FRAME = 'request server frame';
+export const SNAPSHOT = 'snapshot';
+export const INITIATE_SYNC = 'initiate sync'
+export const HANDSHAKE_COMPLETE = 'handshake complete';

@@ -6,7 +6,7 @@ import Peg from '../shared/bodies/Peg';
 import Triangle from '../shared/bodies/Triangle';
 import { VerticalWall, HorizontalWall, BucketWall } from '../shared/bodies/Wall';
 import { Input, InputBuffer } from './inputBuffer';
-import Serializer from './serializer';
+import Serializer from '../shared/serializer';
 
 import { CANVAS,
          ROWS,

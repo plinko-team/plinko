@@ -10,11 +10,15 @@ import io from 'socket.io-client';
 import EventEmitter from 'eventemitter3';
 import { Snapshot, SnapshotBuffer } from './snapshot.js';
 import Serializer from '../shared/serializer';
+import Synchronizer from './synchronizer';
 
 import { CONNECTION_ESTABLISHED,
          NEW_CHIP,
          SNAPSHOT,
-         INITIATE_SYNC } from '../shared/constants/events'
+         INITIATE_SYNC,
+         HANDSHAKE_COMPLETE,
+         SERVER_FRAME,
+         REQUEST_SERVER_FRAME } from '../shared/constants/events'
 
 import { CANVAS,
          ROWS,
@@ -38,7 +42,7 @@ export default class ClientEngine {
     this.renderer = new Renderer();
     this.eventEmitter = new EventEmitter();
     this.stage = this.renderer.stage;
-    // this.synchronizer = new Synchronizer(this.socket, this.eventEmitter).init();
+    this.synchronizer = new Synchronizer(this.socket, this.eventEmitter).init();
   }
 
   init() {
@@ -51,18 +55,19 @@ export default class ClientEngine {
     this.createEnvironment();
     this.registerCanvasEvents();
     this.registerSocketEvents();
-    // this.establishSynchronization();
+    this.establishSynchronization();
 
     return this;
   }
 
-  // establishSynchronization() {
-  //   this.synchronizer.handshake();
-  //
-  //   this.eventEmitter.once(HANDSHAKE_COMPLETE, () => {
-  //     this.socket.emit(REQUEST_SERVER_FRAME);
-  //   })
-  // }
+  establishSynchronization() {
+    this.synchronizer.handshake();
+
+    this.eventEmitter.once(HANDSHAKE_COMPLETE, () => {
+      // this.socket.emit(REQUEST_SERVER_FRAME);
+      console.log("Handshake complete, your latency is: ", this.synchronizer.latency)
+    })
+  }
 
   registerSocketEvents() {
     this.socket.on(CONNECTION_ESTABLISHED, ({ playerId }) => {
@@ -116,9 +121,6 @@ export default class ClientEngine {
 
       if (typeof this.chips[combinedId] === 'undefined') {
         const chip = new Chip({ id, ownerId, x, y });
-        console.log("Id: ", String(id))
-        console.log("ownerId: ", String(ownerId));
-        console.log("Combined: ", combinedId);
 
         chip.addToRenderer(this.stage);
         this.chips[combinedId] = chip;
@@ -222,7 +224,6 @@ export default class ClientEngine {
       this.delta -= TIMESTEP;
     }
 
-    //console.log('buffer size', this.snapshotBuffer.length);
 
     // this.renderer.interpolate(this.chips, 1);
     // this.renderer.spriteUpdate(this.chips);

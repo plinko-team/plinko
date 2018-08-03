@@ -76,9 +76,6 @@ export default class Game extends Component {
       winnerId = userIds.find(id => this.state.players[id].score >= this.state.targetScore);
     }
 
-    console.log("Game winnerId", winnerId)
-    console.log("Game targetScore", this.state.targetScore)
-
     return (
       <main>
         <Header

@@ -91,9 +91,7 @@ export default class Synchronizer {
       this.history = this._filterStandardDeviationAroundMedian(this.history);
 
       this.latency = avg(this.history);
-      console.log("============================")
-      console.log("============================> New latency: ", this.latency)
-      console.log("============================")
+      console.log("========> New latency: ", this.latency)
 
       this.serverOffset = performance.now() - (serverTime + this.latency);
     }
@@ -102,8 +100,6 @@ export default class Synchronizer {
   _filterStandardDeviationAroundMedian(array) {
     let medianValue = median(array);
     let standardDev = standardDeviation(array, true);
-    console.log(`Median: ${medianValue}`)
-    console.log(`Range: (${medianValue - standardDev}, ${medianValue + standardDev})`)
 
     return array.filter(num => {
       return num < (medianValue + standardDev) && num > (medianValue - standardDev)
