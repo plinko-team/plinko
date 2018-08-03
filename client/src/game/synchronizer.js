@@ -66,7 +66,6 @@ export default class Synchronizer {
   pingOnInterval(intervalTime) {
     let interval = setInterval(() => {
       this.pingEmitTimes.push(performance.now());
-      console.log("pET: ", this.pingEmitTimes)
 
       this.socket.emit(PING_MESSAGE, { ping: true })
 
