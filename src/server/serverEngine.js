@@ -161,14 +161,14 @@ export default class ServerEngine {
     const winningPlayer = scores.some(score => score >= this.targetScore);
 
     // ADD NO PLAYERS CONNECTED CHECK LATER
-    return (this.targetScore === 0 && !scoresAboveZero) || winningPlayer; ß
+    return (this.targetScore === 0 && !scoresAboveZero) || winningPlayer;
   }
 
   reduceTargetScoreInterval() {
     //this.targetScoreInterval = true;
 
     this.targetScoreInterval = setInterval(() => {
-      this.targetScore -= 1;
+      this.targetScore -= 3;
     }, 1000);
   }
 

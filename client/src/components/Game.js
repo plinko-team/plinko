@@ -17,13 +17,13 @@ export default class Game extends Component {
   }
 
   state = {
-    someoneWon: false,
+    gameEnded: false,
     targetScore: 63,
     players: {},
   }
 
   componentDidMount() {
-    // this.setState({targetScore: 50, someoneWon: true});
+    // this.setState({targetScore: 50, gameEnded: true});
 
     this.setState({players: this.props.players});
     this.client = new ClientEngine({ socket: this.props.socket });
@@ -41,14 +41,14 @@ export default class Game extends Component {
     this.props.socket.on(SNAPSHOT, ({ score, targetScore }) => {
       this.setState((prevState) => {
         const newPlayers = {};
-        let someoneWon = false;
+        let gameEnded = false;
 
         Object.keys(prevState.players).map(id => {
           let player = prevState.players[id];
           let playerScore = score[id];
 
           if (playerScore >= targetScore) {
-            someoneWon = true;
+            gameEnded = true;
           }
 
           newPlayers[id] = Object.assign({}, player, { score: playerScore })
@@ -57,28 +57,38 @@ export default class Game extends Component {
         return {
           targetScore,
           players: newPlayers,
-          someoneWon
+          gameEnded
         }
       })
     });
   }
 
   winnerBanner = (winnerId) => {
-    return (
-      <WinnerBanner
-        winnerName={this.state.players[winnerId].name}
-        winnerColorId={this.state.players[winnerId].colorId}
-        handleNewGameClick={this.props.handleEndGameClick}
-      />
-    )
+    if (winnerId) {
+      return (
+        <WinnerBanner
+          winnerName={this.state.players[winnerId].name}
+          winnerColorId={this.state.players[winnerId].colorId}
+          handleNewGameClick={this.props.handleEndGameClick}
+        />
+      )
+    } else {
+      return (
+        <WinnerBanner
+          handleNewGameClick={this.props.handleEndGameClick}
+        />
+      )
+    }
+    
+    
   }
 
   render() {
     let winnerId;
 
-    if (this.state.someoneWon) {
+    if (this.state.gameEnded) {
       const userIds = Object.keys(this.state.players);
-      winnerId = userIds.find(id => this.state.players[id].score >= this.state.targetScore);
+      winnerId = userIds.find(id => (this.state.players[id].score >= this.state.targetScore) && this.state.targetScore !== 0);
     }
 
     return (
@@ -89,7 +99,7 @@ export default class Game extends Component {
           winnerId={winnerId}
         />
 
-        {winnerId !== undefined && this.winnerBanner(winnerId)}
+        {this.state.gameEnded && this.winnerBanner(winnerId)}
 
         <div className="canvas"></div>
 
