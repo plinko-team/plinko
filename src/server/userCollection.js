@@ -12,7 +12,9 @@ export default class UserCollection {
   }
 
   delete(user) {
-    delete this.users[user.userId];
+    if (this.users[user.userId]) {
+      delete this.users[user.userId];
+    }
   }
 
   get(userId) {

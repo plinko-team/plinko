@@ -40,26 +40,20 @@ export default class Game extends Component {
   }
 
   registerSocketEvents = () => {
-    this.props.socket.on(SNAPSHOT, ({ score, targetScore }) => {
+    this.props.socket.on(SNAPSHOT, ({ score, winner, targetScore }) => {
       this.setState((prevState) => {
         const newPlayers = {};
-        let someoneWon = false;
 
         Object.keys(prevState.players).map(id => {
           let player = prevState.players[id];
           let playerScore = score[id];
-
-          if (playerScore >= targetScore) {
-            someoneWon = true;
-          }
-
           newPlayers[id] = Object.assign({}, player, { score: playerScore })
         });
 
         return {
           targetScore,
           players: newPlayers,
-          someoneWon
+          someoneWon: winner,
         }
       })
     });

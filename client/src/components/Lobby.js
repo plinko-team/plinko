@@ -57,7 +57,7 @@ export default class Lobby extends Component {
     return Object.keys(usersObj).map(id => {
       let user = usersObj[id];
       return (
-        <li key={"player-" + id} className={active ? "player-color-" + user.colorId : ""}>
+        <li key={"player-" + id} className={active ? "player-" + user.playerId : ""}>
           <span className="dot"></span>
           {user.name}
         </li>
