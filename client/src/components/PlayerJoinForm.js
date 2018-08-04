@@ -19,7 +19,7 @@ const PlayerJoinForm = ({ userName, handleSubmit, handleChange }) => {
   )
 }
 
-PlayerNameForm.propTypes = {
+PlayerJoinForm.propTypes = {
   handleChange: PropTypes.func,
   handleSubmit: PropTypes.func,
 }

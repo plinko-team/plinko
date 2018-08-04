@@ -1,4 +1,4 @@
-export default class WaitingQueue () {
+export default class WaitingQueue {
   constructor() {
     this.queue = [];
   }
@@ -7,19 +7,23 @@ export default class WaitingQueue () {
     return this.queue.length;
   }
 
-  enqueue(player) {
-    player.setWaiting();
-    this.queue.push(player);
+  enqueue(user) {
+    user.setWaiting();
+    this.queue.push(user);
   }
 
   dequeue() {
-    let player = this.queue.shift();
+    let user = this.queue.shift();
 
-    if (player) {
-      player.setActive();
-      return player;
+    if (user) {
+      user.setActive();
+      return user;
     } else {
       return false;
     }
+  }
+
+  forEach(cb) {
+    this.queue.forEach(cb);
   }
 }

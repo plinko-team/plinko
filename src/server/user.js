@@ -1,9 +1,12 @@
+import shortid from 'shortid'
+
 export default class User {
   constructor({ name, socket }) {
     this.name = name;
     this.socket = socket;
-    this.userId = null;
+    this.userId = shortid.generate();
     this.status = null;
+    this.colorId = null;
   }
 
   setActive() {
@@ -16,9 +19,5 @@ export default class User {
 
   resetStatus() {
     this.status = null;
-  }
-
-  setUserId(id) {
-    this.userId = id;
   }
 }

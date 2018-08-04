@@ -8,11 +8,11 @@ import StartGameButton from './StartGameButton';
 export default class Lobby extends Component {
   static propTypes = {
     userId: PropTypes.string,
-    activePlayers: PropTypes.object,
-    waitingPlayers: PropTypes.object,
-    gameInProgress: PropTypes.bool,
+    activeUsers: PropTypes.object,
+    waitingUsers: PropTypes.object,
+    gameIsRunning: PropTypes.bool,
     handleStartGameClick: PropTypes.func,
-    handlePlayerJoin: PropTypes.func,
+    handleUserJoin: PropTypes.func,
     isNameFormOpen: PropTypes.bool,
   }
 
@@ -21,58 +21,58 @@ export default class Lobby extends Component {
   }
 
   // lobby should maintain state for isNameFormOpen, which starts as false
-  // updated based on isActivePlayer() || isWaitingPlayer()
+  // updated based on isactiveUser() || iswaitingUser()
 
-  activePlayerList = () => {
+  activeUserList = () => {
     return (
       <div className="active-players row">
         <div className="players-container four columns">
           <h2>{"You've got next"}</h2>
           <ul>
-            {this.playerItems(this.props.activePlayers, true)}
+            {this.userItems(this.props.activeUsers, true)}
           </ul>
         </div>
 
-        {this.isActivePlayer() && this.gameStartElement()}
+        {this.isactiveUser() && this.gameStartElement()}
 
       </div>
     )
   }
 
-  waitingPlayerList = () => {
+  waitingUserList = () => {
     return (
       <div className="waiting-players">
         <div className="players-container">
           <h2>Your turn is coming up</h2>
-          {this.isWaitingPlayer() && <p className="alert">Plinko supports four players at a time. When an active players leaves, the first waiting player will move up to join the next game.</p>}
+          {this.iswaitingUser() && <p className="alert">Plinko supports four players at a time. When an active players leaves, the first waiting player will move up to join the next game.</p>}
           <ul>
-            {this.playerItems(this.props.waitingPlayers)}
+            {this.userItems(this.props.waitingUsers)}
           </ul>
       </div>
       </div>
     )
   }
 
-  playerItems = (playersObj, active=false) => {
-    return Object.keys(playersObj).map(id => {
-      let player = playersObj[id];
+  userItems = (usersObj, active=false) => {
+    return Object.keys(usersObj).map(id => {
+      let user = usersObj[id];
       return (
-        <li key={"player-" + id} className={active ? "player-color-" + player.colorId : ""}>
+        <li key={"player-" + id} className={active ? "player-color-" + user.colorId : ""}>
           <span className="dot"></span>
-          {player.name}
+          {user.name}
         </li>
       )
     })
   }
 
   gameStartElement = () => {
-    if (this.isActivePlayer() && this.props.gameInProgress) {
+    if (this.isactiveUser() && this.props.gameIsRunning) {
       return (
         <p class="alert five columns offset-by-two">
           A game is currently in progress. When it's over, you and the other active players can start a new game.
         </p>
       )
-    } else if (this.isActivePlayer()) {
+    } else if (this.isactiveUser()) {
       return (
         <StartGameButton
           handleClick={this.props.handleStartGameClick}
@@ -82,27 +82,25 @@ export default class Lobby extends Component {
     }
   }
 
-  isActivePlayer = () => {
-    return Object.keys(this.props.activePlayers).includes(this.props.userId);
+  isactiveUser = () => {
+    return Object.keys(this.props.activeUsers).includes(this.props.userId);
   }
 
-  isWaitingPlayer = () => {
-    return Object.keys(this.props.waitingPlayers).includes(this.props.userId);
+  iswaitingUser = () => {
+    return Object.keys(this.props.waitingUsers).includes(this.props.userId);
   }
 
   isNameFormOpen = () => {
-    return !this.isActivePlayer() && !this.isWaitingPlayer()
+    return !this.isactiveUser() && !this.iswaitingUser()
   }
 
   handleNameChange = (input) => {
-    this.setState({userName: input}, () => {
-      console.log("This sets Lobby's state.userName to " + this.state.userName);
-    });
+    this.setState({userName: input});
   }
 
-  handlePlayerJoin = () => {
+  handleUserJoin = () => {
     // validation logic and error notice here
-    this.props.handlePlayerJoin(this.state.userName.trim());
+    this.props.handleUserJoin(this.state.userName.trim());
   }
 
   render() {
@@ -110,10 +108,10 @@ export default class Lobby extends Component {
       <main>
         <Header />
         <div className="main-content lobby">
-          {this.isNameFormOpen() && <PlayerNameForm userName={this.state.userName} handleSubmit={this.handlePlayerJoin} handleChange={this.handleNameChange} />}
+          {this.isNameFormOpen() && <PlayerJoinForm userName={this.state.userName} handleSubmit={this.handleUserJoin} handleChange={this.handleNameChange} />}
 
-          {Object.keys(this.props.activePlayers).length && this.activePlayerList()}
-          {Object.keys(this.props.waitingPlayers).length && this.waitingPlayerList()}
+          {Object.keys(this.props.activeUsers).length && this.activeUserList()}
+          {Object.keys(this.props.waitingUsers).length && this.waitingUserList()}
         </div>
       </main>
     )

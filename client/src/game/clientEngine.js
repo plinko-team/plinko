@@ -57,7 +57,7 @@ export default class ClientEngine {
     this.registerSocketEvents();
 
     // Wait 250ms so that the socket.io connection can complete
-    setTimeout(this.establishSynchronization.bind(this), 250)
+    // setTimeout(this.establishSynchronization.bind(this), 250)
 
     return this;
   }

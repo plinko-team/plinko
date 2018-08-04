@@ -8,12 +8,20 @@ import About from './pages/About';
 import Team from './pages/Team';
 
 class App extends Component {
+  state = {
+    uuid: undefined,
+  }
+
+  setUserId = (userId) => {
+    this.setState({ userId });
+  }
+
   render() {
     return (
       <div>
         <TopNav />
         <Switch>
-          <Route exact path='/play' component={GameContainer} />
+          <Route exact path='/play' render={() => <GameContainer setUserId={this.setUserId} userId={this.state.userId} />} />
           <Route exact path='/about' component={About} />
           <Route exact path='/team' component={Team} />
           <Route path='/' component={Welcome} />
