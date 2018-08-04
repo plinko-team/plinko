@@ -4,16 +4,15 @@ import PropTypes from 'prop-types';
 import Game from './Game';
 import Lobby from './Lobby';
 
-import openSocketConnection from '../game/socket';
-
 export default class GameContainer extends Component {
   static propTypes = {
     setUserId: PropTypes.func,
     userId: PropTypes.string,
+    socket: PropTypes.object,
+    connectToSocket: PropTypes.func,
   }
 
   state = {
-    socket: {},
     gameIsRunning: false,
     userInGame: false,
     activeUsers: {},
@@ -43,29 +42,26 @@ export default class GameContainer extends Component {
   //   etc.
   // }
 
+  get hasOpenSocket() {
+    return Object.keys(this.props.socket).length > 0;
+  }
+
   componentDidMount() {
-    if (this.props.userId !== undefined) {
-      const socket = this.connectToSocket();
-      socket.emit('reconnection', {userId: this.props.userId});
+    if (this.props.userId !== undefined && this.hasOpenSocket) {
+      console.log('emitting rejoin game')
+      this.registerSocketEvents(this.props.socket);
+      this.props.socket.emit('rejoin game', {userId: this.props.userId});
     }
   }
 
   componentWillUnmount() {
-    // if (Object.keys(this.state.socket).length > 0) {
-    //   this.disconnectFromSocket();
-    // }
-  }
-
-  connectToSocket = () => {
-    const socket = openSocketConnection('localhost:3001');
-    this.setState({ socket });
-
-    return socket;
-  }
-
-  disconnectFromSocket = () => {
-    this.state.socket.disconnect(true);
-    console.log('Disconnected!');
+    if (this.hasOpenSocket) {
+      console.log('emitting leave game')
+      this.props.socket.emit('leave game');
+      this.props.socket.removeAllListeners('connection established');
+      this.props.socket.removeAllListeners('new user ack');
+      this.props.socket.removeAllListeners('user list');
+    }
   }
 
   handleEndGameClick = () => {
@@ -74,14 +70,16 @@ export default class GameContainer extends Component {
   }
 
   handleStartGameClick = () => {
-    console.log('This should start a new game with the top 4 users in lobby');
-    this.state.socket.emit('start game');
+    console.log('This should move all current users into game');
+    this.props.socket.emit('start game');
     this.setState({gameIsRunning: true});
   }
 
   handleUserJoin = (name) => {
     console.log(`This should submit the new name "${name}" to the server from GameContainer, which should broadcast updated user lists to all users in lobby, which should close the form`)
-    const socket = this.connectToSocket();
+    const socket = this.props.connectToSocket();
+
+    this.registerSocketEvents(socket);
 
     socket.on('connection established', ({ message }) => {
       console.log('ESTABLISHED!', message);
@@ -92,8 +90,12 @@ export default class GameContainer extends Component {
       this.props.setUserId(userId);
       console.log('userId', userId)
     });
+  }
 
+  registerSocketEvents(socket) {
     socket.on('user list', ({ activeUsers, waitingUsers }) => {
+      console.log('received user list')
+      console.log(activeUsers)
       this.setState({ activeUsers, waitingUsers });
     });
   }
@@ -102,7 +104,7 @@ export default class GameContainer extends Component {
     if (this.state.gameIsRunning) {
       return (
         <Game
-          socket={this.state.socket}
+          socket={this.props.socket}
           userId={this.props.userId}
           players={this.state.activeUsers}
           handleEndGameClick={this.handleEndGameClick}
@@ -115,7 +117,6 @@ export default class GameContainer extends Component {
           activeUsers={this.state.activeUsers}
           waitingUsers={this.state.waitingUsers}
           gameIsRunning={this.state.gameIsRunning}
-          isNameFormOpen={this.state.isNameFormOpen}
           handleStartGameClick={this.handleStartGameClick}
           handleUserJoin={this.handleUserJoin}
         />

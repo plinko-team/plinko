@@ -48,6 +48,8 @@ export default class ServerEngine {
     this.gameIsRunning = false;
     this.gameLoop = undefined;
     this.playerIds = {0: null, 1: null, 2: null, 3: null};
+
+    console.log('new ServerEngine! gameIsRunning:', this.gameIsRunning)
   }
 
   init() {
@@ -149,21 +151,17 @@ export default class ServerEngine {
       socket.on('new user', ({ name }) => {
         user = new User({ socket });
         user.name = name;
-
         this.users.add(user);
-        this.waitingQueue.enqueue(user);
-        this.fillActiveUsers();
         socket.emit('new user ack', { userId: user.userId });
-        this.broadcastUserList();
-      });
 
-      socket.on('reconnection', ({ userId }) => {
-        user = this.users.get(userId);
-        if (user) {
-          user.socket = socket;
-          this.waitingQueue.enqueue(user);
+        this.waitingQueue.enqueue(user);
+
+        console.log('new user! gameIsRunning:', this.gameIsRunning)
+        if (!this.gameIsRunning) {
           this.fillActiveUsers();
         }
+
+        this.broadcastUserList();
       });
 
       // Events must be set on socket established through connection
@@ -183,19 +181,48 @@ export default class ServerEngine {
         this.startGame();
       });
 
-      socket.on('disconnect', () => {
-        this.activeUsers.delete(user);
-        this.playerIds[user.playerId] = null;
-
-        if (this.gameIsRunning) {
-          if (this.activeUsers.length === 0) {
-            this.stopGame();
-          }
-        } else {
-          this.fillActiveUsers();
+      socket.on('leave game', () => {
+        if (user) {
+          console.log('received leave game for userID', user.userId)
+          this.removeFromGame(user);
         }
       });
+
+      // should be called when users refresh or navigate away from site,
+      // but we are not currently emitting an explicit disconnect
+      socket.on('disconnect', () => {
+        this.removeFromGame(user);
+        this.users.delete(user);
+        user = undefined;
+      });
+
+      socket.on('rejoin game', ({ userId }) => {
+        console.log('received rejoin game for userId', userId)
+        user = this.users.get(userId);
+        this.waitingQueue.enqueue(user);
+
+        if (!this.gameIsRunning) {
+          this.fillActiveUsers();
+        }
+
+        this.broadcastUserList();
+      });
     });
+  }
+
+  removeFromGame(user) {
+    this.activeUsers.delete(user);
+    this.playerIds[user.playerId] = null;
+
+    if (this.gameIsRunning) {
+      if (this.activeUsers.length === 0) {
+        this.stopGame();
+      }
+    } else {
+      this.fillActiveUsers();
+    }
+
+    this.broadcastUserList();
   }
 
   broadcastUserList() {
