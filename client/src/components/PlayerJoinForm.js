@@ -1,12 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const PlayerNameForm = ({ userName, handleSubmit, handleChange }) => {
+const PlayerJoinForm = ({ userName, handleSubmit, handleChange }) => {
   const updateName = (e) => {
     handleChange(e.target.value);
   }
 
-  const submitName = (e) => {
+  const joinGame = (e) => {
     // validation here
     handleSubmit();
   }
@@ -14,14 +14,14 @@ const PlayerNameForm = ({ userName, handleSubmit, handleChange }) => {
   return (
     <div className="name-form">
       <input type="text" placeholder="Your Name" value={userName} onChange={updateName} />
-      <button className="button-primary" onClick={submitName}>Join</button>
+      <button className="button-primary" onClick={joinGame}>Join</button>
     </div>
   )
 }
 
-PlayerNameForm.propTypes = {
+PlayerJoinForm.propTypes = {
   handleChange: PropTypes.func,
   handleSubmit: PropTypes.func,
 }
 
-export default PlayerNameForm;
+export default PlayerJoinForm;

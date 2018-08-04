@@ -37,8 +37,8 @@ import { CANVAS,
 **/
 
 export default class ClientEngine {
-  constructor({ socket }) {
-    this.socket = socket;
+  constructor({ url }) {
+    this.socket = io.connect(url);
     this.renderer = new Renderer();
     this.eventEmitter = new EventEmitter();
     this.synchronizer = new Synchronizer(this.socket, this.eventEmitter).init();
@@ -57,7 +57,7 @@ export default class ClientEngine {
     this.registerSocketEvents();
 
     // Wait 250ms so that the socket.io connection can complete
-    setTimeout(this.establishSynchronization.bind(this), 250)
+    // setTimeout(this.establishSynchronization.bind(this), 250)
 
     return this;
   }
@@ -72,8 +72,8 @@ export default class ClientEngine {
   }
 
   registerSocketEvents() {
-    this.socket.on(CONNECTION_ESTABLISHED, ({ playerId }) => {
-      window.playerId = playerId;
+    this.socket.on(CONNECTION_ESTABLISHED, ({ uuid }) => {
+      this.uuid = uuid;
       this.frame = 0;
     });
 

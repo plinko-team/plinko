@@ -7,6 +7,9 @@ import Triangle from '../shared/bodies/Triangle';
 import { VerticalWall, HorizontalWall, BucketWall } from '../shared/bodies/Wall';
 import { Input, InputBuffer } from './inputBuffer';
 import Serializer from '../shared/serializer';
+import User from './user';
+import UserCollection from './userCollection';
+import WaitingQueue from './waitingQueue';
 
 import { CANVAS,
          ROWS,
@@ -35,15 +38,19 @@ import { CONNECTION,
 
 export default class ServerEngine {
   constructor({ io }) {
-    this.knownPlayers = [];
+    this.users = new UserCollection();
+    this.activeUsers = new UserCollection();
     this.io = io;
     this.engine = Engine.create();
     this.frame = 0;
     this.inputBuffer = new InputBuffer();
+    this.waitingQueue = new WaitingQueue();
+    this.gameIsRunning = false;
+    this.gameLoop = undefined;
+    this.colorIds = {0: null, 1: null, 2: null, 3: null};
   }
 
   init() {
-    this.lastId = 0;
     this.chips = {};
     this.pegs = [];
     this.winner = false;
@@ -108,35 +115,110 @@ export default class ServerEngine {
     }
   }
 
-
   registerPhysicsEvents() {
     // Collision Events
     Events.on(this.engine, 'collisionStart', this.onCollisionStart);
   }
 
+  fillActiveUsers = () => {
+    while (this.waitingQueue.length > 0 && this.activeUsers.length < 4) {
+      let user = this.waitingQueue.dequeue();
+      if (this.users.get(user.userId)) {
+        let colorId;
+
+        for (let id in this.colorIds) {
+          if (!this.colorIds[id]) {
+            user.colorId = id;
+            this.colorIds[id] = user.userId;
+            break;
+          }
+        }
+
+        this.activeUsers.add(user);
+        user.setActive();
+      }
+    }
+  }
+
   registerSocketEvents() {
-    let playerId = 0;
-    let i = 0;
-
     this.io.on(CONNECTION, socket => {
-      this.knownPlayers.push(socket);
+      let user;
 
-      socket.emit(CONNECTION_ESTABLISHED, { playerId: playerId % 4 });
-      playerId++;
+      socket.emit(CONNECTION_ESTABLISHED, { message: 'congratulations' });
+
+      socket.on('new user', ({ name }) => {
+        user = new User({ socket });
+        user.name = name;
+
+        this.users.add(user);
+        this.waitingQueue.enqueue(user);
+        this.fillActiveUsers();
+        socket.emit('new user ack', { userId: user.userId });
+        this.broadcastUserList();
+      });
+
+      socket.on('reconnection', ({ userId }) => {
+        user = this.users.get(userId);
+        user.socket = socket;
+        this.waitingQueue.enqueue(user);
+        this.fillActiveUsers();
+      });
 
       // Events must be set on socket established through connection
       socket.on(NEW_CHIP, (chipInfo) => {
         this.inputBuffer.insert(new Input(chipInfo));
-      })
+      });
 
       socket.on(PING_MESSAGE, () => {
         socket.emit(PONG_MESSAGE, { serverTime: Date.now() });
-      })
+      });
 
       socket.on(REQUEST_SERVER_FRAME, () => {
         socket.emit(SERVER_FRAME, { frame: this.frame });
-      })
+      });
+
+      socket.on('start game', () => {
+        this.startGame();
+      });
+
+      socket.on('disconnect', () => {
+        this.activeUsers.delete(user);
+        this.colorIds[user.colorId] = null;
+
+        if (this.gameIsRunning) {
+          if (this.activeUsers.length === 0) {
+            this.stopGame();
+          }
+        } else {
+          this.fillActiveUsers();
+        }
+      });
     });
+  }
+
+  broadcastUserList() {
+    this.users.forEach((user) => {
+      if (user.status === 'waiting' || user.status === 'active') {
+        let activeUsers = {};
+        let waitingUsers = {};
+        let colorId
+
+        this.activeUsers.forEach(user => {
+          activeUsers[user.userId] = {
+            name: user.name,
+            colorId: user.colorId,
+          }
+        });
+
+        this.waitingQueue.forEach(user => {
+          waitingUsers[user.userId] = {
+            name: user.name,
+          }
+        });
+
+        user.socket.emit('user list', ({ activeUsers, waitingUsers }));
+      }
+    })
   }
 
   processInputBuffer() {
@@ -171,6 +253,8 @@ export default class ServerEngine {
   }
 
   startGame() {
+    this.gameIsRunning = true;
+
     this.nextTimestep = this.nextTimestep || Date.now();
 
     while (Date.now() > this.nextTimestep) {
@@ -192,11 +276,26 @@ export default class ServerEngine {
       this.nextTimestep += TIMESTEP;
     }
 
-    setImmediate(this.startGame.bind(this))
+    this.gameLoop = setImmediate(this.startGame.bind(this))
   }
 
   stopGame() {
-    clearInterval(this.loop);
+    clearImmediate(this.gameLoop);
+    this.gameIsRunning = false;
+    this.resetGame();
+  }
+
+  resetGame() {
+    this.activeUsers = new UserCollection();
+    this.engine = Engine.create();
+    this.frame = 0;
+    this.inputBuffer = new InputBuffer();
+    this.gameLoop = undefined;
+    this.chips = {};
+    this.pegs = [];
+    this.winner = false;
+    this.initializeScore();
+    this.createEnvironment();
   }
 
   generateSnapshot(chips, pegs, score, winner, targetScore) {
@@ -224,7 +323,8 @@ export default class ServerEngine {
   broadcastSnapshot({ chips, pegs, score, winner, targetScore }) {
     let encodedSnapshot = Serializer.encode({ chips, pegs, score, winner, targetScore })
 
-    this.knownPlayers.forEach(socket => {
+    this.users.forEach(user => {
+      let socket = user.socket;
       socket.emit(SNAPSHOT, { frame: this.frame, encodedSnapshot, score, targetScore });
     })
   }
