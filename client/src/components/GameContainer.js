@@ -14,54 +14,40 @@ export default class GameContainer extends Component {
 
   state = {
     socket: {},
-    gameIsRunning: false, // a game is currently running
-    userInGame: false,     // the user is part of the currently running game
-    activeUsers: {},     // users in top 4, will include this user if userInGame OR user is up in next round
-    waitingUsers: {},    // users below top 4, may include this user
+    gameIsRunning: false,
+    userInGame: false,
+    activeUsers: {},
+    waitingUsers: {},
   }
+
+  // activeUsers:
+  // {
+  //   'fwed23d': {
+  //     name: 'Ryann',
+  //     playerId: 0,
+  //   },
+  //   'kjsd9s0': {
+  //     name: 'Josh',
+  //     playerId: 1,
+  //   },
+  //   etc.
+  // }
+  // waitingUsers:
+  // {
+  //   'lkdweo8': {
+  //     name: 'Branko',
+  //   },
+  //   '3ds-wdf': {
+  //     name: 'RK',
+  //   },
+  //   etc.
+  // }
 
   componentDidMount() {
     if (this.props.userId !== undefined) {
       const socket = this.connectToSocket();
       socket.emit('reconnection', {userId: this.props.userId});
     }
-
-    // this.setState(() => {
-    //   return {
-    //     userName: '',
-    //     gameIsRunning: false,
-    //     activeUsers: {
-    //       0: {
-    //         name: 'Branko',
-    //         score: 0,
-    //         colorId: 0,
-    //       },
-    //       1: {
-    //         name: 'Josh',
-    //         score: 0,
-    //         colorId: 1,
-    //       },
-    //       2: {
-    //         name: 'Ryann',
-    //         score: 0,
-    //         colorId: 2,
-    //       },
-    //       3: {
-    //         name: 'Longest Name 15',
-    //         score: 0,
-    //         colorId: 3,
-    //       },
-    //     },
-    //     waitingUsers: {
-    //       41231: {
-    //         name: 'Poor Schmuck',
-    //       },
-    //       75654: {
-    //         name: 'Sad Sack',
-    //       }
-    //     }
-    //   }
-    // });
   }
 
   componentWillUnmount() {
@@ -117,6 +103,7 @@ export default class GameContainer extends Component {
       return (
         <Game
           socket={this.state.socket}
+          userId={this.props.userId}
           players={this.state.activeUsers}
           handleEndGameClick={this.handleEndGameClick}
         />

@@ -47,7 +47,7 @@ export default class ServerEngine {
     this.waitingQueue = new WaitingQueue();
     this.gameIsRunning = false;
     this.gameLoop = undefined;
-    this.colorIds = {0: null, 1: null, 2: null, 3: null};
+    this.playerIds = {0: null, 1: null, 2: null, 3: null};
   }
 
   init() {
@@ -124,12 +124,12 @@ export default class ServerEngine {
     while (this.waitingQueue.length > 0 && this.activeUsers.length < 4) {
       let user = this.waitingQueue.dequeue();
       if (this.users.get(user.userId)) {
-        let colorId;
+        let playerId;
 
-        for (let id in this.colorIds) {
-          if (!this.colorIds[id]) {
-            user.colorId = id;
-            this.colorIds[id] = user.userId;
+        for (let id in this.playerIds) {
+          if (!this.playerIds[id]) {
+            user.playerId = id;
+            this.playerIds[id] = user.userId;
             break;
           }
         }
@@ -159,9 +159,11 @@ export default class ServerEngine {
 
       socket.on('reconnection', ({ userId }) => {
         user = this.users.get(userId);
-        user.socket = socket;
-        this.waitingQueue.enqueue(user);
-        this.fillActiveUsers();
+        if (user) {
+          user.socket = socket;
+          this.waitingQueue.enqueue(user);
+          this.fillActiveUsers();
+        }
       });
 
       // Events must be set on socket established through connection
@@ -183,7 +185,7 @@ export default class ServerEngine {
 
       socket.on('disconnect', () => {
         this.activeUsers.delete(user);
-        this.colorIds[user.colorId] = null;
+        this.playerIds[user.playerId] = null;
 
         if (this.gameIsRunning) {
           if (this.activeUsers.length === 0) {
@@ -201,12 +203,12 @@ export default class ServerEngine {
       if (user.status === 'waiting' || user.status === 'active') {
         let activeUsers = {};
         let waitingUsers = {};
-        let colorId
+        let playerId
 
         this.activeUsers.forEach(user => {
           activeUsers[user.userId] = {
             name: user.name,
-            colorId: user.colorId,
+            playerId: user.playerId,
           }
         });
 

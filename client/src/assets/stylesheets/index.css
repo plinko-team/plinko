@@ -220,23 +220,23 @@ canvas {
   display: inline-block;
   background-color: #555;
 }
-.player-color-0 .dot,
-.player-color-0 .score-bar,
-.player-color-0.winner-banner {
+.player-0 .dot,
+.player-0 .score-bar,
+.player-0.winner-banner {
   background-color: #ffaaaa;
 }
-.player-color-1 .dot,
-.player-color-1 .score-bar,
-.player-color-1.winner-banner  {
+.player-1 .dot,
+.player-1 .score-bar,
+.player-1.winner-banner  {
   background-color: #ffee75;
 }
-.player-color-2 .dot,
-.player-color-2 .score-bar,
-.player-color-2.winner-banner  {
+.player-2 .dot,
+.player-2 .score-bar,
+.player-2.winner-banner  {
   background-color: #ecb5ff;
 }
-.player-color-3 .dot,
-.player-color-3 .score-bar,
-.player-color-3.winner-banner  {
+.player-3 .dot,
+.player-3 .score-bar,
+.player-3.winner-banner  {
   background-color: #aaffb1;
 }

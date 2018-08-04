@@ -6,7 +6,7 @@ export default class User {
     this.socket = socket;
     this.userId = shortid.generate();
     this.status = null;
-    this.colorId = null;
+    this.playerId = null; // integers 0-3 or null
   }
 
   setActive() {
