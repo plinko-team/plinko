@@ -56,8 +56,12 @@ export default class GameContainer extends Component {
   componentDidMount() {
     if (this.hasUserId() && this.hasOpenSocket) {
       console.log('emitting rejoin game')
-      this.registerSocketEvents(this.props.socket);
       this.props.socket.emit('rejoin game', { userId: this.props.userId });
+      this.registerSocketEvents(this.props.socket);
+      this.setState({
+        gameInProgress: false,
+        gameIsRunning: false
+      })
     }
   }
 
@@ -102,7 +106,7 @@ export default class GameContainer extends Component {
     });
 
     socket.once('rejoin game ack', ({ gameInProgress }) => {
-      this.setState({ gameInProgress })
+      this.setState({ gameInProgress });
     })
 
     socket.on('user list', ({ activeUsers, waitingUsers }) => {

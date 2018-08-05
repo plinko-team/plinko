@@ -125,6 +125,7 @@ export default class ServerEngine {
   fillActiveUsers = () => {
     while (this.waitingQueue.length > 0 && this.activeUsers.length < 4) {
       let user = this.waitingQueue.dequeue();
+
       if (this.users.get(user.userId)) {
         let playerId;
 
@@ -207,9 +208,12 @@ export default class ServerEngine {
       socket.on('rejoin game', ({ userId }) => {
         console.log('received rejoin game for userId', userId)
         user = this.users.get(userId);
+
+        this.activeUsers.delete(user);
         this.waitingQueue.enqueue(user);
 
         if (!this.gameIsRunning) {
+          console.log("Filling active users from rejoin game")
           this.fillActiveUsers();
         }
 
@@ -234,28 +238,30 @@ export default class ServerEngine {
   }
 
   broadcastUserList() {
+    let activeUsers = {};
+    let waitingUsers = {};
+    let playerId;
+
+    this.activeUsers.forEach(user => {
+      activeUsers[user.userId] = {
+        name: user.name,
+        playerId: user.playerId,
+      }
+    });
+
+    this.waitingQueue.forEach(user => {
+      waitingUsers[user.userId] = {
+        name: user.name,
+      }
+    });
+
     this.users.forEach((user) => {
       if (user.status === 'waiting' || user.status === 'active') {
-        let activeUsers = {};
-        let waitingUsers = {};
-        let playerId
-
-        this.activeUsers.forEach(user => {
-          activeUsers[user.userId] = {
-            name: user.name,
-            playerId: user.playerId,
-          }
-        });
-
-        this.waitingQueue.forEach(user => {
-          waitingUsers[user.userId] = {
-            name: user.name,
-          }
-        });
-
         user.socket.emit('user list', ({ activeUsers, waitingUsers }));
       }
     })
+
+    console.log("Active: ", activeUsers, "\nWaiting: ",  waitingUsers)
   }
 
   processInputBuffer() {
@@ -317,10 +323,14 @@ export default class ServerEngine {
   }
 
   stopGame() {
-    this.users.broadcastAll('game over');
     clearImmediate(this.gameLoop);
     this.gameIsRunning = false;
     this.resetGame();
+
+    this.fillActiveUsers();
+
+    this.users.broadcastAll('game over');
+    this.broadcastUserList();
   }
 
   resetGame() {
