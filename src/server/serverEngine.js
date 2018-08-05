@@ -157,6 +157,7 @@ export default class ServerEngine {
         this.waitingQueue.enqueue(user);
 
         console.log('new user! gameIsRunning:', this.gameIsRunning)
+
         if (!this.gameIsRunning) {
           this.fillActiveUsers();
         }
@@ -214,10 +215,8 @@ export default class ServerEngine {
     this.activeUsers.delete(user);
     this.playerIds[user.playerId] = null;
 
-    if (this.gameIsRunning) {
-      if (this.activeUsers.length === 0) {
-        this.stopGame();
-      }
+    if (this.gameIsRunning && this.activeUsers.length === 0) {
+      this.stopGame();
     } else {
       this.fillActiveUsers();
     }
