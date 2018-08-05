@@ -47,7 +47,9 @@ export default class ServerEngine {
     this.waitingQueue = new WaitingQueue();
     this.gameIsRunning = false;
     this.gameLoop = undefined;
-    this.colorIds = {0: null, 1: null, 2: null, 3: null};
+    this.playerIds = {0: null, 1: null, 2: null, 3: null};
+
+    console.log('new ServerEngine! gameIsRunning:', this.gameIsRunning)
   }
 
   init() {
@@ -124,12 +126,12 @@ export default class ServerEngine {
     while (this.waitingQueue.length > 0 && this.activeUsers.length < 4) {
       let user = this.waitingQueue.dequeue();
       if (this.users.get(user.userId)) {
-        let colorId;
+        let playerId;
 
-        for (let id in this.colorIds) {
-          if (!this.colorIds[id]) {
-            user.colorId = id;
-            this.colorIds[id] = user.userId;
+        for (let id in this.playerIds) {
+          if (!this.playerIds[id]) {
+            user.playerId = id;
+            this.playerIds[id] = user.userId;
             break;
           }
         }
@@ -149,19 +151,17 @@ export default class ServerEngine {
       socket.on('new user', ({ name }) => {
         user = new User({ socket });
         user.name = name;
-
         this.users.add(user);
-        this.waitingQueue.enqueue(user);
-        this.fillActiveUsers();
         socket.emit('new user ack', { userId: user.userId });
-        this.broadcastUserList();
-      });
 
-      socket.on('reconnection', ({ userId }) => {
-        user = this.users.get(userId);
-        user.socket = socket;
         this.waitingQueue.enqueue(user);
-        this.fillActiveUsers();
+
+        console.log('new user! gameIsRunning:', this.gameIsRunning)
+        if (!this.gameIsRunning) {
+          this.fillActiveUsers();
+        }
+
+        this.broadcastUserList();
       });
 
       // Events must be set on socket established through connection
@@ -181,19 +181,48 @@ export default class ServerEngine {
         this.startGame();
       });
 
-      socket.on('disconnect', () => {
-        this.activeUsers.delete(user);
-        this.colorIds[user.colorId] = null;
-
-        if (this.gameIsRunning) {
-          if (this.activeUsers.length === 0) {
-            this.stopGame();
-          }
-        } else {
-          this.fillActiveUsers();
+      socket.on('leave game', () => {
+        if (user) {
+          console.log('received leave game for userID', user.userId)
+          this.removeFromGame(user);
         }
       });
+
+      // should be called when users refresh or navigate away from site,
+      // but we are not currently emitting an explicit disconnect
+      socket.on('disconnect', () => {
+        this.removeFromGame(user);
+        this.users.delete(user);
+        user = undefined;
+      });
+
+      socket.on('rejoin game', ({ userId }) => {
+        console.log('received rejoin game for userId', userId)
+        user = this.users.get(userId);
+        this.waitingQueue.enqueue(user);
+
+        if (!this.gameIsRunning) {
+          this.fillActiveUsers();
+        }
+
+        this.broadcastUserList();
+      });
     });
+  }
+
+  removeFromGame(user) {
+    this.activeUsers.delete(user);
+    this.playerIds[user.playerId] = null;
+
+    if (this.gameIsRunning) {
+      if (this.activeUsers.length === 0) {
+        this.stopGame();
+      }
+    } else {
+      this.fillActiveUsers();
+    }
+
+    this.broadcastUserList();
   }
 
   broadcastUserList() {
@@ -201,12 +230,12 @@ export default class ServerEngine {
       if (user.status === 'waiting' || user.status === 'active') {
         let activeUsers = {};
         let waitingUsers = {};
-        let colorId
+        let playerId
 
         this.activeUsers.forEach(user => {
           activeUsers[user.userId] = {
             name: user.name,
-            colorId: user.colorId,
+            playerId: user.playerId,
           }
         });
 
@@ -321,11 +350,11 @@ export default class ServerEngine {
   }
 
   broadcastSnapshot({ chips, pegs, score, winner, targetScore }) {
-    let encodedSnapshot = Serializer.encode({ chips, pegs, score, winner, targetScore })
+    // let encodedSnapshot = Serializer.encode({ chips, pegs, score, winner, targetScore })
 
     this.users.forEach(user => {
       let socket = user.socket;
-      socket.emit(SNAPSHOT, { frame: this.frame, encodedSnapshot, score, targetScore });
+      socket.emit(SNAPSHOT, { frame: this.frame, chips, pegs, score, winner, targetScore });
     })
   }
 

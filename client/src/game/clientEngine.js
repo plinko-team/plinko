@@ -37,8 +37,9 @@ import { CANVAS,
 **/
 
 export default class ClientEngine {
-  constructor({ url }) {
-    this.socket = io.connect(url);
+  constructor({ playerId, socket }) {
+    this.playerId = playerId;
+    this.socket = socket;
     this.renderer = new Renderer();
     this.eventEmitter = new EventEmitter();
     this.synchronizer = new Synchronizer(this.socket, this.eventEmitter).init();
@@ -77,8 +78,8 @@ export default class ClientEngine {
       this.frame = 0;
     });
 
-    this.socket.on(SNAPSHOT, ({ frame, encodedSnapshot }) => {
-      let { chips, pegs, score, winner, targetScore } = Serializer.decode(encodedSnapshot);
+    this.socket.on(SNAPSHOT, ({ frame, chips, pegs, score, winner, targetScore }) => {
+      // let { chips, pegs, score, winner, targetScore } = Serializer.decode(encodedSnapshot);
 
       if (this.isRunning) {
         this.snapshotBuffer.push(new Snapshot({ frame, pegs, chips, score, winner, targetScore, timestamp: performance.now() }));
@@ -266,7 +267,7 @@ export default class ClientEngine {
 
     const x = e.offsetX;
     const y = e.offsetY;
-    const ownerId = window.playerId;
+    const ownerId = this.playerId;
     const id = this.lastChipId++ % 255;
 
     let frame = this.frame;
@@ -281,7 +282,7 @@ export default class ClientEngine {
   onMouseEnter = (e) => {
     const x = e.offsetX;
     const y = e.offsetY;
-    const hoverChip = new HoverChip({ x, y, ownerId: window.playerId });
+    const hoverChip = new HoverChip({ x, y, ownerId: this.playerId });
     hoverChip.addToRenderer(this.stage);
 
     e.target.addEventListener('mouseleave', () => {

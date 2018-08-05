@@ -3,18 +3,18 @@ import PropTypes from 'prop-types';
 
 import NewGameButton from './NewGameButton';
 
-const WinnerBanner = ({ winnerName, winnerColorId, handleNewGameClick }) => {
+const WinnerBanner = ({ winnerName, winnerplayerId, handleNewGameClick }) => {
   return (
-    <div className={"winner-banner player-color-" + winnerColorId}>
+    <div className={"winner-banner player-color-" + winnerplayerId}>
       {winnerName} won!
       <NewGameButton handleClick={handleNewGameClick} />
     </div>
   );
 }
 
-NewGameButton.propTypes = {
+WinnerBanner.propTypes = {
   winnerName: PropTypes.string,
-  winnerColorId: PropTypes.string,
+  winnerplayerId: PropTypes.string,
   handleNewGameClick: PropTypes.func,
 }
 

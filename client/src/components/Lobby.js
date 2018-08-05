@@ -13,15 +13,11 @@ export default class Lobby extends Component {
     gameIsRunning: PropTypes.bool,
     handleStartGameClick: PropTypes.func,
     handleUserJoin: PropTypes.func,
-    isNameFormOpen: PropTypes.bool,
   }
 
   state = {
     userName: '',
   }
-
-  // lobby should maintain state for isNameFormOpen, which starts as false
-  // updated based on isactiveUser() || iswaitingUser()
 
   activeUserList = () => {
     return (
@@ -33,7 +29,7 @@ export default class Lobby extends Component {
           </ul>
         </div>
 
-        {this.isactiveUser() && this.gameStartElement()}
+        {this.isActiveUser() && this.gameStartElement()}
 
       </div>
     )
@@ -44,7 +40,7 @@ export default class Lobby extends Component {
       <div className="waiting-players">
         <div className="players-container">
           <h2>Your turn is coming up</h2>
-          {this.iswaitingUser() && <p className="alert">Plinko supports four players at a time. When an active players leaves, the first waiting player will move up to join the next game.</p>}
+          {this.isWaitingUser() && <p className="alert">Plinko supports four players at a time. When an active players leaves, the first waiting player will move up to join the next game.</p>}
           <ul>
             {this.userItems(this.props.waitingUsers)}
           </ul>
@@ -57,7 +53,7 @@ export default class Lobby extends Component {
     return Object.keys(usersObj).map(id => {
       let user = usersObj[id];
       return (
-        <li key={"player-" + id} className={active ? "player-color-" + user.colorId : ""}>
+        <li key={"player-" + id} className={active ? "player-" + user.playerId : ""}>
           <span className="dot"></span>
           {user.name}
         </li>
@@ -66,13 +62,13 @@ export default class Lobby extends Component {
   }
 
   gameStartElement = () => {
-    if (this.isactiveUser() && this.props.gameIsRunning) {
+    if (this.isActiveUser() && this.props.gameIsRunning) {
       return (
         <p class="alert five columns offset-by-two">
           A game is currently in progress. When it's over, you and the other active players can start a new game.
         </p>
       )
-    } else if (this.isactiveUser()) {
+    } else if (this.isActiveUser()) {
       return (
         <StartGameButton
           handleClick={this.props.handleStartGameClick}
@@ -82,16 +78,19 @@ export default class Lobby extends Component {
     }
   }
 
-  isactiveUser = () => {
+  isActiveUser = () => {
     return Object.keys(this.props.activeUsers).includes(this.props.userId);
   }
 
-  iswaitingUser = () => {
+  isWaitingUser = () => {
     return Object.keys(this.props.waitingUsers).includes(this.props.userId);
   }
 
   isNameFormOpen = () => {
-    return !this.isactiveUser() && !this.iswaitingUser()
+    console.log('inside isNameFormOpen');
+    console.log('user is active:', this.isActiveUser());
+    console.log('user is waiting:', this.isWaitingUser());
+    return !this.isActiveUser() && !this.isWaitingUser();
   }
 
   handleNameChange = (input) => {
@@ -104,6 +103,7 @@ export default class Lobby extends Component {
   }
 
   render() {
+    console.log('lobby is rerendering')
     return (
       <main>
         <Header />

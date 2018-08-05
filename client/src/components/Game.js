@@ -12,6 +12,7 @@ import Serializer from '../shared/serializer';
 export default class Game extends Component {
   static propTypes = {
     socket: PropTypes.object,
+    userId: PropTypes.string,
     players: PropTypes.object,
     handleEndGameClick: PropTypes.func,
   }
@@ -25,8 +26,9 @@ export default class Game extends Component {
   componentDidMount() {
     // this.setState({targetScore: 50, someoneWon: true});
 
+    const playerId = this.props.players[this.props.userId].playerId;
     this.setState({players: this.props.players});
-    this.client = new ClientEngine({ socket: this.props.socket });
+    this.client = new ClientEngine({ playerId, socket: this.props.socket });
     this.registerSocketEvents();
     this.client.init();
     this.client.startGame();
@@ -38,26 +40,20 @@ export default class Game extends Component {
   }
 
   registerSocketEvents = () => {
-    this.props.socket.on(SNAPSHOT, ({ score, targetScore }) => {
+    this.props.socket.on(SNAPSHOT, ({ score, winner, targetScore }) => {
       this.setState((prevState) => {
         const newPlayers = {};
-        let someoneWon = false;
 
         Object.keys(prevState.players).map(id => {
           let player = prevState.players[id];
           let playerScore = score[id];
-
-          if (playerScore >= targetScore) {
-            someoneWon = true;
-          }
-
           newPlayers[id] = Object.assign({}, player, { score: playerScore })
         });
 
         return {
           targetScore,
           players: newPlayers,
-          someoneWon
+          someoneWon: winner,
         }
       })
     });
@@ -67,7 +63,7 @@ export default class Game extends Component {
     return (
       <WinnerBanner
         winnerName={this.state.players[winnerId].name}
-        winnerColorId={this.state.players[winnerId].colorId}
+        winnerplayerId={this.state.players[this.props.userId].playerId}
         handleNewGameClick={this.props.handleEndGameClick}
       />
     )
@@ -78,7 +74,8 @@ export default class Game extends Component {
 
     if (this.state.someoneWon) {
       const userIds = Object.keys(this.state.players);
-      winnerId = userIds.find(id => this.state.players[id].score >= this.state.targetScore);
+      const winningUserId = userIds.find(id => this.state.players[id].score >= this.state.targetScore);
+      winnerId = this.state.players[winningUserId].playerId;
     }
 
     return (

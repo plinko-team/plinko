@@ -14,11 +14,10 @@ const ScoreList = ({ players, targetScore, winnerId, columnCount }) => {
     return (
       <ScoreBar
         key={'player-' + id}
-        id={id}
         playerName={players[id].name}
-        playerColorId={players[id].colorId}
+        playerId={players[id].playerId}
         score={players[id].score}
-        isWinner={id === winnerId}
+        isWinner={players[id].playerId === winnerId}
         targetPercentage={targetPercentage}
       />
     )
