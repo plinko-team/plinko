@@ -110,8 +110,8 @@ export default class Lobby extends Component {
         <div className="main-content lobby">
           {this.isNameFormOpen() && <PlayerJoinForm userName={this.state.userName} handleSubmit={this.handleUserJoin} handleChange={this.handleNameChange} />}
 
-          {Object.keys(this.props.activeUsers).length && this.activeUserList()}
-          {Object.keys(this.props.waitingUsers).length && this.waitingUserList()}
+          {!!Object.keys(this.props.activeUsers).length && this.activeUserList()}
+          {!!Object.keys(this.props.waitingUsers).length && this.waitingUserList()}
         </div>
       </main>
     )
