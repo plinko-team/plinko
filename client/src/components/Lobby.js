@@ -13,6 +13,7 @@ export default class Lobby extends Component {
     gameIsRunning: PropTypes.bool,
     handleStartGameClick: PropTypes.func,
     handleUserJoin: PropTypes.func,
+    gameInProgress: PropTypes.bool,
   }
 
   state = {
@@ -29,7 +30,7 @@ export default class Lobby extends Component {
           </ul>
         </div>
 
-        {this.isActiveUser() && this.gameStartElement()}
+        {this.isActiveUser() && !this.props.gameInProgress && this.gameStartElement()}
 
       </div>
     )

@@ -27,9 +27,11 @@ export default class UserCollection {
     }
   }
 
-  broadcastAll(eventName, payload) {
+  broadcastAll(eventName) {
+    console.log("Broadcast all!")
     for (let userId in this.users) {
-      this.users[userId].socket.emit(eventName, payload)
+      // console.log(`Emitting: ${eventName} to ${userId}`)
+      this.users[userId].socket.emit(eventName)
     }
   }
 }

@@ -152,7 +152,11 @@ export default class ServerEngine {
         user = new User({ socket });
         user.name = name;
         this.users.add(user);
-        socket.emit('new user ack', { userId: user.userId });
+
+        socket.emit('new user ack', {
+          userId: user.userId,
+          gameInProgress: this.gameIsRunning
+        });
 
         this.waitingQueue.enqueue(user);
 
@@ -180,6 +184,7 @@ export default class ServerEngine {
 
       socket.on('start game', () => {
         this.activeUsers.broadcastAll('start game');
+        this.users.broadcastAll('game started');
         this.startGame();
       });
 
@@ -309,6 +314,7 @@ export default class ServerEngine {
   }
 
   stopGame() {
+    this.users.broadcastAll('game over');
     clearImmediate(this.gameLoop);
     this.gameIsRunning = false;
     this.resetGame();
