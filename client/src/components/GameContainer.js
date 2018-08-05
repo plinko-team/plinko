@@ -13,6 +13,9 @@ export default class GameContainer extends Component {
   }
 
   state = {
+    // gameInProgress when server has a game currently running
+    // gameIsRunning when client is part of a game
+    gameInProgress: false,
     gameIsRunning: false,
     userInGame: false,
     activeUsers: {},
@@ -46,11 +49,19 @@ export default class GameContainer extends Component {
     return Object.keys(this.props.socket).length > 0;
   }
 
+  hasUserId() {
+    return this.props.userId !== undefined;
+  }
+
   componentDidMount() {
-    if (this.props.userId !== undefined && this.hasOpenSocket) {
+    if (this.hasUserId() && this.hasOpenSocket) {
       console.log('emitting rejoin game')
+      this.props.socket.emit('rejoin game', { userId: this.props.userId });
       this.registerSocketEvents(this.props.socket);
-      this.props.socket.emit('rejoin game', {userId: this.props.userId});
+      this.setState({
+        gameInProgress: false,
+        gameIsRunning: false
+      })
     }
   }
 
@@ -58,9 +69,7 @@ export default class GameContainer extends Component {
     if (this.hasOpenSocket) {
       console.log('emitting leave game')
       this.props.socket.emit('leave game');
-      this.props.socket.removeAllListeners('connection established');
-      this.props.socket.removeAllListeners('new user ack');
-      this.props.socket.removeAllListeners('user list');
+      this.unregisterSocketEvents()
     }
   }
 
@@ -85,19 +94,52 @@ export default class GameContainer extends Component {
       console.log('ESTABLISHED!', message);
       socket.emit('new user', { name })
     });
-
-    socket.on('new user ack', ({ userId }) => {
-      this.props.setUserId(userId);
-      console.log('userId', userId)
-    });
   }
 
   registerSocketEvents(socket) {
+    socket.once('new user ack', ({ userId, gameInProgress }) => {
+      this.props.setUserId(userId);
+      this.setState({ gameInProgress });
+
+      console.log('userId', userId);
+      console.log(`ACK: userId: ${userId}, gameInProgress: ${gameInProgress}`)
+    });
+
+    socket.once('rejoin game ack', ({ gameInProgress }) => {
+      this.setState({ gameInProgress });
+    })
+
     socket.on('user list', ({ activeUsers, waitingUsers }) => {
       console.log('received user list')
       console.log(activeUsers)
       this.setState({ activeUsers, waitingUsers });
     });
+
+    socket.on('start game', () => {
+      console.log("Start game event, set gameIsRunning to true if active")
+      this.setState({ gameIsRunning: true });
+    })
+
+    socket.on('game started'), () => {
+      console.log("Game started event, set gameInProgress to true")
+
+      this.setState({ gameInProgress: true })
+    }
+
+    socket.on('game over', () => {
+      console.log("Game over event; gameIsRunning and gameInProgress to false")
+      this.setState({ gameIsRunning: false, gameInProgress: false })
+    })
+  }
+
+  unregisterSocketEvents() {
+    this.props.socket.removeAllListeners('connection established');
+    this.props.socket.removeAllListeners('new user ack');
+    this.props.socket.removeAllListeners('rejoin game ack');
+    this.props.socket.removeAllListeners('user list');
+    this.props.socket.removeAllListeners('game started')
+    this.props.socket.removeAllListeners('start game')
+    this.props.socket.removeAllListeners('game over');
   }
 
   render() {
@@ -119,6 +161,7 @@ export default class GameContainer extends Component {
           gameIsRunning={this.state.gameIsRunning}
           handleStartGameClick={this.handleStartGameClick}
           handleUserJoin={this.handleUserJoin}
+          gameInProgress={this.state.gameInProgress}
         />
       )
     }

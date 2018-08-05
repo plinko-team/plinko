@@ -125,6 +125,7 @@ export default class ServerEngine {
   fillActiveUsers = () => {
     while (this.waitingQueue.length > 0 && this.activeUsers.length < 4) {
       let user = this.waitingQueue.dequeue();
+
       if (this.users.get(user.userId)) {
         let playerId;
 
@@ -152,7 +153,11 @@ export default class ServerEngine {
         user = new User({ socket });
         user.name = name;
         this.users.add(user);
-        socket.emit('new user ack', { userId: user.userId });
+
+        socket.emit('new user ack', {
+          userId: user.userId,
+          gameInProgress: this.gameIsRunning
+        });
 
         this.waitingQueue.enqueue(user);
 
@@ -179,6 +184,8 @@ export default class ServerEngine {
       });
 
       socket.on('start game', () => {
+        this.activeUsers.broadcastAll('start game');
+        this.users.broadcastAll('game started');
         this.startGame();
       });
 
@@ -194,17 +201,23 @@ export default class ServerEngine {
       socket.on('disconnect', () => {
         this.removeFromGame(user);
         this.users.delete(user);
+
         user = undefined;
       });
 
       socket.on('rejoin game', ({ userId }) => {
         console.log('received rejoin game for userId', userId)
         user = this.users.get(userId);
+
+        this.activeUsers.delete(user);
         this.waitingQueue.enqueue(user);
 
         if (!this.gameIsRunning) {
+          console.log("Filling active users from rejoin game")
           this.fillActiveUsers();
         }
+
+        socket.emit('rejoin game ack', { gameInProgress: this.gameIsRunning })
 
         this.broadcastUserList();
       });
@@ -225,28 +238,30 @@ export default class ServerEngine {
   }
 
   broadcastUserList() {
+    let activeUsers = {};
+    let waitingUsers = {};
+    let playerId;
+
+    this.activeUsers.forEach(user => {
+      activeUsers[user.userId] = {
+        name: user.name,
+        playerId: user.playerId,
+      }
+    });
+
+    this.waitingQueue.forEach(user => {
+      waitingUsers[user.userId] = {
+        name: user.name,
+      }
+    });
+
     this.users.forEach((user) => {
       if (user.status === 'waiting' || user.status === 'active') {
-        let activeUsers = {};
-        let waitingUsers = {};
-        let playerId
-
-        this.activeUsers.forEach(user => {
-          activeUsers[user.userId] = {
-            name: user.name,
-            playerId: user.playerId,
-          }
-        });
-
-        this.waitingQueue.forEach(user => {
-          waitingUsers[user.userId] = {
-            name: user.name,
-          }
-        });
-
         user.socket.emit('user list', ({ activeUsers, waitingUsers }));
       }
     })
+
+    console.log("Active: ", activeUsers, "\nWaiting: ",  waitingUsers)
   }
 
   processInputBuffer() {
@@ -311,6 +326,11 @@ export default class ServerEngine {
     clearImmediate(this.gameLoop);
     this.gameIsRunning = false;
     this.resetGame();
+
+    this.fillActiveUsers();
+
+    this.users.broadcastAll('game over');
+    this.broadcastUserList();
   }
 
   resetGame() {

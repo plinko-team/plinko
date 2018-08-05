@@ -12,7 +12,7 @@ export default class UserCollection {
   }
 
   delete(user) {
-    if (this.users[user.userId]) {
+    if (user && this.users[user.userId]) {
       delete this.users[user.userId];
     }
   }
@@ -24,6 +24,13 @@ export default class UserCollection {
   forEach(cb) {
     for (let userId in this.users) {
       cb(this.users[userId]);
+    }
+  }
+
+  broadcastAll(eventName) {
+    for (let userId in this.users) {
+      // console.log(`Emitting: ${eventName} to ${userId}`)
+      this.users[userId].socket.emit(eventName)
     }
   }
 }
