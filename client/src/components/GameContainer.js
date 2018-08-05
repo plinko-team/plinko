@@ -49,11 +49,15 @@ export default class GameContainer extends Component {
     return Object.keys(this.props.socket).length > 0;
   }
 
+  hasUserId() {
+    return this.props.userId !== undefined;
+  }
+
   componentDidMount() {
-    if (this.props.userId !== undefined && this.hasOpenSocket) {
+    if (this.hasUserId() && this.hasOpenSocket) {
       console.log('emitting rejoin game')
       this.registerSocketEvents(this.props.socket);
-      this.props.socket.emit('rejoin game', {userId: this.props.userId});
+      this.props.socket.emit('rejoin game', { userId: this.props.userId });
     }
   }
 
@@ -61,9 +65,7 @@ export default class GameContainer extends Component {
     if (this.hasOpenSocket) {
       console.log('emitting leave game')
       this.props.socket.emit('leave game');
-      this.props.socket.removeAllListeners('connection established');
-      this.props.socket.removeAllListeners('new user ack');
-      this.props.socket.removeAllListeners('user list');
+      this.unregisterSocketEvents()
     }
   }
 
@@ -91,13 +93,17 @@ export default class GameContainer extends Component {
   }
 
   registerSocketEvents(socket) {
-    socket.on('new user ack', ({ userId, gameInProgress }) => {
+    socket.once('new user ack', ({ userId, gameInProgress }) => {
       this.props.setUserId(userId);
       this.setState({ gameInProgress });
 
       console.log('userId', userId);
       console.log(`ACK: userId: ${userId}, gameInProgress: ${gameInProgress}`)
     });
+
+    socket.once('rejoin game ack', ({ gameInProgress }) => {
+      this.setState({ gameInProgress })
+    })
 
     socket.on('user list', ({ activeUsers, waitingUsers }) => {
       console.log('received user list')
@@ -120,6 +126,16 @@ export default class GameContainer extends Component {
       console.log("Game over event; gameIsRunning and gameInProgress to false")
       this.setState({ gameIsRunning: false, gameInProgress: false })
     })
+  }
+
+  unregisterSocketEvents() {
+    this.props.socket.removeAllListeners('connection established');
+    this.props.socket.removeAllListeners('new user ack');
+    this.props.socket.removeAllListeners('rejoin game ack');
+    this.props.socket.removeAllListeners('user list');
+    this.props.socket.removeAllListeners('game started')
+    this.props.socket.removeAllListeners('start game')
+    this.props.socket.removeAllListeners('game over');
   }
 
   render() {

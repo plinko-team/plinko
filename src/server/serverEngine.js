@@ -200,6 +200,7 @@ export default class ServerEngine {
       socket.on('disconnect', () => {
         this.removeFromGame(user);
         this.users.delete(user);
+
         user = undefined;
       });
 
@@ -211,6 +212,8 @@ export default class ServerEngine {
         if (!this.gameIsRunning) {
           this.fillActiveUsers();
         }
+
+        socket.emit('rejoin game ack', { gameInProgress: this.gameIsRunning })
 
         this.broadcastUserList();
       });

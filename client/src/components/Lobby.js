@@ -30,8 +30,7 @@ export default class Lobby extends Component {
           </ul>
         </div>
 
-        {this.isActiveUser() && !this.props.gameInProgress && this.gameStartElement()}
-
+        {this.gameStartElement()}
       </div>
     )
   }
@@ -63,7 +62,7 @@ export default class Lobby extends Component {
   }
 
   gameStartElement = () => {
-    if (this.isActiveUser() && this.props.gameIsRunning) {
+    if (this.props.gameInProgress) {
       return (
         <p class="alert five columns offset-by-two">
           A game is currently in progress. When it's over, you and the other active players can start a new game.
@@ -88,9 +87,9 @@ export default class Lobby extends Component {
   }
 
   isNameFormOpen = () => {
-    console.log('inside isNameFormOpen');
-    console.log('user is active:', this.isActiveUser());
-    console.log('user is waiting:', this.isWaitingUser());
+    // console.log('inside isNameFormOpen');
+    // console.log('user is active:', this.isActiveUser());
+    // console.log('user is waiting:', this.isWaitingUser());
     return !this.isActiveUser() && !this.isWaitingUser();
   }
 
@@ -104,7 +103,8 @@ export default class Lobby extends Component {
   }
 
   render() {
-    console.log('lobby is rerendering')
+    // console.log('lobby is rerendering')
+    console.log("Game in progress: ", this.props.gameInProgress)
     return (
       <main>
         <Header />

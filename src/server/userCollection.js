@@ -28,7 +28,6 @@ export default class UserCollection {
   }
 
   broadcastAll(eventName) {
-    console.log("Broadcast all!")
     for (let userId in this.users) {
       // console.log(`Emitting: ${eventName} to ${userId}`)
       this.users[userId].socket.emit(eventName)
