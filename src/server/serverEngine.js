@@ -179,6 +179,7 @@ export default class ServerEngine {
       });
 
       socket.on('start game', () => {
+        this.activeUsers.broadcastAll('start game');
         this.startGame();
       });
 

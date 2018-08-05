@@ -26,4 +26,10 @@ export default class UserCollection {
       cb(this.users[userId]);
     }
   }
+
+  broadcastAll(eventName, payload) {
+    for (let userId in this.users) {
+      this.users[userId].socket.emit(eventName, payload)
+    }
+  }
 }

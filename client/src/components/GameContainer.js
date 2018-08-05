@@ -98,6 +98,10 @@ export default class GameContainer extends Component {
       console.log(activeUsers)
       this.setState({ activeUsers, waitingUsers });
     });
+
+    socket.on('start game', () => {
+      this.setState({ gameIsRunning: true });
+    })
   }
 
   render() {
