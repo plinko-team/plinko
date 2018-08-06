@@ -71,7 +71,7 @@ generateWinnerBanner = (winningUserId) => {
       return (
         <WinnerBanner
         winnerName={"No one "}
-        winningPlayerId={'0'}
+        winningPlayerId={''}
       />
     )
   }
