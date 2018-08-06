@@ -329,7 +329,7 @@ export default class ServerEngine {
 
     setTimeout(() => {
       this.stopGame();
-    }, 3000)
+    }, 5000)
   }
 
   stopGame() {
