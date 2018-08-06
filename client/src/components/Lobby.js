@@ -87,9 +87,6 @@ export default class Lobby extends Component {
   }
 
   isNameFormOpen = () => {
-    // console.log('inside isNameFormOpen');
-    // console.log('user is active:', this.isActiveUser());
-    // console.log('user is waiting:', this.isWaitingUser());
     return !this.isActiveUser() && !this.isWaitingUser();
   }
 

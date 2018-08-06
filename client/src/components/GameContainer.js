@@ -126,8 +126,7 @@ export default class GameContainer extends Component {
       console.log("Game over event; gameIsRunning and gameInProgress to false")
       this.setState({
         gameIsRunning: false,
-        gameInProgress: false,
-        activeUsers: {}
+        gameInProgress: false
        })
     })
 
