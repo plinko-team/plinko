@@ -278,23 +278,19 @@ export default class ServerEngine {
     }
   }
 
-  detectWinner() {
-    let scores = Object.values(this.score);
-    let winningPlayer = scores.some(score => score >= this.targetScore);
+  gameIsOver() {
+    const scores = Object.values(this.score);
+    const scoresAboveZero = scores.some(score => score > 0);
+    const winningPlayer = scores.some(score => score >= this.targetScore);
 
-    if (winningPlayer) {
-      this.winner = true;
-
-      // this may need to move once we change game ending mechanisms
-      this.endRound();
-    }
+    return (this.targetScore === 0 && !scoresAboveZero) || winningPlayer;
   }
 
   reduceTargetScoreInterval() {
-    this.targetScoreInterval = true;
-    setInterval(() => {
+    this.targetScoreInterval = setInterval(() => {
+      console.log(this.targetScore);
       this.targetScore -= 1;
-    }, 5000);
+    }, 1000);
   }
 
   startGame() {
@@ -309,9 +305,14 @@ export default class ServerEngine {
 
 
       Engine.update(this.engine, TIMESTEP);
-
-      if (!this.winner) { this.detectWinner() }
+     
       if (!this.targetScoreInterval) { this.reduceTargetScoreInterval() }
+
+      if (!this.winner && this.gameIsOver()) { 
+        this.winner = true;
+        clearInterval(this.targetScoreInterval);
+        this.endRound();
+      }
 
       let snapshot = this.generateSnapshot(this.chips, this.pegs, this.score,
                                            this.winner, this.targetScore);
@@ -333,6 +334,7 @@ export default class ServerEngine {
   }
 
   stopGame() {
+    clearInterval(this.targetScoreInterval);
     clearImmediate(this.gameLoop);
     this.gameIsRunning = false;
     this.resetGame();
