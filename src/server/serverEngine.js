@@ -305,10 +305,10 @@ export default class ServerEngine {
 
 
       Engine.update(this.engine, TIMESTEP);
-     
+
       if (!this.targetScoreInterval) { this.reduceTargetScoreInterval() }
 
-      if (!this.winner && this.gameIsOver()) { 
+      if (!this.winner && this.gameIsOver()) {
         this.winner = true;
         clearInterval(this.targetScoreInterval);
         this.endRound();
@@ -333,12 +333,19 @@ export default class ServerEngine {
     }, 5000)
   }
 
+  enqueueActiveUsers() {
+    this.activeUsers.forEach(user => {
+      this.waitingQueue.enqueue(user);
+    })
+  }
+
   stopGame() {
     clearInterval(this.targetScoreInterval);
     clearImmediate(this.gameLoop);
     this.gameIsRunning = false;
-    this.resetGame();
 
+    this.enqueueActiveUsers();
+    this.resetGame();
     this.fillActiveUsers();
 
     this.users.broadcastAll('game over');
