@@ -31,7 +31,7 @@ export default class WinnerBanner extends Component {
 
   render() {
     return (
-      <div className={"winner-banner player-" + this.props.winningPlayerId}>
+      <div className={"banner player-" + this.props.winningPlayerId}>
         {this.props.winnerName} won!
         New game in {this.state.countdown}...
       </div>

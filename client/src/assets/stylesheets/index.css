@@ -66,7 +66,7 @@ main {
   border-color: #fff;
 }
 
-.winner-banner {
+.banner {
   position: absolute;
   margin: 0 auto;
   text-align: center;
@@ -78,10 +78,8 @@ main {
   margin: auto;
   font-size: 2rem;
   opacity: .9;
-}
-
-.winner-banner button {
-  margin-left: 2rem;
+  background-color: #777;
+  color: #fff;
 }
 
 .canvas,
@@ -98,6 +96,10 @@ main {
   width: 800px;
   height: 600px;
   padding: 0;
+}
+
+.lobby {
+  padding-top: 0;
 }
 
 canvas {
@@ -121,7 +123,8 @@ canvas {
 }
 
 .active-players {
-  vertical-align: middle
+  vertical-align: middle;
+  padding-top: 5rem;
 }
 
 .waiting-players {
@@ -223,21 +226,21 @@ canvas {
 }
 .player-0 .dot,
 .player-0 .score-bar,
-.player-0.winner-banner {
+.player-0.banner {
   background-color: #ffaaaa;
 }
 .player-1 .dot,
 .player-1 .score-bar,
-.player-1.winner-banner  {
+.player-1.banner  {
   background-color: #ffee75;
 }
 .player-2 .dot,
 .player-2 .score-bar,
-.player-2.winner-banner  {
+.player-2.banner  {
   background-color: #ecb5ff;
 }
 .player-3 .dot,
 .player-3 .score-bar,
-.player-3.winner-banner  {
+.player-3.banner  {
   background-color: #aaffb1;
 }

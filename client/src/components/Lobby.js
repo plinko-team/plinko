@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import Header from './Header';
 import PlayerJoinForm from './PlayerJoinForm';
 import StartGameButton from './StartGameButton';
+import StartBanner from './StartBanner';
 
 export default class Lobby extends Component {
   static propTypes = {
@@ -14,6 +15,8 @@ export default class Lobby extends Component {
     handleStartGameClick: PropTypes.func,
     handleUserJoin: PropTypes.func,
     gameInProgress: PropTypes.bool,
+    startBannerVisible: PropTypes.bool,
+    startCount: PropTypes.number,
   }
 
   state = {
@@ -40,7 +43,6 @@ export default class Lobby extends Component {
       <div className="waiting-players">
         <div className="players-container">
           <h2>Your turn is coming up</h2>
-          {this.isWaitingUser() && <p className="alert">Plinko supports four players at a time. When an active players leaves, the first waiting player will move up to join the next game.</p>}
           <ul>
             {this.userItems(this.props.waitingUsers)}
           </ul>
@@ -106,6 +108,8 @@ export default class Lobby extends Component {
       <main>
         <Header />
         <div className="main-content lobby">
+          {this.props.startBannerVisible && <StartBanner count={this.props.startCount} />}
+
           {this.isNameFormOpen() && <PlayerJoinForm userName={this.state.userName} handleSubmit={this.handleUserJoin} handleChange={this.handleNameChange} />}
 
           {!!Object.keys(this.props.activeUsers).length && this.activeUserList()}
