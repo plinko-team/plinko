@@ -188,7 +188,7 @@ export default class ServerEngine {
       socket.on('start game', () => {
         this.activeUsers.broadcastAll('start game');
         this.users.broadcastAll('game started');
-        this.startGame();
+        setTimeout(this.startGame.bind(this), 5000);
       });
 
       socket.on('leave game', () => {

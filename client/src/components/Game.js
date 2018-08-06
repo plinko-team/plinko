@@ -79,14 +79,14 @@ render() {
   }
 
   return (
-    <main>
-      <Header
-        players={this.state.players}
-        targetScore={this.state.targetScore}
-        winningPlayerId={winningPlayerId}
-      />
+      <main>
+        <Header
+          players={this.state.players}
+          targetScore={this.state.targetScore}
+          winningPlayerId={winningPlayerId}
+        />
 
-    {winningPlayerId !== undefined && this.generateWinnerBanner(winningUserId)}
+        {winningPlayerId !== undefined && this.generateWinnerBanner(winningUserId)}
 
         <div className="canvas"></div>
       </main>
