@@ -286,7 +286,7 @@ export default class ServerEngine {
       this.winner = true;
 
       // this may need to move once we change game ending mechanisms
-      this.stopGame();
+      this.endRound();
     }
   }
 
@@ -322,6 +322,14 @@ export default class ServerEngine {
     }
 
     this.gameLoop = setImmediate(this.startGame.bind(this))
+  }
+
+  endRound() {
+    this.activeUsers.broadcastAll('round over');
+
+    setTimeout(() => {
+      this.stopGame();
+    }, 3000)
   }
 
   stopGame() {
