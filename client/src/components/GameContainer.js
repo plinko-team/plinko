@@ -129,11 +129,16 @@ export default class GameContainer extends Component {
 
     socket.on('game over', () => {
       console.log("Game over event; gameIsRunning and gameInProgress to false")
-      this.setState({ gameIsRunning: false,
+      this.setState({
+                      gameIsRunning: false,
                       gameInProgress: false,
                       userInGame: false,
                       activeUsers: {}
                      })
+    })
+
+    socket.on('round over', () => {
+      console.log("Received round over event")
     })
   }
 
