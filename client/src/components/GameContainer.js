@@ -17,9 +17,9 @@ export default class GameContainer extends Component {
     // gameIsRunning when client is part of a game
     gameInProgress: false,
     gameIsRunning: false,
-    userInGame: false,
     activeUsers: {},
     waitingUsers: {},
+    countdown: 0,
   }
 
   // activeUsers:
@@ -74,11 +74,6 @@ export default class GameContainer extends Component {
     }
   }
 
-  handleEndGameClick = () => {
-    console.log('This should stop the current game and return users to lobby');
-    this.setState({userInGame: false});
-  }
-
   handleStartGameClick = () => {
     console.log('This should move all current users into game');
     this.props.socket.emit('start game');
@@ -130,11 +125,10 @@ export default class GameContainer extends Component {
     socket.on('game over', () => {
       console.log("Game over event; gameIsRunning and gameInProgress to false")
       this.setState({
-                      gameIsRunning: false,
-                      gameInProgress: false,
-                      userInGame: false,
-                      activeUsers: {}
-                     })
+        gameIsRunning: false,
+        gameInProgress: false,
+        activeUsers: {}
+       })
     })
 
     socket.on('round over', () => {
@@ -159,7 +153,6 @@ export default class GameContainer extends Component {
           socket={this.props.socket}
           userId={this.props.userId}
           players={this.state.activeUsers}
-          handleEndGameClick={this.handleEndGameClick}
         />
       )
     } else {

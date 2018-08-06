@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import Header from './Header';
-import EndGameButton from './EndGameButton';
 import WinnerBanner from './WinnerBanner';
 
 import ClientEngine from '../game/clientEngine';
@@ -14,7 +13,6 @@ export default class Game extends Component {
     socket: PropTypes.object,
     userId: PropTypes.string,
     players: PropTypes.object,
-    handleEndGameClick: PropTypes.func,
   }
 
   state = {
@@ -66,7 +64,6 @@ generateWinnerBanner = (winningUserId) => {
     <WinnerBanner
       winnerName={this.state.players[winningUserId].name}
       winningPlayerId={this.state.players[winningUserId].playerId}
-      handleNewGameClick={this.props.handleEndGameClick}
     />
   )
 }
@@ -92,8 +89,6 @@ render() {
     {winningPlayerId !== undefined && this.generateWinnerBanner(winningUserId)}
 
         <div className="canvas"></div>
-
-        <EndGameButton handleClick={this.props.handleEndGameClick} />
       </main>
     )
   }
