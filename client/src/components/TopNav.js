@@ -5,10 +5,18 @@ const TopNav = () => {
   return (
     <div className="nav-container">
       <nav className="row">
-        <NavLink to="about" className="button two columns offset-by-four">About</NavLink>
-        <NavLink to="play" className="button two columns">Play</NavLink>
-        <NavLink to="team" className="button two columns">Team</NavLink>
-        <a href="https://github.com/plinko-team/plinko" className="button two columns">GitHub</a>
+        <div className="two columns offset-by-four">
+          <NavLink to="about" className="button ">About</NavLink>
+        </div>
+        <div className="two columns">
+          <NavLink to="play" className="button">Play</NavLink>
+        </div>
+        <div className="two columns">
+          <NavLink to="team" className="button">Team</NavLink>
+        </div>
+        <div className="two columns">
+          <a href="https://github.com/plinko-team/plinko" className="button">GitHub</a>
+        </div>
       </nav>
     </div>
   )

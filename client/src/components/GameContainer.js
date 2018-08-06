@@ -45,7 +45,7 @@ export default class GameContainer extends Component {
   //   etc.
   // }
 
-  get hasOpenSocket() {
+  hasOpenSocket() {
     return Object.keys(this.props.socket).length > 0;
   }
 
@@ -54,7 +54,7 @@ export default class GameContainer extends Component {
   }
 
   componentDidMount() {
-    if (this.hasUserId() && this.hasOpenSocket) {
+    if (this.hasUserId() && this.hasOpenSocket()) {
       console.log('emitting rejoin game')
       this.props.socket.emit('rejoin game', { userId: this.props.userId });
 
@@ -67,7 +67,7 @@ export default class GameContainer extends Component {
   }
 
   componentWillUnmount() {
-    if (this.hasOpenSocket) {
+    if (this.hasOpenSocket()) {
       console.log('emitting leave game')
       this.props.socket.emit('leave game');
       this.unregisterSocketEvents()
