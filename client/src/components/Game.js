@@ -25,7 +25,6 @@ export default class Game extends Component {
 
   componentDidMount() {
     // this.setState({targetScore: 50, someoneWon: true});
-
     const playerId = this.props.players[this.props.userId].playerId;
     this.setState({players: this.props.players});
     this.client = new ClientEngine({ playerId, socket: this.props.socket });
@@ -44,10 +43,13 @@ export default class Game extends Component {
       this.setState((prevState) => {
         const newPlayers = {};
 
-        Object.keys(prevState.players).map(id => {
-          let player = prevState.players[id];
-          let playerScore = score[id];
-          newPlayers[id] = Object.assign({}, player, { score: playerScore })
+        Object.keys(prevState.players).forEach(userId => {
+          // UserId is a shortid uuid string
+
+          let player = prevState.players[userId];
+          let playerScore = score[player.playerId];
+
+          newPlayers[userId] = Object.assign({}, player, { score: playerScore })
         });
 
         return {

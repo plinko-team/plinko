@@ -122,9 +122,11 @@ export default class ServerEngine {
     Events.on(this.engine, 'collisionStart', this.onCollisionStart);
   }
 
-  fillActiveUsers = () => {
+  fillActiveUsers() {
     while (this.waitingQueue.length > 0 && this.activeUsers.length < 4) {
       let user = this.waitingQueue.dequeue();
+
+      console.log("Queuing player: ", user.userId, " playerId: ", user.playerId)
 
       if (this.users.get(user.userId)) {
         let playerId;
@@ -344,6 +346,7 @@ export default class ServerEngine {
     this.winner = false;
     this.initializeScore();
     this.createEnvironment();
+    this.registerPhysicsEvents();
   }
 
   generateSnapshot(chips, pegs, score, winner, targetScore) {
@@ -372,8 +375,7 @@ export default class ServerEngine {
     // let encodedSnapshot = Serializer.encode({ chips, pegs, score, winner, targetScore })
 
     this.users.forEach(user => {
-      let socket = user.socket;
-      socket.emit(SNAPSHOT, { frame: this.frame, chips, pegs, score, winner, targetScore });
+      user.socket.emit(SNAPSHOT, { frame: this.frame, chips, pegs, score, winner, targetScore });
     })
   }
 
