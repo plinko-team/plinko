@@ -118,13 +118,16 @@ canvas {
   display: inline-block;
 }
 
+.player-lists {
+  padding-top: 5rem;
+}
+
 .players-container {
   display: inline-block;
 }
 
 .active-players {
   vertical-align: middle;
-  padding-top: 5rem;
 }
 
 .waiting-players {

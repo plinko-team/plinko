@@ -33,7 +33,7 @@ export default class Lobby extends Component {
           </ul>
         </div>
 
-        {this.gameStartElement()}
+        {!this.props.startBannerVisible && this.gameStartElement()}
       </div>
     )
   }
@@ -110,10 +110,12 @@ export default class Lobby extends Component {
         <div className="main-content lobby">
           {this.props.startBannerVisible && <StartBanner count={this.props.startCount} />}
 
-          {this.isNameFormOpen() && <PlayerJoinForm userName={this.state.userName} handleSubmit={this.handleUserJoin} handleChange={this.handleNameChange} />}
+          <div className="player-lists">
+            {this.isNameFormOpen() && <PlayerJoinForm userName={this.state.userName} handleSubmit={this.handleUserJoin} handleChange={this.handleNameChange} />}
 
-          {!!Object.keys(this.props.activeUsers).length && this.activeUserList()}
-          {!!Object.keys(this.props.waitingUsers).length && this.waitingUserList()}
+            {!!Object.keys(this.props.activeUsers).length && this.activeUserList()}
+            {!!Object.keys(this.props.waitingUsers).length && this.waitingUserList()}
+          </div>
         </div>
       </main>
     )
