@@ -102,8 +102,6 @@ export default class Lobby extends Component {
   }
 
   render() {
-    // console.log('lobby is rerendering')
-    console.log("Game in progress: ", this.props.gameInProgress)
     return (
       <main>
         <Header />

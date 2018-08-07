@@ -1,118 +1,65 @@
-// // Leaving this code here just for testing
-//
-// function rng(n) {
-//   return Math.floor(Math.random() * n)
-// }
-//
-// function generateChip() {
-//   return {
-//     id: rng(255),
-//     ownerId: rng(4),
-//     x: rng(600),
-//     y: rng(800),
-//     angle: Math.random()
-//   }
-// }
-//
-// function generatePeg(id) {
-//   let rand = rng(5);
-//   let ownerId = rand === 0 ? null : rand - 1;
-//   return { id, ownerId }
-// }
-//
-// function generateSnapshot() {
-//   let chips = [];
-//   let pegs = [];
-//
-//   for (let i = 0; i < 5; i++) {
-//     chips.push(generateChip())
-//   }
-//
-//   for (let i = 0; i < 68; i++) {
-//     pegs.push(generatePeg(i))
-//   }
-//
-//   return { chips, pegs }
-// }
-//
-// let { chips, pegs } = generateSnapshot()
+const CHIP_ID_BITS = 8;
+const PEG_ID_BITS = 7;
+const OWNER_ID_BITS = 3;
+const POSITION_BITS = 10;
+const ANGLE_BITS = 10;
+const SCORE_BITS = 6;
 
-// TODO:
-// Currently sending bits as a string, should transmit just a number
-// Needs to send a separate "header" to indicate necessary bit length
+const BITS_PER_CHIP = 41;
+const BITS_PER_PEG = 10;
+const BITS_FOR_SCORE = 24;
+const BITS_FOR_WINNER = 1;
+const BITS_FOR_TARGET_SCORE = 6;
 
 export default class Serializer {
   static toBinary(num, bitLength) {
     let output = '';
     for (let i = 0; i < bitLength; i++) { output += '0' };
-    output += num.toString(2);
+    output += Number(num).toString(2);
     return output.slice(-(bitLength), output.length);
+  }
+
+  static fromBinary(numStr) {
+    return parseInt(numStr, 2);
   }
 
   static encodeChip(chip) {
     let encoded = '';
 
-    encoded += this.toBinary(chip.id, 8);
-    encoded += this.toBinary(chip.ownerId, 3);
-    encoded += this.toBinary(Math.floor(chip.x), 10);
-    encoded += this.toBinary(Math.floor(chip.y), 10);
-
+    // Account for negative radians
     if (chip.angle < 0) {
-      chip.angle = (2 * Math.PI) + chip.angle;
+      chip.angle = Math.PI * 2 + chip.angle;
     }
 
-    encoded += this.toBinary(chip.angle.toFixed(3) * 1000, 10);
+    encoded += this.toBinary(chip.id, CHIP_ID_BITS);
+    encoded += this.toBinary(chip.ownerId, OWNER_ID_BITS);
+    encoded += this.toBinary(Math.floor(chip.x), POSITION_BITS);
+    encoded += this.toBinary(Math.floor(chip.y), POSITION_BITS);
+    encoded += this.toBinary(chip.angle.toFixed(3) * 1000, ANGLE_BITS);
 
     return encoded;
   }
 
   static decodeChip(encodedChip) {
-    let chip = {
+    return {
+      id:      this.fromBinary(encodedChip.substr(0, CHIP_ID_BITS)),
+      ownerId: String(this.fromBinary(encodedChip.substr(8, OWNER_ID_BITS))),
+      x:       this.fromBinary(encodedChip.substr(11, POSITION_BITS)),
+      y:       this.fromBinary(encodedChip.substr(21, POSITION_BITS)),
+      angle:   this.fromBinary(encodedChip.substr(31, ANGLE_BITS)) / 1000,
     };
-
-    let id = '';
-    let ownerId = '';
-    let x = '';
-    let y = '';
-    let angle = '';
-
-
-    for (let i = 0; i < encodedChip.length; i++) {
-      let char = encodedChip[i]
-
-      if (i < 8) {
-        id += char
-      } else if (i < 11) {
-        chip.id = parseInt(id, 2);
-        ownerId += char
-      } else if (i < 21) {
-        chip.ownerId = parseInt(ownerId, 2);
-        x += char
-      } else if (i < 31) {
-        chip.x = parseInt(x, 2);
-        y += char;
-      } else if (i < 41) {
-        chip.y = parseInt(y, 2);
-        angle += char
-      }
-
-      chip.angle = parseInt(angle, 2) / 1000
-    }
-
-
-    return chip
   }
 
   static encodePeg(peg) {
     let output = '';
 
-    output += this.toBinary(peg.id, 7);
+    // ownerIds are 0-3, but can be null if there is no peg owner
+    // So if ownerId is null, encode it as 0
+    // Otherwise, increase by 1 (then substract when decoding)
+    const ownerId = peg.ownerId === null ? 4 : peg.ownerId;
 
-    if (peg.ownerId === null) {
-      output += this.toBinary(0, 3);
-    } else {
-      output += this.toBinary(peg.ownerId + 1, 3);
-    }
+    output += this.toBinary(peg.id, PEG_ID_BITS);
+    output += this.toBinary(ownerId, OWNER_ID_BITS)
 
     return output
   }
@@ -120,14 +67,9 @@ export default class Serializer {
   static decodePeg(encodedPeg) {
     let peg = {};
 
-    peg.id = parseInt(encodedPeg.slice(0, 7), 2)
-    let ownerId = parseInt(encodedPeg.slice(7, 10), 2)
-
-    if (ownerId === 0) {
-      peg.ownerId = null
-    } else {
-      peg.ownerId = ownerId - 1
-    }
+    peg.id = this.fromBinary(encodedPeg.substr(0, PEG_ID_BITS));
+    let ownerId = +this.fromBinary(encodedPeg.substr(7, OWNER_ID_BITS));
+    peg.ownerId = ownerId === 4 ? null : String(ownerId);
 
     return peg
   }
@@ -135,53 +77,38 @@ export default class Serializer {
   static encodeScore(score) {
     let output = '';
 
-    output += this.toBinary(score[0], 6);
-    output += this.toBinary(score[1], 6);
-    output += this.toBinary(score[2], 6);
-    output += this.toBinary(score[3], 6);
+    output += this.toBinary(score[0], SCORE_BITS);
+    output += this.toBinary(score[1], SCORE_BITS);
+    output += this.toBinary(score[2], SCORE_BITS);
+    output += this.toBinary(score[3], SCORE_BITS);
 
     return output;
   }
 
   static decodeScore(encodedScore) {
-    let score = {}
-
-    score[0] = parseInt(encodedScore.substring(0, 6), 2);
-    score[1] = parseInt(encodedScore.substring(6, 12), 2);
-    score[2] = parseInt(encodedScore.substring(12, 18), 2);
-    score[3] = parseInt(encodedScore.substring(18, 24), 2);
-
-    return score;
+    return {
+      0: this.fromBinary(encodedScore.substr(0, SCORE_BITS)),
+      1: this.fromBinary(encodedScore.substr(6, SCORE_BITS)),
+      2: this.fromBinary(encodedScore.substr(12, SCORE_BITS)),
+      3: this.fromBinary(encodedScore.substr(18, SCORE_BITS))
+    }
   }
 
   static encodeWinner(winner) {
-    let output = '';
-    let winnerFlag = winner === true ? '1' : '0';
-
-    output += this.toBinary(winnerFlag, 1);
-
-    return output;
+    return this.toBinary(winner ? '1' : '0', 1);
   }
 
   static decodeWinner(encodedWinner) {
-    let winner = encodedWinner === '1' ? true : false;
-    return winner;   
+    const winner = encodedWinner === '1' ? true : false;
+    return winner;
   }
 
   static encodeTargetScore(targetScore) {
-    let output = '';
-
-    output += this.toBinary(targetScore, 6);
-
-    return output;
+    return this.toBinary(targetScore, SCORE_BITS);
   }
 
   static decodeTargetScore(encodedTargetScore) {
-    let targetScore;
-
-    targetScore = parseInt(encodedTargetScore.substring(0, 6), 2);
-
-    return targetScore;
+    return this.fromBinary(encodedTargetScore.substr(0, SCORE_BITS));
   }
 
   static encode({ chips, pegs, score, winner, targetScore }) {
@@ -204,9 +131,7 @@ export default class Serializer {
     }
 
     encoded += this.encodeWinner(winner);
-
     encoded += this.encodeTargetScore(targetScore);
-
     encoded += this.encodeScore(score)
 
     return encoded
@@ -214,37 +139,40 @@ export default class Serializer {
 
   static decode(encodedSnapshot) {
     if (!encodedSnapshot) { throw new Error('Must supply encoded snapshot')}
-    const BITS_PER_CHIP = 41;
-    const BITS_PER_PEG = 10;
-    const BITS_FOR_SCORE = 24;
-    const BITS_FOR_WINNER = 1;
-    const BITS_FOR_TARGET_SCORE = 6;
+    const chips = [];
+    const pegs = [];
 
-    let numChips = parseInt(encodedSnapshot.substring(0, 8), 2)
-    let chips = [];
-    let pegs = [];
+    // First 8 bits determine number of chips in snapshot
+    const numChips = this.fromBinary(encodedSnapshot.substr(0, 8))
+    const chipsEnd = 8 + numChips * BITS_PER_CHIP
 
+    // Deserialize chips
     for (let i = 0; i < numChips; i++) {
-      let chipStart = 8 + i * BITS_PER_CHIP
-      chips.push(this.decodeChip(encodedSnapshot.substring(chipStart, chipStart + BITS_PER_CHIP )))
+      const chipStart = 8 + i * BITS_PER_CHIP
+      chips.push(this.decodeChip(encodedSnapshot.substr(chipStart, BITS_PER_CHIP )))
     }
 
-    let chipsEnd = 8 + numChips * BITS_PER_CHIP
-    let numPegs = parseInt(encodedSnapshot.substring(chipsEnd, chipsEnd + 7), 2)
+    // Next 7 bits determine number of pegs
+    const numPegs = this.fromBinary(encodedSnapshot.substr(chipsEnd, 7))
+    const pegsEnd = 7 + numPegs * BITS_PER_PEG;
 
+    // Deserialize Pegs
     for (let i = 0; i < numPegs; i++) {
-      let pegStart = chipsEnd + 7 + BITS_PER_PEG * i;
-      pegs.push(this.decodePeg(encodedSnapshot.substring(pegStart, pegStart + BITS_PER_PEG)))
+      const pegStart = chipsEnd + 7 + BITS_PER_PEG * i;
+      pegs.push(this.decodePeg(encodedSnapshot.substr(pegStart, BITS_PER_PEG)))
     }
 
-    let winnerStart = 8 + numChips * BITS_PER_CHIP + 7 + numPegs * BITS_PER_PEG;
-    let winner = this.decodeWinner(encodedSnapshot.substring(winnerStart, winnerStart + BITS_FOR_WINNER)); 
-    
-    let targetScoreStart = 8 + numChips * BITS_PER_CHIP + 7 + numPegs * BITS_PER_PEG + BITS_FOR_WINNER;
-    let targetScore = this.decodeTargetScore(encodedSnapshot.substring(targetScoreStart, targetScoreStart + BITS_FOR_TARGET_SCORE)); 
-    
-    let scoreStart = 8 + numChips * BITS_PER_CHIP + 7 + numPegs * BITS_PER_PEG + BITS_FOR_WINNER + BITS_FOR_TARGET_SCORE;
-    let score = this.decodeScore(encodedSnapshot.substring(scoreStart, scoreStart + BITS_FOR_SCORE))
+    // Deserialize winner
+    const winnerStart = chipsEnd + pegsEnd;
+    const winner = this.decodeWinner(encodedSnapshot.substr(winnerStart, BITS_FOR_WINNER));
+
+    // Deserialize target score
+    const targetScoreStart = winnerStart + BITS_FOR_WINNER;
+    const targetScore = this.decodeTargetScore(encodedSnapshot.substr(targetScoreStart,  BITS_FOR_TARGET_SCORE));
+
+    // Deserialize score
+    const scoreStart = targetScoreStart + BITS_FOR_TARGET_SCORE;
+    const score = this.decodeScore(encodedSnapshot.substr(scoreStart, BITS_FOR_SCORE))
 
     return { chips, pegs, score, winner, targetScore }
   }
