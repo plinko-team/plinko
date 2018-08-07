@@ -37,7 +37,9 @@ export default class Game extends Component {
   }
 
   registerSocketEvents = () => {
-    this.props.socket.on(SNAPSHOT, ({ score, winner, targetScore }) => {
+    this.props.socket.on(SNAPSHOT, (encodedSnapshot) => {
+      let { score, winner, targetScore } = Serializer.decode(encodedSnapshot);
+
       this.setState((prevState) => {
         const newPlayers = {};
 

@@ -389,10 +389,10 @@ export default class ServerEngine {
   }
 
   broadcastSnapshot({ chips, pegs, score, winner, targetScore }) {
-    // let encodedSnapshot = Serializer.encode({ chips, pegs, score, winner, targetScore })
+    let encodedSnapshot = Serializer.encode({ chips, pegs, score, winner, targetScore })
 
     this.users.forEach(user => {
-      user.socket.emit(SNAPSHOT, { frame: this.frame, chips, pegs, score, winner, targetScore });
+      user.socket.emit(SNAPSHOT, encodedSnapshot);
     })
   }
 
