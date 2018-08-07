@@ -1,9 +1,9 @@
 import Renderer from './renderer';
-import Chip from '../shared/bodies/Chip';
-import Peg from '../shared/bodies/Peg';
-import Triangle from '../shared/bodies/Triangle';
-import { VerticalWall, HorizontalWall, BucketWall } from '../shared/bodies/Wall';
-import HoverChip from '../shared/bodies/HoverChip';
+import Chip from './bodies/Chip';
+import Peg from './bodies/Peg';
+import Triangle from './bodies/Triangle';
+import { VerticalWall, HorizontalWall, BucketWall } from './bodies/Wall';
+import HoverChip from './bodies/HoverChip';
 import { DROP_BOUNDARY, TIMESTEP } from '../shared/constants/game'
 import { PLAYER_COLORS } from '../shared/constants/colors';
 import io from 'socket.io-client';

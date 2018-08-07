@@ -1,7 +1,7 @@
-import { CHIP } from '../constants/bodies';
-import { DROP_BOUNDARY } from '../constants/game';
-import { CHIP_SPRITE } from '../constants/sprites';
-import { CANVAS_COLOR, PLAYER_COLORS, HOVER_CHIP_TRANSPARENCY } from '../constants/colors';
+import { CHIP } from '../../shared/constants/bodies';
+import { DROP_BOUNDARY } from '../../shared/constants/game';
+import { CHIP_SPRITE } from '../../shared/constants/sprites';
+import { CANVAS_COLOR, PLAYER_COLORS, HOVER_CHIP_TRANSPARENCY } from '../../shared/constants/colors';
 
 import GameObject from './GameObject';
 import * as PIXI from 'pixi.js'
