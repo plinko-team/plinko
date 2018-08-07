@@ -15,13 +15,6 @@ class App extends Component {
     socket: {},
   }
 
-  // componentWillUnmount() {
-  //   if (Object.keys(this.state.socket).length) {
-  //     this.state.socket.disconnect();
-  //     this.setState({socket: {}});
-  //   }
-  // }
-
   setUserId = (userId) => {
     this.setState({ userId });
   }

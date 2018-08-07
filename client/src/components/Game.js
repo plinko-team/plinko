@@ -16,13 +16,12 @@ export default class Game extends Component {
   }
 
   state = {
-    someoneWon: false,
+    gameEnded: false,
     targetScore: 63,
     players: {},
   }
 
   componentDidMount() {
-    // this.setState({targetScore: 50, someoneWon: true});
     const playerId = this.props.players[this.props.userId].playerId;
     this.setState({players: this.props.players});
     this.client = new ClientEngine({ playerId, socket: this.props.socket });
@@ -55,7 +54,7 @@ export default class Game extends Component {
         return {
           targetScore,
           players: newPlayers,
-          someoneWon: winner,
+          gameEnded: winner,
         }
       })
     });
@@ -83,7 +82,7 @@ render() {
   let winningPlayerId;
   let winningUserId;
 
-  if (this.state.someoneWon) {
+  if (this.state.gameEnded) {
     const userIds = Object.keys(this.state.players);
     winningUserId = userIds.find(id => this.state.players[id].score >= this.state.targetScore && this.state.players[id].score !== 0);
 
@@ -100,7 +99,7 @@ render() {
         winnerId={winningPlayerId}
       />
 
-      {this.state.someoneWon && this.generateWinnerBanner(winningUserId)}
+    {this.state.gameEnded && this.generateWinnerBanner(winningUserId)}
 
         <div className="canvas"></div>
       </main>

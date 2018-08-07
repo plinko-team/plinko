@@ -33,7 +33,6 @@ export default class GameContainer extends Component {
 
   componentDidMount() {
     if (this.hasUserId() && this.hasOpenSocket()) {
-      console.log('emitting rejoin game')
       this.props.socket.emit('rejoin game', { userId: this.props.userId });
 
       this.registerSocketEvents(this.props.socket);
@@ -46,7 +45,6 @@ export default class GameContainer extends Component {
 
   componentWillUnmount() {
     if (this.hasOpenSocket()) {
-      console.log('emitting leave game')
       this.props.socket.emit('leave game');
       this.unregisterSocketEvents();
       clearInterval(this.interval);
@@ -54,18 +52,15 @@ export default class GameContainer extends Component {
   }
 
   handleStartGameClick = () => {
-    console.log('This should start a countdown then move all current users into game');
     this.props.socket.emit('start game');
   }
 
   handleUserJoin = (name) => {
-    console.log(`This should submit the new name "${name}" to the server from GameContainer, which should broadcast updated user lists to all users in lobby, which should close the form`)
     const socket = this.props.connectToSocket();
 
     this.registerSocketEvents(socket);
 
     socket.on('connection established', ({ message }) => {
-      console.log('ESTABLISHED!', message);
       socket.emit('new user', { name })
     });
   }
@@ -74,9 +69,6 @@ export default class GameContainer extends Component {
     socket.once('new user ack', ({ userId, gameInProgress }) => {
       this.props.setUserId(userId);
       this.setState({ gameInProgress });
-
-      console.log('userId', userId);
-      console.log(`ACK: userId: ${userId}, gameInProgress: ${gameInProgress}`)
     });
 
     socket.once('rejoin game ack', ({ gameInProgress }) => {
@@ -84,13 +76,10 @@ export default class GameContainer extends Component {
     })
 
     socket.on('user list', ({ activeUsers, waitingUsers }) => {
-      console.log('received user list')
-      console.log(activeUsers)
       this.setState({ activeUsers, waitingUsers });
     });
 
     socket.on('start game', () => {
-      console.log("Start game event, set gameIsRunning to true if active")
       this.setState({startBannerVisible: true});
       this.interval = setInterval(() => {
         if (this.state.startCount > 1) {
@@ -105,13 +94,10 @@ export default class GameContainer extends Component {
     })
 
     socket.on('game started', () => {
-      console.log("Game started event, set gameInProgress to true");
-
       this.setState({ gameInProgress: true });
     })
 
     socket.on('game over', () => {
-      console.log("Game over event; gameIsRunning and gameInProgress to false")
       this.setState({
         gameIsRunning: false,
         gameInProgress: false,

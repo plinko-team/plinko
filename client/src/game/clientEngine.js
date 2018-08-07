@@ -82,11 +82,6 @@ export default class ClientEngine {
     this.socket.on(SNAPSHOT, (encodedSnapshot) => {
       let { chips, pegs, score, winner, targetScore } = Serializer.decode(encodedSnapshot);
 
-      if (chips[0] && chips[0].ownerId !== null && this.logged === false) {
-        console.log(chips[0]);
-        this.logged = true;
-      }
-
       if (this.isRunning) {
         this.snapshotBuffer.push(new Snapshot({ pegs, chips, score, winner, targetScore, timestamp: performance.now() }));
       }
@@ -104,8 +99,7 @@ export default class ClientEngine {
   }
 
   frameSync() {
-
-    //if we have too many snapshots shorten it
+    // If we have too many snapshots shorten it
     while (this.snapshotBuffer.length > 5) {
       this.snapshotBuffer.shift();
     }
@@ -113,10 +107,6 @@ export default class ClientEngine {
     let currentSnapshot = this.snapshotBuffer.shift();
 
     if (!currentSnapshot) { return }
-
-    // if (!currentSnapshot.winner) { this.updateTargetScore(currentSnapshot.targetScore) }
-
-    // if (currentSnapshot.winner) { this.highlightWinner(currentSnapshot.score) }
 
     let chipsInCurrentSnapshot = {}
 
@@ -162,8 +152,6 @@ export default class ClientEngine {
         peg.sprite.tint = PLAYER_COLORS[peg.ownerId];
       }
     });
-
-    // this.updateScoreboard(currentSnapshot.score);
   }
 
   updateTargetScore(targetScore) {
@@ -234,16 +222,12 @@ export default class ClientEngine {
       this.delta -= TIMESTEP;
     }
 
-
-    // this.renderer.interpolate(this.chips, 1);
-    // this.renderer.spriteUpdate(this.chips);
     this.renderer.render(this.stage);
 
     this.frameID = requestAnimationFrame(this.animate.bind(this));
   }
 
   startGame() {
-    console.log("Game started!")
     // Entry point for updates and rendering
     // Only gets called once
     this.isRunning = true;
