@@ -15,7 +15,7 @@ export default class Serializer {
   static toBinary(num, bitLength) {
     let output = '';
     for (let i = 0; i < bitLength; i++) { output += '0' };
-    output += num.toString(2);
+    output += Number(num).toString(2);
     return output.slice(-(bitLength), output.length);
   }
 
@@ -43,10 +43,10 @@ export default class Serializer {
   static decodeChip(encodedChip) {
     return {
       id:      this.fromBinary(encodedChip.substr(0, CHIP_ID_BITS)),
-      ownerId: this.fromBinary(encodedChip.substr(8, OWNER_ID_BITS)),
+      ownerId: String(this.fromBinary(encodedChip.substr(8, OWNER_ID_BITS))),
       x:       this.fromBinary(encodedChip.substr(11, POSITION_BITS)),
       y:       this.fromBinary(encodedChip.substr(21, POSITION_BITS)),
-      angle:   this.fromBinary(encodedChip.substr(31, ANGLE_BITS)),
+      angle:   this.fromBinary(encodedChip.substr(31, ANGLE_BITS)) / 1000,
     };
   }
 
@@ -56,7 +56,7 @@ export default class Serializer {
     // ownerIds are 0-3, but can be null if there is no peg owner
     // So if ownerId is null, encode it as 0
     // Otherwise, increase by 1 (then substract when decoding)
-    const ownerId = peg.ownerId === null ? 0 : peg.ownerId + 1;
+    const ownerId = peg.ownerId === null ? 4 : peg.ownerId;
 
     output += this.toBinary(peg.id, PEG_ID_BITS);
     output += this.toBinary(ownerId, OWNER_ID_BITS)
@@ -68,8 +68,8 @@ export default class Serializer {
     let peg = {};
 
     peg.id = this.fromBinary(encodedPeg.substr(0, PEG_ID_BITS));
-    let ownerId = this.fromBinary(encodedPeg.substr(7, OWNER_ID_BITS));
-    peg.ownerId = ownerId === 0 ? null : ownerId - 1;
+    let ownerId = +this.fromBinary(encodedPeg.substr(7, OWNER_ID_BITS));
+    peg.ownerId = ownerId === 4 ? null : String(ownerId);
 
     return peg
   }
@@ -177,8 +177,8 @@ export default class Serializer {
     return { chips, pegs, score, winner, targetScore }
   }
 }
-//
-// // Leaving this code here just for testing
+
+// Leaving this code here just for testing
 //
 // function rng(n) {
 //   return Math.floor(Math.random() * n)
@@ -197,7 +197,7 @@ export default class Serializer {
 // function generatePeg(id) {
 //   let rand = rng(5);
 //   let ownerId = rand === 0 ? null : rand - 1;
-//   return { id, ownerId }
+//   return { id, ownerId };
 // }
 //
 // function generateSnapshot(numChips=10, numPegs=10) {
@@ -213,7 +213,7 @@ export default class Serializer {
 //   }
 //
 //   let score = {
-//     0: 23,
+//     0: 33,
 //     1: 12,
 //     2: 0,
 //     3: 10,
@@ -225,9 +225,17 @@ export default class Serializer {
 //   return { chips, pegs, score, winner, targetScore }
 // }
 //
-// let snapshot = generateSnapshot(5, 5)
+// let snapshot = generateSnapshot(5, 63)
 //
-// console.log(snapshot)
+// let peg = snapshot.pegs[2]
 //
 // let encoded = Serializer.encode(snapshot)
-// console.log(Serializer.decode(encoded))
+// let decodedPeg = Serializer.decode(encoded).pegs[2]
+//
+// console.log(peg.ownerId === decodedPeg.ownerId)
+// console.log(peg.id === decodedPeg.id)
+//
+// let chip = { id: 0, ownerId: 2, x: 403, y: 31.27777777777778, angle: 0 }
+// console.log(chip)
+// let encoded = Serializer.encodeChip(chip)
+// console.log(Serializer.decodeChip(encoded))

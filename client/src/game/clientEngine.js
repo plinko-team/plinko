@@ -47,6 +47,7 @@ export default class ClientEngine {
   }
 
   init() {
+    this.logged = false
     this.chips = {};
     this.pegs = {};
     this.isRunning = false;
@@ -80,6 +81,11 @@ export default class ClientEngine {
 
     this.socket.on(SNAPSHOT, (encodedSnapshot) => {
       let { chips, pegs, score, winner, targetScore } = Serializer.decode(encodedSnapshot);
+
+      if (chips[0] && chips[0].ownerId !== null && this.logged === false) {
+        console.log(chips[0]);
+        this.logged = true;
+      }
 
       if (this.isRunning) {
         this.snapshotBuffer.push(new Snapshot({ pegs, chips, score, winner, targetScore, timestamp: performance.now() }));

@@ -37,28 +37,28 @@ export default class Game extends Component {
   }
 
   registerSocketEvents = () => {
-    this.props.socket.on(SNAPSHOT, (encodedSnapshot) => {
-      let { score, winner, targetScore } = Serializer.decode(encodedSnapshot);
+this.props.socket.on(SNAPSHOT, (encodedSnapshot) => {
+  let { score, winner, targetScore } = Serializer.decode(encodedSnapshot);
 
-      this.setState((prevState) => {
-        const newPlayers = {};
+  this.setState((prevState) => {
+    const newPlayers = {};
 
-        Object.keys(prevState.players).forEach(userId => {
-          // UserId is a shortid uuid string
+    Object.keys(prevState.players).forEach(userId => {
+      // UserId is a shortid uuid string
 
-          let player = prevState.players[userId];
-          let playerScore = score[player.playerId];
+      let player = prevState.players[userId];
+      let playerScore = score[player.playerId];
 
-          newPlayers[userId] = Object.assign({}, player, { score: playerScore })
-        });
-
-        return {
-          targetScore,
-          players: newPlayers,
-          someoneWon: winner,
-        }
-      })
+      newPlayers[userId] = Object.assign({}, player, { score: playerScore })
     });
+
+    return {
+      targetScore,
+      players: newPlayers,
+      someoneWon: winner,
+    }
+  })
+});
   }
 
 generateWinnerBanner = (winningUserId) => {

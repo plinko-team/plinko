@@ -53,6 +53,7 @@ export default class ServerEngine {
   }
 
   init() {
+    this.logged = false
     this.chips = {};
     this.pegs = [];
     this.winner = false;
@@ -353,6 +354,7 @@ export default class ServerEngine {
   }
 
   resetGame() {
+    this.logged = false
     this.activeUsers = new UserCollection();
     this.engine = Engine.create();
     this.frame = 0;
@@ -385,13 +387,18 @@ export default class ServerEngine {
       return { id: peg.id, ownerId: peg.ownerId };
     });
 
-    return { chips: chipInfo, pegs: pegInfo, score, winner: winner, targetScore: targetScore }
+    return { chips: chipInfo, pegs: pegInfo, score, winner, targetScore }
   }
 
   broadcastSnapshot({ chips, pegs, score, winner, targetScore }) {
     let encodedSnapshot = Serializer.encode({ chips, pegs, score, winner, targetScore })
 
-    this.users.forEach(user => {
+    if (chips[0] && chips[0].ownerId !== null && this.logged === false) {
+      console.log(chips[0]);
+      this.logged = true;
+    }
+
+    this.activeUsers.forEach(user => {
       user.socket.emit(SNAPSHOT, encodedSnapshot);
     })
   }
