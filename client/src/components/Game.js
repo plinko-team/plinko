@@ -85,7 +85,7 @@ render() {
     const userIds = Object.keys(this.state.players);
     winningUserId = userIds.find(id => this.state.players[id].score >= this.state.targetScore && this.state.players[id].score !== 0);
 
-    if (winningUserId) { 
+    if (winningUserId) {
       winningPlayerId = this.state.players[winningUserId].playerId;
     }
   }

@@ -47,7 +47,7 @@ export default class GameContainer extends Component {
   componentWillUnmount() {
     if (this.hasOpenSocket()) {
       console.log('emitting leave game')
-      this.props.socket.emit('leave game', {});
+      this.props.socket.emit('leave game');
       this.unregisterSocketEvents();
       clearInterval(this.interval);
     }
@@ -55,7 +55,7 @@ export default class GameContainer extends Component {
 
   handleStartGameClick = () => {
     console.log('This should start a countdown then move all current users into game');
-    this.props.socket.emit('start game', {});
+    this.props.socket.emit('start game');
   }
 
   handleUserJoin = (name) => {
