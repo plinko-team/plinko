@@ -98,7 +98,7 @@ render() {
         winnerId={winningPlayerId}
       />
 
-    {this.state.someoneWon && this.generateWinnerBanner(winningUserId)}
+      {this.state.someoneWon && this.generateWinnerBanner(winningUserId)}
 
         <div className="canvas"></div>
       </main>

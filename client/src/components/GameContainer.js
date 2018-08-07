@@ -19,31 +19,9 @@ export default class GameContainer extends Component {
     gameIsRunning: false,
     activeUsers: {},
     waitingUsers: {},
-    countdown: 0,
+    startBannerVisible: false,
+    startCount: 5,
   }
-
-  // activeUsers:
-  // {
-  //   'fwed23d': {
-  //     name: 'Ryann',
-  //     playerId: 0,
-  //   },
-  //   'kjsd9s0': {
-  //     name: 'Josh',
-  //     playerId: 1,
-  //   },
-  //   etc.
-  // }
-  // waitingUsers:
-  // {
-  //   'lkdweo8': {
-  //     name: 'Branko',
-  //   },
-  //   '3ds-wdf': {
-  //     name: 'RK',
-  //   },
-  //   etc.
-  // }
 
   hasOpenSocket() {
     return Object.keys(this.props.socket).length > 0;
@@ -69,15 +47,15 @@ export default class GameContainer extends Component {
   componentWillUnmount() {
     if (this.hasOpenSocket()) {
       console.log('emitting leave game')
-      this.props.socket.emit('leave game');
-      this.unregisterSocketEvents()
+      this.props.socket.emit('leave game', {});
+      this.unregisterSocketEvents();
+      clearInterval(this.interval);
     }
   }
 
   handleStartGameClick = () => {
-    console.log('This should move all current users into game');
-    this.props.socket.emit('start game');
-    this.setState({gameIsRunning: true});
+    console.log('This should start a countdown then move all current users into game');
+    this.props.socket.emit('start game', {});
   }
 
   handleUserJoin = (name) => {
@@ -113,20 +91,32 @@ export default class GameContainer extends Component {
 
     socket.on('start game', () => {
       console.log("Start game event, set gameIsRunning to true if active")
-      this.setState({ gameIsRunning: true });
+      this.setState({startBannerVisible: true});
+      this.interval = setInterval(() => {
+        if (this.state.startCount > 1) {
+          this.setState((prevState) => {
+            return {startCount: prevState.startCount - 1}
+          });
+        } else {
+          this.setState({gameIsRunning: true});
+          clearInterval(this.interval);
+        }
+      }, 1000);
     })
 
-    socket.on('game started'), () => {
-      console.log("Game started event, set gameInProgress to true")
+    socket.on('game started', () => {
+      console.log("Game started event, set gameInProgress to true");
 
-      this.setState({ gameInProgress: true })
-    }
+      this.setState({ gameInProgress: true });
+    })
 
     socket.on('game over', () => {
       console.log("Game over event; gameIsRunning and gameInProgress to false")
       this.setState({
         gameIsRunning: false,
-        gameInProgress: false
+        gameInProgress: false,
+        startBannerVisible: false,
+        startCount: 5,
        })
     })
 
@@ -164,6 +154,8 @@ export default class GameContainer extends Component {
           handleStartGameClick={this.handleStartGameClick}
           handleUserJoin={this.handleUserJoin}
           gameInProgress={this.state.gameInProgress}
+          startBannerVisible={this.state.startBannerVisible}
+          startCount={this.state.startCount}
         />
       )
     }
