@@ -55,11 +55,7 @@ export default class GameContainer extends Component {
 
   handleStartGameClick = () => {
     console.log('This should start a countdown then move all current users into game');
-<<<<<<< HEAD
     this.props.socket.emit('start game');
-=======
-    this.props.socket.emit('start game', {});
->>>>>>> 13d9130ef06ac1c6f40cbb265af2e177809d2b08
   }
 
   handleUserJoin = (name) => {
