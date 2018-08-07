@@ -1,5 +1,3 @@
-import { World } from 'matter-js';
-
 export default class GameObject {
   constructor({ id, x, y, ownerId }) {
     this.id = id;
@@ -10,9 +8,5 @@ export default class GameObject {
 
   addToRenderer(stage) {
     stage.addChild(this.sprite);
-  }
-
-  addToEngine(world) {
-    World.add(world, this.body);
   }
 }

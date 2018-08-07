@@ -1,35 +1,16 @@
-import { Bodies } from 'matter-js';
-import { WALL } from '../constants/bodies';
-import { WALL_TINT } from '../constants/colors';
-import { CANVAS } from '../constants/canvas';
+import { WALL } from '../../shared/constants/bodies';
+import { WALL_TINT } from '../../shared/constants/colors';
+import { CANVAS } from '../../shared/constants/canvas';
 import GameObject from './GameObject';
 
-let PIXI;
-
-if (typeof window === 'object') {
-  PIXI = require('pixi.js');
-}
+let PIXI = require('pixi.js');
 
 class Wall extends GameObject {
   constructor({ x, y, width, height }) {
     super({ x, y })
     this.width = width;
     this.height = height;
-    this.createPhysics({ width, height });
-    if (typeof window === 'object') { this.createSprite() };
-  }
-
-  createPhysics({width, height}) {
-    let options = {
-      restitution: WALL.RESTITUTION,
-      friction: WALL.FRICTION,
-    }
-
-    this.body = Bodies.rectangle(this.x, this.y, this.width, this.height, options);
-    this.body.isStatic = true;
-    this.body.position.x = this.x;
-    this.body.position.y = this.y;
-    this.body.label = this.type;
+    this.createSprite();
   }
 
   createSprite() {
@@ -60,7 +41,6 @@ export class HorizontalWall extends Wall {
       width: CANVAS.WIDTH,
       height: 10
     })
-    this.body.label = 'ground'
   }
 }
 
