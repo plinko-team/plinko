@@ -336,6 +336,7 @@ export default class ServerEngine {
 
   enqueueActiveUsers() {
     this.activeUsers.forEach(user => {
+      this.playerIds[user.playerId] = null;
       this.waitingQueue.enqueue(user);
     })
   }
@@ -392,11 +393,6 @@ export default class ServerEngine {
 
   broadcastSnapshot({ chips, pegs, score, winner, targetScore }) {
     let encodedSnapshot = Serializer.encode({ chips, pegs, score, winner, targetScore })
-
-    if (chips[0] && chips[0].ownerId !== null && this.logged === false) {
-      console.log(chips[0]);
-      this.logged = true;
-    }
 
     this.activeUsers.forEach(user => {
       user.socket.emit(SNAPSHOT, encodedSnapshot);
