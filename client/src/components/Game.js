@@ -60,12 +60,21 @@ export default class Game extends Component {
   }
 
 generateWinnerBanner = (winningUserId) => {
-  return (
-    <WinnerBanner
-      winnerName={this.state.players[winningUserId].name}
-      winningPlayerId={this.state.players[winningUserId].playerId}
-    />
-  )
+  if (winningUserId) {
+    return (
+      <WinnerBanner
+        winnerName={this.state.players[winningUserId].name}
+        winningPlayerId={this.state.players[winningUserId].playerId}
+        />
+      )
+    } else {
+      return (
+        <WinnerBanner
+        winnerName={"No one "}
+        winningPlayerId={''}
+      />
+    )
+  }
 }
 
 render() {
@@ -74,19 +83,22 @@ render() {
 
   if (this.state.someoneWon) {
     const userIds = Object.keys(this.state.players);
-    winningUserId = userIds.find(id => this.state.players[id].score >= this.state.targetScore);
-    winningPlayerId = this.state.players[winningUserId].playerId;
+    winningUserId = userIds.find(id => this.state.players[id].score >= this.state.targetScore && this.state.players[id].score !== 0);
+
+    if (winningUserId) { 
+      winningPlayerId = this.state.players[winningUserId].playerId;
+    }
   }
 
   return (
-      <main>
-        <Header
-          players={this.state.players}
-          targetScore={this.state.targetScore}
-          winningPlayerId={winningPlayerId}
-        />
+    <main>
+      <Header
+        players={this.state.players}
+        targetScore={this.state.targetScore}
+        winnerId={winningPlayerId}
+      />
 
-        {winningPlayerId !== undefined && this.generateWinnerBanner(winningUserId)}
+      {this.state.someoneWon && this.generateWinnerBanner(winningUserId)}
 
         <div className="canvas"></div>
       </main>
