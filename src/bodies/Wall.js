@@ -1,14 +1,8 @@
 import { Bodies } from 'matter-js';
-import { WALL } from '../constants/bodies';
-import { WALL_TINT } from '../constants/colors';
-import { CANVAS } from '../constants/canvas';
+
 import GameObject from './GameObject';
-
-let PIXI;
-
-if (typeof window === 'object') {
-  PIXI = require('pixi.js');
-}
+import { WALL } from '../shared/constants/bodies';
+import { CANVAS } from '../shared/constants/canvas';
 
 class Wall extends GameObject {
   constructor({ x, y, width, height }) {
@@ -16,7 +10,6 @@ class Wall extends GameObject {
     this.width = width;
     this.height = height;
     this.createPhysics({ width, height });
-    if (typeof window === 'object') { this.createSprite() };
   }
 
   createPhysics({width, height}) {
@@ -30,19 +23,6 @@ class Wall extends GameObject {
     this.body.position.x = this.x;
     this.body.position.y = this.y;
     this.body.label = this.type;
-  }
-
-  createSprite() {
-    const texture = PIXI.Texture.WHITE;
-    const wall = new PIXI.Sprite(texture);
-    wall.position.x = this.x;
-    wall.position.y = this.y;
-    wall.height = this.height;
-    wall.width = this.width;
-    wall.tint = WALL_TINT;
-    wall.anchor.set(0.5, 0.5);
-
-    this.sprite = wall;
   }
 }
 

@@ -1,10 +1,10 @@
 import EventEmitter from 'eventemitter3';
 import { Body, World, Engine, Events } from 'matter-js';
 import { DROP_BOUNDARY, TIMESTEP, TARGET_SCORE } from '../shared/constants/game';
-import Chip from '../shared/bodies/Chip';
-import Peg from '../shared/bodies/Peg';
-import Triangle from '../shared/bodies/Triangle';
-import { VerticalWall, HorizontalWall, BucketWall } from '../shared/bodies/Wall';
+import Chip from '../bodies/Chip';
+import Peg from '../bodies/Peg';
+import Triangle from '../bodies/Triangle';
+import { VerticalWall, HorizontalWall, BucketWall } from '../bodies/Wall';
 import { Input, InputBuffer } from './inputBuffer';
 import Serializer from '../shared/serializer';
 import User from './user';
