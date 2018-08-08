@@ -28,7 +28,7 @@ import {
   ROW_SPACING,
   COL_SPACING,
   VERTICAL_MARGIN,
-  HORIZONTAL_OFFSET 
+  HORIZONTAL_OFFSET
 } from '../shared/constants/canvas'
 
 /**
@@ -132,6 +132,10 @@ export default class ClientEngine {
       chip.sprite.position.x = x;
       chip.sprite.position.y = y;
       chip.sprite.rotation = angle;
+
+      if (y >= CANVAS.HEIGHT - 10 - chip.sprite.width / 2) {
+        chip.shrink();
+      }
     });
 
     for (let id of Object.keys(this.chips)) {

@@ -25,25 +25,24 @@ export default class Chip extends GameObject {
     chip.tint = PLAYER_COLORS[this.ownerId];
 
     this.sprite = chip;
+    this.shrinking = false;
   }
 
-  // shrink(callback) {
-  //   setTimeout(() => {
-  //     const SHRINK_FACTOR = 0.95
-  //     const interval = setInterval(() => {
-  //       Body.scale(this.body, SHRINK_FACTOR, SHRINK_FACTOR)
-  //       this.body.circleRadius *= SHRINK_FACTOR
-  //
-  //       if (typeof window === 'object') {
-  //         this.sprite.width *= SHRINK_FACTOR
-  //         this.sprite.height *= SHRINK_FACTOR
-  //       }
-  //
-  //       if (this.body.circleRadius < 0.1) {
-  //         clearInterval(interval);
-  //         callback();
-  //       }
-  //     }, 10)
-  //   }, 50)
-  // }
+  shrink(callback) {
+    this.shrinking = true;
+
+    setTimeout(() => {
+      const SHRINK_FACTOR = 0.95;
+
+      const interval = setInterval(() => {
+        this.sprite.width *= SHRINK_FACTOR ** 2;
+        this.sprite.height *= SHRINK_FACTOR ** 2;
+
+        if (this.sprite.width < 0.1) {
+          clearInterval(interval);
+          if (callback) callback();
+        }
+      }, 10)
+    }, 50)
+  }
 }
