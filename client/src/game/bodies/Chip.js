@@ -6,13 +6,15 @@ import GameObject from './GameObject';
 let PIXI = require('pixi.js');
 
 export default class Chip extends GameObject {
-  static count = 0
+  static count = 0;
 
   constructor({ id, x, y, ownerId }) {
     super({ id, x, y, ownerId });
     this.type = 'chip';
     this.createSprite()
     this.sprite.parentObject = this;
+
+    Chip.count++;
   }
 
   createSprite() {
@@ -29,16 +31,21 @@ export default class Chip extends GameObject {
   }
 
   shrink(callback) {
+    if (this.shrinking) { return }
     this.shrinking = true;
 
     setTimeout(() => {
-      const SHRINK_FACTOR = 0.95;
+      const SHRINK_FACTOR = Math.max(0.95, Math.min(0.995, 0.995 ** Chip.count));
+
+      console.log("Shrink factor: ", SHRINK_FACTOR)
+      console.log("Chip count: ", Chip.count)
 
       const interval = setInterval(() => {
         this.sprite.width *= SHRINK_FACTOR ** 2;
         this.sprite.height *= SHRINK_FACTOR ** 2;
 
         if (this.sprite.width < 0.1) {
+          Chip.count--;
           clearInterval(interval);
           if (callback) callback();
         }
