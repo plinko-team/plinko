@@ -40,11 +40,6 @@ export default class Chip extends GameObject {
         Body.scale(this.body, SHRINK_FACTOR, SHRINK_FACTOR)
         this.body.circleRadius *= SHRINK_FACTOR
 
-        if (typeof window === 'object') {
-          this.sprite.width *= SHRINK_FACTOR
-          this.sprite.height *= SHRINK_FACTOR
-        }
-
         if (this.body.circleRadius < 0.1) {
           clearInterval(interval);
           callback();

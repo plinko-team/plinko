@@ -113,8 +113,10 @@ export default class ServerEngine {
         const chip = bodyB.parentObject;
         const combinedId = String(chip.ownerId) + String(chip.id);
 
-        World.remove(this.engine.world, chip.body);
-        delete this.chips[combinedId];
+        chip.shrink(() => {
+          World.remove(this.engine.world, chip.body);
+          delete this.chips[combinedId];
+        })
       }
     }
   }
