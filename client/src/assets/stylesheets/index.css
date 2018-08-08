@@ -61,9 +61,16 @@ main {
   padding: 0;
 }
 
+.button:hover,
 .button:focus {
   background-color: #fff;
   border-color: #fff;
+}
+
+.button-primary:disabled,
+.button-primary:disabled:hover {
+  background-color: #e0e0e0;
+  border-color: #e0e0e0;
 }
 
 .banner {
@@ -85,6 +92,7 @@ main {
 .canvas,
 .main-content {
   max-width: 800px;
+  min-height: 50vh;
   margin: 2rem auto;
   padding: 2.5rem;
   box-sizing: border-box;
@@ -98,17 +106,20 @@ main {
   padding: 0;
 }
 
-.lobby {
-  padding-top: 0;
-}
-
 canvas {
   width: 100%;
   height: 100%;
 }
 
-.lobby h2 {
+.lobby {
+  padding-top: 0;
+  padding-left: 8rem;
+  padding-right: 8rem;
   font-size: 2rem;
+}
+
+.lobby h2 {
+  font-size: 2.5rem;
   margin-bottom: 1rem;
   letter-spacing: .05rem;
 }
@@ -118,17 +129,22 @@ canvas {
   display: inline-block;
 }
 
-.player-lists {
-  padding-top: 5rem;
+.lobby input,
+.lobby button {
+  height: 5rem;
+  font-size: 2rem;
 }
 
-.players-container {
-  display: inline-block;
+.lobby input {
+  margin-right: 2rem;
 }
 
-.active-players {
-  vertical-align: middle;
-  padding-top: 5rem;
+.lobby button.start {
+  margin-top: 3rem;
+}
+
+.player-info {
+  padding-top: 6rem;
 }
 
 .waiting-players {
@@ -139,16 +155,13 @@ canvas {
   text-align: center;
 }
 
-.name-form input {
-  font-size: 2rem;
-}
-
 .alert {
   background-color: #fff4e0;
   line-height: 1.5rem;
   border: 1px solid #fcd88f;
   padding: .5rem;
   font-size: 1.3rem;
+  border-radius: 2px;
 }
 
 #scores {

@@ -1,12 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const StartGameButton = ({ handleClick, columnCount }) => {
+const StartGameButton = ({ handleClick }) => {
   return (
-    <button
-      className={`button-primary ${columnCount} columns offset-by-three`}
-      onClick={handleClick}
-    >
+    <button className={"button-primary start"} onClick={handleClick}>
       Start Game
     </button>
   );
@@ -14,7 +11,6 @@ const StartGameButton = ({ handleClick, columnCount }) => {
 
 StartGameButton.propTypes = {
   handleClick: PropTypes.func,
-  columnCount: PropTypes.string,
 }
 
 export default StartGameButton;
