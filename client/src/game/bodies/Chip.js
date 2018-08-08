@@ -35,10 +35,12 @@ export default class Chip extends GameObject {
     this.shrinking = true;
 
     setTimeout(() => {
-      const SHRINK_FACTOR = Math.max(0.95, Math.min(0.995, 0.995 ** Chip.count));
+      // 1 + Math.log(0.95) / N
+      // where N is number of chips before max shrinking
+      // Here, it is 0.995 for N = 10
+      // 0.95 is max shrinking factor
 
-      console.log("Shrink factor: ", SHRINK_FACTOR)
-      console.log("Chip count: ", Chip.count)
+      const SHRINK_FACTOR = Math.max(0.95, Math.min(0.995, 0.995 ** Chip.count));
 
       const interval = setInterval(() => {
         this.sprite.width *= SHRINK_FACTOR ** 2;
