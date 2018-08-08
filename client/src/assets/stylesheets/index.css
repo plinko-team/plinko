@@ -32,23 +32,37 @@ header {
   /* position: relative; */
 }
 
-h1,
-h2,
-h3,
-p {
+h1, h2, h3, h4 {
   font-family: 'Fredoka One', sans-serif;
+  letter-spacing: .01rem;
 }
 
 h1 {
-  font-size: 6rem;
-  letter-spacing: .1rem;
-  margin-top: 2rem;
+  font-size: 3.5rem;
 }
 
 h1 a,
 h1 a:hover {
   text-decoration: none;
   color: inherit;
+}
+
+header h1 {
+  font-size: 6rem;
+  letter-spacing: .1rem;
+  margin-top: 2rem;
+}
+
+h2 {
+  font-size: 2.6rem;
+}
+
+h3 {
+  font-size: 2rem;
+}
+
+h2, h3, h4 {
+  margin-bottom: .5rem;
 }
 
 main {
@@ -156,8 +170,8 @@ canvas {
 }
 
 .rule h2 {
-  font-family: 'Lato';
-  font-weight: 700;
+  /* font-family: 'Lato'; */
+  /* font-weight: 700; */
   display: inline-block;
   font-size: 1.6rem;
   background-color: #f7e8ff;
@@ -177,7 +191,7 @@ canvas {
 }
 
 .rule:first-child h2 {
-  background-color: #eabaff;
+  background-color: #e3a3ff;
 }
 
 .reminder {
@@ -204,11 +218,6 @@ canvas {
 }
 
 #scores {
-  /* position: absolute;
-  top: 50%;
-  left: 35%;
-  width: 55%;
-  transform: translateY(-50%); */
   background-color: #fff;
   border-radius: 5px;
   color: #555;
@@ -301,18 +310,10 @@ canvas {
   background-color: #aaffb1;
 }
 
-/* Help Tab */
+/* Pages */
 
-.help h2 {
-  font-size: 30px;
-  text-decoration: underline;
-}
-
-.help h3 {
-  font-size: 26px;
-  margin-bottom: 10px;
-}
-
-.help p {
-  font-size: 16px;
+.left-rule {
+  margin-left: 1rem;
+  padding-left: 1rem;
+  border-left: 1px solid #e0e0e0;
 }

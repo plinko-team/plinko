@@ -12,10 +12,10 @@ const TopNav = () => {
           <NavLink to="play" className="button">Play</NavLink>
         </div>
         <div className="two columns">
-          <NavLink to="team" className="button">Team</NavLink>
+          <NavLink to="help" className="button">Help</NavLink>
         </div>
         <div className="two columns">
-          <NavLink to="help" className="button">Help</NavLink>
+          <NavLink to="team" className="button">Team</NavLink>
         </div>
         <div className="two columns">
           <a href="https://github.com/plinko-team/plinko" className="button">GitHub</a>
