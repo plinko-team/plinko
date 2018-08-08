@@ -6,13 +6,15 @@ import GameObject from './GameObject';
 let PIXI = require('pixi.js');
 
 export default class Chip extends GameObject {
-  static count = 0
+  static count = 0;
 
   constructor({ id, x, y, ownerId }) {
     super({ id, x, y, ownerId });
     this.type = 'chip';
     this.createSprite()
     this.sprite.parentObject = this;
+
+    Chip.count++;
   }
 
   createSprite() {
@@ -25,25 +27,31 @@ export default class Chip extends GameObject {
     chip.tint = PLAYER_COLORS[this.ownerId];
 
     this.sprite = chip;
+    this.shrinking = false;
   }
 
-  // shrink(callback) {
-  //   setTimeout(() => {
-  //     const SHRINK_FACTOR = 0.95
-  //     const interval = setInterval(() => {
-  //       Body.scale(this.body, SHRINK_FACTOR, SHRINK_FACTOR)
-  //       this.body.circleRadius *= SHRINK_FACTOR
-  //
-  //       if (typeof window === 'object') {
-  //         this.sprite.width *= SHRINK_FACTOR
-  //         this.sprite.height *= SHRINK_FACTOR
-  //       }
-  //
-  //       if (this.body.circleRadius < 0.1) {
-  //         clearInterval(interval);
-  //         callback();
-  //       }
-  //     }, 10)
-  //   }, 50)
-  // }
+  shrink(callback) {
+    if (this.shrinking) { return }
+    this.shrinking = true;
+
+    setTimeout(() => {
+      // 1 + Math.log(0.95) / N
+      // where N is number of chips before max shrinking
+      // Here, it is 0.995 for N = 10
+      // 0.95 is max shrinking factor
+
+      const SHRINK_FACTOR = Math.max(0.95, Math.min(0.995, 0.995 ** Chip.count));
+
+      const interval = setInterval(() => {
+        this.sprite.width *= SHRINK_FACTOR ** 2;
+        this.sprite.height *= SHRINK_FACTOR ** 2;
+
+        if (this.sprite.width < 0.1) {
+          Chip.count--;
+          clearInterval(interval);
+          if (callback) callback();
+        }
+      }, 10)
+    }, 50)
+  }
 }
