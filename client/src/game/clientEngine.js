@@ -11,8 +11,7 @@ import { Snapshot, SnapshotBuffer } from './snapshot.js';
 import Serializer from '../shared/serializer';
 import Synchronizer from './synchronizer';
 
-import { CONNECTION_ESTABLISHED,
-         NEW_CHIP,
+import { NEW_CHIP,
          SNAPSHOT,
          INITIATE_SYNC,
          HANDSHAKE_COMPLETE,
@@ -73,8 +72,7 @@ export default class ClientEngine {
   }
 
   registerSocketEvents() {
-    this.socket.on(CONNECTION_ESTABLISHED, ({ uuid }) => {
-      this.uuid = uuid;
+    this.socket.on('start game', () => {
       this.frame = 0;
     });
 
