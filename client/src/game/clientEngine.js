@@ -12,20 +12,24 @@ import { DROP_BOUNDARY, TIMESTEP } from '../shared/constants/game'
 import { PLAYER_COLORS } from '../shared/constants/colors';
 import { Snapshot, SnapshotBuffer } from './snapshot.js';
 
-import { NEW_CHIP,
-         SNAPSHOT,
-         INITIATE_SYNC,
-         HANDSHAKE_COMPLETE,
-         SERVER_FRAME,
-         REQUEST_SERVER_FRAME } from '../shared/constants/events'
+import {
+  NEW_CHIP,
+  SNAPSHOT,
+  // INITIATE_SYNC,
+  // HANDSHAKE_COMPLETE,
+  SERVER_FRAME,
+  // REQUEST_SERVER_FRAME
+} from '../shared/constants/events'
 
-import { CANVAS,
-         ROWS,
-         COLS,
-         ROW_SPACING,
-         COL_SPACING,
-         VERTICAL_MARGIN,
-         HORIZONTAL_OFFSET } from '../shared/constants/canvas'
+import {
+  CANVAS,
+  ROWS,
+  COLS,
+  ROW_SPACING,
+  COL_SPACING,
+  VERTICAL_MARGIN,
+  HORIZONTAL_OFFSET 
+} from '../shared/constants/canvas'
 
 /**
 
@@ -63,14 +67,13 @@ export default class ClientEngine {
     return this;
   }
 
-  establishSynchronization() {
-    this.synchronizer.handshake();
-
-    this.eventEmitter.once(HANDSHAKE_COMPLETE, () => {
-      console.log("Handshake complete, your latency is: ", this.synchronizer.latency)
-      !this.isRunning && this.startGame();
-    })
-  }
+  // establishSynchronization() {
+  //   this.synchronizer.handshake();
+  //
+  //   this.eventEmitter.once(HANDSHAKE_COMPLETE, () => {
+  //     console.log("Handshake complete, your latency is: ", this.synchronizer.latency)
+  //   })
+  // }
 
   registerSocketEvents() {
     this.socket.on('start game', () => {
