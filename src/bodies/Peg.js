@@ -1,7 +1,7 @@
 import { Body, Bodies } from 'matter-js';
-import { PEG } from '../constants/bodies';
-import { PEG_TINT } from '../constants/colors';
-import { PEG_SPRITE } from '../constants/sprites';
+import { PEG } from '../shared/constants/bodies';
+import { PEG_TINT } from '../shared/constants/colors';
+import { PEG_SPRITE } from '../shared/constants/sprites';
 import GameObject from './GameObject';
 
 let PIXI;

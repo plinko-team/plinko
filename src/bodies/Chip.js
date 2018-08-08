@@ -1,7 +1,7 @@
 import { Bodies } from 'matter-js';
-import { CHIP } from '../constants/bodies';
-import { PLAYER_COLORS } from '../constants/colors';
-import { CHIP_SPRITE } from '../constants/sprites';
+import { CHIP } from '../shared/constants/bodies';
+import { PLAYER_COLORS } from '../shared/constants/colors';
+import { CHIP_SPRITE } from '../shared/constants/sprites';
 import { Events, Body } from 'matter-js'
 import GameObject from './GameObject';
 

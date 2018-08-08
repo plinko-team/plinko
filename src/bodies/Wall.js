@@ -1,7 +1,7 @@
 import { Bodies } from 'matter-js';
-import { WALL } from '../constants/bodies';
-import { WALL_TINT } from '../constants/colors';
-import { CANVAS } from '../constants/canvas';
+import { WALL } from '../shared/constants/bodies';
+import { WALL_TINT } from '../shared/constants/colors';
+import { CANVAS } from '../shared/constants/canvas';
 import GameObject from './GameObject';
 
 let PIXI;
