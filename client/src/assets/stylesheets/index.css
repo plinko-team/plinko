@@ -33,7 +33,9 @@ header {
 }
 
 h1,
-h2 {
+h2,
+h3,
+p {
   font-family: 'Fredoka One', sans-serif;
 }
 
@@ -247,4 +249,20 @@ canvas {
 .player-3 .score-bar,
 .player-3.banner  {
   background-color: #aaffb1;
+}
+
+/* Help Tab */
+
+.help h2 {
+  font-size: 30px;
+  text-decoration: underline;
+}
+
+.help h3 {
+  font-size: 26px;
+  margin-bottom: 10px;
+}
+
+.help p {
+  font-size: 16px;
 }
