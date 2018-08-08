@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { NavLink } from 'react-router-dom';
 
 import Header from './Header';
 import PlayerJoinForm from './PlayerJoinForm';
@@ -120,6 +121,23 @@ export default class Lobby extends Component {
       return (
         <div className="player-info">
           {<PlayerJoinForm userName={this.state.userName} isJoinDisabled={this.state.isJoinDisabled} handleSubmit={this.handleUserJoin} handleChange={this.handleNameChange} />}
+
+          <div className="rules">
+            <div className="rule">
+              <h2>Objective</h2>
+              <p>Hit the pegs as fast as you can to change their color.</p>
+            </div>
+            <div className="rule">
+              <h2>Playing against friends?</h2>
+              <p>Reach the target peg percentage before anyone else.</p>
+              <p>Watch out! Other players can steal your pegs.</p>
+            </div>
+            <div className="rule">
+              <h2>Playing alone? </h2>
+              <p>Reach the target peg percentage as fast as you can.</p>
+              <p>Can you hit 90% of pegs? How about 95%?</p>
+            </div>
+          </div>
         </div>
       )
     } else {
@@ -127,6 +145,10 @@ export default class Lobby extends Component {
         <div className="player-info">
           {this.activeUserList()}
           {this.waitingUserList()}
+
+          <div className="reminder">
+            <p>Forget the rules and don't want to wing it? Get <NavLink to="help">help</NavLink>.</p>
+          </div>
         </div>
       )
     }

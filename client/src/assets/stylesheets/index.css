@@ -147,6 +147,43 @@ canvas {
   padding-top: 6rem;
 }
 
+.rules {
+  width: 70%;
+  margin: 2rem auto;
+  text-align: center;
+}
+
+.rule h2 {
+  font-family: 'Lato';
+  font-weight: 700;
+  display: inline-block;
+  font-size: 1.6rem;
+  background-color: #f7e8ff;
+  padding: .5rem 1rem;
+  border-radius: 2rem;
+  margin-bottom: 0;
+  letter-spacing: normal;
+}
+
+.rule p {
+  font-size: 1.6rem;
+  margin-bottom: 0;
+}
+
+.rule {
+  margin-bottom: 1.5rem;
+}
+
+.rule:first-child h2 {
+  background-color: #eabaff;
+}
+
+.reminder {
+  text-align: center;
+  font-size: 1.4rem;
+  margin-top: 5rem;
+}
+
 .waiting-players {
   opacity: .7;
 }
