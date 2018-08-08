@@ -8,10 +8,6 @@ export default class GameObject {
     this.ownerId = ownerId;
   }
 
-  addToRenderer(stage) {
-    stage.addChild(this.sprite);
-  }
-
   addToEngine(world) {
     World.add(world, this.body);
   }

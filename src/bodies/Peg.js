@@ -1,35 +1,15 @@
 import { Body, Bodies } from 'matter-js';
-import { PEG } from '../shared/constants/bodies';
-import { PEG_TINT } from '../shared/constants/colors';
-import { PEG_SPRITE } from '../shared/constants/sprites';
+
 import GameObject from './GameObject';
-
-let PIXI;
-
-if (typeof window === 'object') {
-  PIXI = require('pixi.js');
-}
+import { PEG } from '../shared/constants/bodies';
 
 export default class Peg extends GameObject {
   constructor({ id, x, y }) {
     super({ id, x, y });
     this.ownerId = null;
     this.type = 'peg';
-
     this.createPhysics();
     this.body.parentObject = this;
-
-    if (typeof window === 'object') {
-      // Only set sprite properties in the browser
-      this.createSprite();
-
-      // Sprite and Body have references to each other so that we can
-      // change renderer properties based on physics collisions
-      this.body.sprite = this.sprite;
-      this.sprite.body = this.body;
-
-      this.sprite.parentObject = this;
-    }
   }
 
   createPhysics() {
@@ -45,18 +25,5 @@ export default class Peg extends GameObject {
     this.body.position.y = this.y;
     this.body.label = this.type;
     this.body.isShrinking = false;
-  }
-
-  createSprite() {
-    const peg = new PIXI.Sprite.fromImage(PEG_SPRITE);
-
-    peg.position.x = this.x;
-    peg.position.y = this.y;
-    peg.height = PEG.DIAMETER;
-    peg.width = PEG.DIAMETER;
-    peg.tint = PEG_TINT;
-    peg.anchor.set(0.5, 0.5);
-
-    this.sprite = peg;
   }
 }
