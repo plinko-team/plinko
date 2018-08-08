@@ -1,4 +1,3 @@
-import { WALL } from '../../shared/constants/bodies';
 import { WALL_TINT } from '../../shared/constants/colors';
 import { CANVAS } from '../../shared/constants/canvas';
 import GameObject from './GameObject';

@@ -6,7 +6,6 @@ import { VerticalWall, HorizontalWall, BucketWall } from './bodies/Wall';
 import HoverChip from './bodies/HoverChip';
 import { DROP_BOUNDARY, TIMESTEP } from '../shared/constants/game'
 import { PLAYER_COLORS } from '../shared/constants/colors';
-import io from 'socket.io-client';
 import EventEmitter from 'eventemitter3';
 import { Snapshot, SnapshotBuffer } from './snapshot.js';
 import Serializer from '../shared/serializer';
