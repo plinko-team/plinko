@@ -1,15 +1,16 @@
+import EventEmitter from 'eventemitter3';
+
+import Serializer from '../shared/serializer';
+import Synchronizer from './synchronizer';
 import Renderer from './renderer';
 import Chip from './bodies/Chip';
 import Peg from './bodies/Peg';
 import Triangle from './bodies/Triangle';
-import { VerticalWall, HorizontalWall, BucketWall } from './bodies/Wall';
 import HoverChip from './bodies/HoverChip';
+import { VerticalWall, HorizontalWall, BucketWall } from './bodies/Wall';
 import { DROP_BOUNDARY, TIMESTEP } from '../shared/constants/game'
 import { PLAYER_COLORS } from '../shared/constants/colors';
-import EventEmitter from 'eventemitter3';
 import { Snapshot, SnapshotBuffer } from './snapshot.js';
-import Serializer from '../shared/serializer';
-import Synchronizer from './synchronizer';
 
 import { NEW_CHIP,
          SNAPSHOT,
