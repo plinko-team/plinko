@@ -1,32 +1,35 @@
+import EventEmitter from 'eventemitter3';
+
+import Serializer from '../shared/serializer';
+import Synchronizer from './synchronizer';
 import Renderer from './renderer';
 import Chip from './bodies/Chip';
 import Peg from './bodies/Peg';
 import Triangle from './bodies/Triangle';
-import { VerticalWall, HorizontalWall, BucketWall } from './bodies/Wall';
 import HoverChip from './bodies/HoverChip';
+import { VerticalWall, HorizontalWall, BucketWall } from './bodies/Wall';
 import { DROP_BOUNDARY, TIMESTEP } from '../shared/constants/game'
 import { PLAYER_COLORS } from '../shared/constants/colors';
-import io from 'socket.io-client';
-import EventEmitter from 'eventemitter3';
 import { Snapshot, SnapshotBuffer } from './snapshot.js';
-import Serializer from '../shared/serializer';
-import Synchronizer from './synchronizer';
 
-import { CONNECTION_ESTABLISHED,
-         NEW_CHIP,
-         SNAPSHOT,
-         INITIATE_SYNC,
-         HANDSHAKE_COMPLETE,
-         SERVER_FRAME,
-         REQUEST_SERVER_FRAME } from '../shared/constants/events'
+import {
+  NEW_CHIP,
+  SNAPSHOT,
+  // INITIATE_SYNC,
+  // HANDSHAKE_COMPLETE,
+  SERVER_FRAME,
+  // REQUEST_SERVER_FRAME
+} from '../shared/constants/events'
 
-import { CANVAS,
-         ROWS,
-         COLS,
-         ROW_SPACING,
-         COL_SPACING,
-         VERTICAL_MARGIN,
-         HORIZONTAL_OFFSET } from '../shared/constants/canvas'
+import {
+  CANVAS,
+  ROWS,
+  COLS,
+  ROW_SPACING,
+  COL_SPACING,
+  VERTICAL_MARGIN,
+  HORIZONTAL_OFFSET 
+} from '../shared/constants/canvas'
 
 /**
 
@@ -64,18 +67,16 @@ export default class ClientEngine {
     return this;
   }
 
-  establishSynchronization() {
-    this.synchronizer.handshake();
-
-    this.eventEmitter.once(HANDSHAKE_COMPLETE, () => {
-      console.log("Handshake complete, your latency is: ", this.synchronizer.latency)
-      !this.isRunning && this.startGame();
-    })
-  }
+  // establishSynchronization() {
+  //   this.synchronizer.handshake();
+  //
+  //   this.eventEmitter.once(HANDSHAKE_COMPLETE, () => {
+  //     console.log("Handshake complete, your latency is: ", this.synchronizer.latency)
+  //   })
+  // }
 
   registerSocketEvents() {
-    this.socket.on(CONNECTION_ESTABLISHED, ({ uuid }) => {
-      this.uuid = uuid;
+    this.socket.on('start game', () => {
       this.frame = 0;
     });
 

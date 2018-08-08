@@ -1,7 +1,5 @@
 import io from 'socket.io-client';
 
-import { CONNECTION_ESTABLISHED } from '../shared/constants/events'
-
 /**
 
   TODO: Write description

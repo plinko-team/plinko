@@ -1,4 +1,4 @@
-import { avg, median, sum, standardDeviation } from '../shared/utils/math.js';
+import { avg, median, standardDeviation } from '../shared/utils/math.js';
 import { PING_MESSAGE,
          PONG_MESSAGE,
          INITIATE_SYNC,
