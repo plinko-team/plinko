@@ -21,34 +21,68 @@ export default class Lobby extends Component {
 
   state = {
     userName: '',
+    isJoinDisabled: true,
+  }
+
+  isActiveUser = () => {
+    return Object.keys(this.props.activeUsers).includes(this.props.userId);
+  }
+
+  isWaitingUser = () => {
+    return Object.keys(this.props.waitingUsers).includes(this.props.userId);
+  }
+
+  isNameFormOpen = () => {
+    return !this.isActiveUser() && !this.isWaitingUser();
+  }
+
+  handleNameChange = (input) => {
+    const isJoinDisabled = input.trim() !== '' ? false : true;
+
+    this.setState({
+      userName: input,
+      isJoinDisabled
+    });
+  }
+
+  handleUserJoin = () => {
+    this.props.handleUserJoin(this.state.userName.trim());
   }
 
   activeUserList = () => {
-    return (
-      <div className="active-players row">
-        <div className="players-container four columns">
-          <h2>{"You've got next"}</h2>
-          <ul>
-            {this.userItems(this.props.activeUsers, true)}
-          </ul>
-        </div>
+    if (!!Object.keys(this.props.activeUsers).length) {
+      return (
+        <div className="active-players row">
+          <div className="players-container four columns">
+            <h2>{"You're up next"}</h2>
+            <ul>
+              {this.userItems(this.props.activeUsers, true)}
+            </ul>
+          </div>
 
-        {!this.props.startBannerVisible && this.gameStartElement()}
-      </div>
-    )
+          {!this.props.startBannerVisible && this.gameStartElement()}
+        </div>
+      )
+    } else {
+      return null;
+    }
   }
 
   waitingUserList = () => {
-    return (
-      <div className="waiting-players">
-        <div className="players-container">
-          <h2>Your turn is coming up</h2>
-          <ul>
-            {this.userItems(this.props.waitingUsers)}
-          </ul>
-      </div>
-      </div>
-    )
+    if (!!Object.keys(this.props.waitingUsers).length) {
+      return (
+        <div className="waiting-players">
+          <div className="players-container">
+            <h2>Your turn is coming up</h2>
+            <ul>
+              {this.userItems(this.props.waitingUsers)}
+            </ul>
+        </div>
+        </div>
+      )
+    } else {
+      return null;
+    }
   }
 
   userItems = (usersObj, active=false) => {
@@ -72,33 +106,30 @@ export default class Lobby extends Component {
       )
     } else if (this.isActiveUser()) {
       return (
-        <StartGameButton
-          handleClick={this.props.handleStartGameClick}
-          columnCount="three"
-        />
+        <div class="button-container three columns offset-by-three">
+          <StartGameButton
+            handleClick={this.props.handleStartGameClick}
+          />
+        </div>
       )
     }
   }
 
-  isActiveUser = () => {
-    return Object.keys(this.props.activeUsers).includes(this.props.userId);
-  }
-
-  isWaitingUser = () => {
-    return Object.keys(this.props.waitingUsers).includes(this.props.userId);
-  }
-
-  isNameFormOpen = () => {
-    return !this.isActiveUser() && !this.isWaitingUser();
-  }
-
-  handleNameChange = (input) => {
-    this.setState({userName: input});
-  }
-
-  handleUserJoin = () => {
-    // validation logic and error notice here
-    this.props.handleUserJoin(this.state.userName.trim());
+  playerInfo = () => {
+    if (this.isNameFormOpen()) {
+      return (
+        <div className="player-info">
+          {<PlayerJoinForm userName={this.state.userName} isJoinDisabled={this.state.isJoinDisabled} handleSubmit={this.handleUserJoin} handleChange={this.handleNameChange} />}
+        </div>
+      )
+    } else {
+      return (
+        <div className="player-info">
+          {this.activeUserList()}
+          {this.waitingUserList()}
+        </div>
+      )
+    }
   }
 
   render() {
@@ -107,13 +138,7 @@ export default class Lobby extends Component {
         <Header />
         <div className="main-content lobby">
           {this.props.startBannerVisible && <StartBanner count={this.props.startCount} />}
-
-          <div className="player-lists">
-            {this.isNameFormOpen() && <PlayerJoinForm userName={this.state.userName} handleSubmit={this.handleUserJoin} handleChange={this.handleNameChange} />}
-
-            {!!Object.keys(this.props.activeUsers).length && this.activeUserList()}
-            {!!Object.keys(this.props.waitingUsers).length && this.waitingUserList()}
-          </div>
+          {this.playerInfo()}
         </div>
       </main>
     )
