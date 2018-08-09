@@ -155,7 +155,7 @@ export default class ClientEngine {
       peg.ownerId = pegInfo.ownerId;
 
       if (peg.ownerId !== null) {
-        peg.sprite.tint = PLAYER_COLORS[peg.ownerId];
+        // peg.sprite.tint = PLAYER_COLORS[peg.ownerId];
       }
     });
   }
@@ -259,7 +259,7 @@ export default class ClientEngine {
     if (!this.isRunning) { return }
 
     // Short circuit handler if outside of drop boundary
-    if (e.offsetY > DROP_BOUNDARY) { return }
+    // if (e.offsetY > DROP_BOUNDARY) { return }
 
     const x = e.offsetX;
     const y = e.offsetY;
@@ -287,36 +287,39 @@ export default class ClientEngine {
   }
 
   _createWalls(stage, engine) {
-    const leftWall = new VerticalWall({x: 0, y: CANVAS.HEIGHT / 2});
-    const rightWall = new VerticalWall({x: CANVAS.WIDTH, y: CANVAS.HEIGHT / 2});
-    const ground = new HorizontalWall();
-    const walls = [leftWall, rightWall, ground];
+    // const leftWall = new VerticalWall({x: 0, y: CANVAS.HEIGHT});
+    // const rightWall = new VerticalWall({x: CANVAS.WIDTH, y: CANVAS.HEIGHT});
+    // const ground = new HorizontalWall();
+    // const walls = [leftWall, rightWall, ground];
 
-    // walls.forEach(w => w.addToRenderer(this.renderer));
+    // walls.forEach(w => this.renderer.addToStage(w));
+
+    const ground = new HorizontalWall();
+    this.renderer.addToStage(ground);
   }
 
   _createBucketWalls() {
     for (let i = 1; i < COLS; i++) {
       let bucket = new BucketWall({ x: i * COL_SPACING });
 
-      // bucket.addToRenderer(this.renderer)
+      this.renderer.addToStage(bucket);
     }
   }
 
   _createTriangles() {
     // Positional calculations and vertices for the wall triangles.
     const triangles = [
-      { x: 772, y: 290, side: 'right' },
-      { x: 772, y: 158, side: 'right' },
-      { x: 772, y: 422, side: 'right' },
-      { x: 28,  y: 305, side: 'left' },
-      { x: 28,  y: 173, side: 'left' },
-      { x: 28,  y: 437, side: 'left' },
+      // { x: 772, y: 290, side: 'right' },
+      // { x: 772, y: 158, side: 'right' },
+      // { x: 772, y: 422, side: 'right' },
+      { x: 0,  y: 305, side: 'left' },
+      { x: 0,  y: 173, side: 'left' },
+      // { x: 0,  y: 437, side: 'left' },
     ];
 
     triangles.forEach(triangle => {
       let t = new Triangle(triangle);
-      // t.addToRenderer(this.renderer);
+      this.renderer.addToStage(t);
     });
   }
 
@@ -341,7 +344,7 @@ export default class ClientEngine {
         this.pegs[id] = peg;
         id++;
 
-        // peg.addToRenderer(this.renderer)
+        this.renderer.addToStage(peg);
       }
     }
   }

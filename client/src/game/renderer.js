@@ -12,25 +12,44 @@ export default class Renderer {
     this.rough = Rough.canvas(this.canvas);
     this.generator = this.rough.generator;
     this.stage = {};
+    // {
+    //   chips: {
+    //     {},
+    //     {},
+    //     {}
+    //   },
+    //   pegs: {
+    //     {},
+    //     {},
+    //     {}
+    //   }
+    // }
   }
 
   addToStage(body) {
-    this.stage[body.id] = body;
-    console.log(this.stage)
+    if (this.stage[body.type + 's'] === undefined) {
+      this.stage[body.type + 's'] = {};
+    }
+
+    const bodies = this.stage[body.type + 's'];
+    bodies[body.id] = body;
+    // console.log(this.stage)
   }
 
   removeFromStage(body) {
-    if (this.stage[body.id]) {
-      delete this.stage[body.id];
+    const bodies = this.stage[body.type + 's'];
+    if (bodies[body.id]) {
+      delete bodies[body.id];
     }
   }
 
   render() {
     this.ctx.clearRect(0, 0, CANVAS.WIDTH, CANVAS.HEIGHT);
 
-    Object.values(this.stage).forEach(body => {
-      body.drawSprite(this.rough)
+    Object.values(this.stage).forEach(bodies => {
+      Object.values(bodies).forEach(body => {
+        body.draw(this.rough);
+      });
     });
-    // draw every body in stage - body.drawSprite(x, y)
   }
 }

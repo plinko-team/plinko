@@ -14,7 +14,7 @@ export default class Chip extends GameObject {
     Chip.count++;
   }
 
-  drawSprite(rough) {
+  draw(rough) {
     // const chip = new PIXI.Sprite.fromImage(CHIP_SPRITE);
     // chip.position.x = this.x;
     // chip.position.y = this.y;
@@ -23,8 +23,10 @@ export default class Chip extends GameObject {
     // chip.anchor.set(0.5, 0.5);
     // chip.tint = PLAYER_COLORS[this.ownerId];
 
-    console.log(this)
-    rough.circle(this.x, this.y, CHIP.DIAMETER);
+    rough.circle(this.x, this.y, CHIP.DIAMETER, {
+      fill: '#ffb2df',
+      roughness: 0.5,
+    });
   }
 
   // shrink(callback) {
