@@ -101,7 +101,9 @@ render() {
 
     {this.state.gameEnded && this.generateWinnerBanner(winningUserId)}
 
-        <div className="canvas"></div>
+        <div className="canvas-container">
+          <canvas id="canvas"></canvas>
+        </div>
       </main>
     )
   }

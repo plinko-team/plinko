@@ -12,6 +12,8 @@ import { DROP_BOUNDARY, TIMESTEP } from '../shared/constants/game'
 import { PLAYER_COLORS } from '../shared/constants/colors';
 import { Snapshot, SnapshotBuffer } from './snapshot.js';
 
+import { CHIP } from '../shared/constants/bodies';
+
 import {
   NEW_CHIP,
   SNAPSHOT,
@@ -55,7 +57,6 @@ export default class ClientEngine {
     this.pegs = {};
     this.isRunning = false;
     this.lastChipId = 0;
-    this.stage = this.renderer.stage;
 
     this.createEnvironment();
     this.registerCanvasEvents();
@@ -121,7 +122,7 @@ export default class ClientEngine {
       if (typeof this.chips[combinedId] === 'undefined') {
         const chip = new Chip({ id, ownerId, x, y });
 
-        chip.addToRenderer(this.stage);
+        this.renderer.addToStage(chip);
         this.chips[combinedId] = chip;
       }
 
@@ -129,13 +130,13 @@ export default class ClientEngine {
 
       const chip = this.chips[combinedId];
 
-      chip.sprite.position.x = x;
-      chip.sprite.position.y = y;
-      chip.sprite.rotation = angle;
+      chip.x = x;
+      chip.y = y;
+      // chip.sprite.rotation = angle;
 
-      if (y >= CANVAS.HEIGHT - 10 - chip.sprite.width / 2) {
-        chip.shrink();
-      }
+      // if (y >= CANVAS.HEIGHT - 10 - chip.sprite.width / 2) {
+      //   chip.shrink();
+      // }
     });
 
     for (let id of Object.keys(this.chips)) {
@@ -143,8 +144,8 @@ export default class ClientEngine {
       // this removes chips that the server has created (and returned to the client)
       // and have reached the bottom
       if (!chipsInCurrentSnapshot[id] && !this.chips[id].recentlyDropped) {
-        this.stage.removeChild(this.chips[id].sprite)
-        delete this.chips[id]
+        this.renderer.removeFromStage(this.chips[id]);
+        delete this.chips[id];
       }
     }
 
@@ -227,7 +228,7 @@ export default class ClientEngine {
       this.delta -= TIMESTEP;
     }
 
-    this.renderer.render(this.stage);
+    this.renderer.render();
 
     this.frameID = requestAnimationFrame(this.animate.bind(this));
   }
@@ -239,7 +240,7 @@ export default class ClientEngine {
 
     requestAnimationFrame((timestamp) => {
       this.lastSyncTime = timestamp;
-      this.renderer.render(this.stage);
+      this.renderer.render();
       this.lastFrameTime = timestamp;
       this.delta = 0;
 
@@ -269,7 +270,7 @@ export default class ClientEngine {
 
     let chip = new Chip({ id, ownerId, x, y });
     chip.recentlyDropped = true;
-    chip.addToRenderer(this.stage);
+    this.renderer.addToStage(chip);
     this.chips[String(ownerId) + String(id)] = chip;
     this.socket.emit(NEW_CHIP, { frame, id, x, y, ownerId });
   }
@@ -278,10 +279,10 @@ export default class ClientEngine {
     const x = e.offsetX;
     const y = e.offsetY;
     const hoverChip = new HoverChip({ x, y, ownerId: this.playerId });
-    hoverChip.addToRenderer(this.stage);
+    // hoverChip.addToRenderer(this.renderer);
 
     e.target.addEventListener('mouseleave', () => {
-      hoverChip.removeChip(this.stage);
+      // hoverChip.removeChip(this.stage);
     });
   }
 
@@ -291,31 +292,31 @@ export default class ClientEngine {
     const ground = new HorizontalWall();
     const walls = [leftWall, rightWall, ground];
 
-    walls.forEach(w => w.addToRenderer(this.stage));
+    // walls.forEach(w => w.addToRenderer(this.renderer));
   }
 
   _createBucketWalls() {
     for (let i = 1; i < COLS; i++) {
       let bucket = new BucketWall({ x: i * COL_SPACING });
 
-      bucket.addToRenderer(this.stage)
+      // bucket.addToRenderer(this.renderer)
     }
   }
 
   _createTriangles() {
     // Positional calculations and vertices for the wall triangles.
     const triangles = [
-                { x: 772, y: 290, side: 'right' },
-                { x: 772, y: 158, side: 'right' },
-                { x: 772, y: 422, side: 'right' },
-                { x: 28,  y: 305, side: 'left' },
-                { x: 28,  y: 173, side: 'left' },
-                { x: 28,  y: 437, side: 'left' },
-              ];
+      { x: 772, y: 290, side: 'right' },
+      { x: 772, y: 158, side: 'right' },
+      { x: 772, y: 422, side: 'right' },
+      { x: 28,  y: 305, side: 'left' },
+      { x: 28,  y: 173, side: 'left' },
+      { x: 28,  y: 437, side: 'left' },
+    ];
 
     triangles.forEach(triangle => {
       let t = new Triangle(triangle);
-      t.addToRenderer(this.stage);
+      // t.addToRenderer(this.renderer);
     });
   }
 
@@ -340,7 +341,7 @@ export default class ClientEngine {
         this.pegs[id] = peg;
         id++;
 
-        peg.addToRenderer(this.stage)
+        // peg.addToRenderer(this.renderer)
       }
     }
   }

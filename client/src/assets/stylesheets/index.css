@@ -105,8 +105,8 @@ main {
   color: #fff;
 }
 
-.canvas,
-.main-content {
+.main-content,
+.canvas-container {
   max-width: 800px;
   min-height: 50vh;
   margin: 2rem auto;
@@ -116,7 +116,7 @@ main {
   color: #555;
 }
 
-.canvas {
+.canvas-container {
   width: 800px;
   height: 600px;
   padding: 0;
@@ -125,6 +125,7 @@ main {
 canvas {
   width: 100%;
   height: 100%;
+  border: 1px solid black;
 }
 
 .lobby {

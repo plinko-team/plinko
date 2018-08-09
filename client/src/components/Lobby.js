@@ -101,13 +101,13 @@ export default class Lobby extends Component {
   gameStartElement = () => {
     if (this.props.gameInProgress) {
       return (
-        <p class="alert five columns offset-by-two">
+        <p className="alert five columns offset-by-two">
           A game is currently in progress. When it's over, you and the other active players can start a new game.
         </p>
       )
     } else if (this.isActiveUser()) {
       return (
-        <div class="button-container three columns offset-by-three">
+        <div className="button-container three columns offset-by-three">
           <StartGameButton
             handleClick={this.props.handleStartGameClick}
           />

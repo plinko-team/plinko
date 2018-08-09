@@ -6,7 +6,7 @@ export default class GameObject {
     this.ownerId = ownerId;
   }
 
-  addToRenderer(stage) {
-    stage.addChild(this.sprite);
-  }
+  // addToRenderer(renderer) {
+  //   renderer.addBody(this.sprite);
+  // }
 }
