@@ -3,47 +3,43 @@ import { TRIANGLE_LEFT_SPRITE, TRIANGLE_RIGHT_SPRITE } from '../../shared/consta
 import { WALL_TINT } from '../../shared/constants/colors';
 import GameObject from './GameObject';
 
-let PIXI = require('pixi.js');
+import { CANVAS } from '../../shared/constants/canvas';
 
 export default class Triangle extends GameObject {
-  constructor({ x, y, side }) {
+  static count = 0;
 
-    super({ x, y })
+  constructor({ y, side }) {
+    super({ y });
+    this.id = Triangle.count++;
     this.side = side;
-    this.vertices = side === 'right' ? TRIANGLE.RIGHT.VERTICES : TRIANGLE.LEFT.VERTICES;
+    // this.vertices = side === 'right' ? TRIANGLE.RIGHT.VERTICES : TRIANGLE.LEFT.VERTICES;
     console.log('new triangle!, x:', this.x, 'y:', this.y)
   }
 
-// add unique ids to triangles, they are overwriting each other
   draw(rough) {
-      // { x: 28,  y: 305, side: 'left' }
     const height = 150;
     const width = 35;
+    let vertices;
 
     if (this.side === 'left') {
-      const vertices = [
-        [this.x, this.y + 48 + height],  // bottom left
-        [this.x + width, this.y + 48 + (height / 2)],   // middle right
-        [this.x, this.y + 48]     // top left
+      vertices = [
+        [0, this.y],                                    // top left
+        [0 + width, this.y + (height / 2)],             // middle right
+        [0, this.y + height],                           // bottom left
       ];
-      rough.polygon(vertices);
     } else {
-      const vertices = [[50, 150], [15, 75], [50, 0]];
-      rough.polygon(vertices);
+      vertices = [
+        [CANVAS.WIDTH, this.y],                         // top right
+        [CANVAS.WIDTH - width, this.y + (height / 2)],  // middle left
+        [CANVAS.WIDTH, this.y + height],                // bottom right
+      ]
     }
-  }
 
-  // createSprite() {
-  //   const sprite = this.side === 'left' ? TRIANGLE_LEFT_SPRITE : TRIANGLE_RIGHT_SPRITE;
-  //   const triangle = new PIXI.Sprite.fromImage(sprite);
-  //
-  //   // The sprite is located based on the actual x, y passed into Triangle
-  //   triangle.position.x = this.x;
-  //   triangle.position.y = this.y;
-  //   triangle.scale.set(0.33, 0.33);
-  //   triangle.anchor.set(0.5, 0.5);
-  //   triangle.tint = WALL_TINT;
-  //
-  //   this.sprite = triangle;
-  // }
+    rough.polygon(vertices, {
+      fill: WALL_TINT,
+      stroke: WALL_TINT,
+      fillStyle: 'solid',
+      roughness: 0.8,
+    });
+  }
 }

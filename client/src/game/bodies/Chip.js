@@ -5,52 +5,53 @@ import GameObject from './GameObject';
 
 export default class Chip extends GameObject {
   static count = 0;
+  static fillStyles = [
+    'hachure',
+    'zigzag',
+    'cross-hatch',
+    'solid',
+  ];
 
   constructor({ id, x, y, ownerId }) {
     super({ id, x, y, ownerId });
     this.type = 'chip';
+    this.diameter = CHIP.DIAMETER;
     this.shrinking = false;
+    this.fillStyle = Chip.fillStyles[Math.floor(Math.random() * Chip.fillStyles.length)];
 
     Chip.count++;
   }
 
   draw(rough) {
-    // const chip = new PIXI.Sprite.fromImage(CHIP_SPRITE);
-    // chip.position.x = this.x;
-    // chip.position.y = this.y;
-    // chip.height = CHIP.DIAMETER;
-    // chip.width = CHIP.DIAMETER;
-    // chip.anchor.set(0.5, 0.5);
-    // chip.tint = PLAYER_COLORS[this.ownerId];
-
-    rough.circle(this.x, this.y, CHIP.DIAMETER, {
-      fill: '#ffb2df',
-      roughness: 0.5,
+    rough.circle(this.x, this.y, this.diameter, {
+      fill: PLAYER_COLORS[this.ownerId],
+      fillStyle: this.fillStyle,
+      fillWeight: 1.5,
+      roughness: 0.7,
     });
   }
 
-  // shrink(callback) {
-  //   if (this.shrinking) { return }
-  //   this.shrinking = true;
-  //
-  //   setTimeout(() => {
-  //     // 1 + Math.log(0.95) / N
-  //     // where N is number of chips before max shrinking
-  //     // Here, it is 0.995 for N = 10
-  //     // 0.95 is max shrinking factor
-  //
-  //     const SHRINK_FACTOR = Math.max(0.95, Math.min(0.995, 0.995 ** Chip.count));
-  //
-  //     const interval = setInterval(() => {
-  //       this.sprite.width *= SHRINK_FACTOR ** 2;
-  //       this.sprite.height *= SHRINK_FACTOR ** 2;
-  //
-  //       if (this.sprite.width < 0.1) {
-  //         Chip.count--;
-  //         clearInterval(interval);
-  //         if (callback) callback();
-  //       }
-  //     }, 10)
-  //   }, 50)
-  // }
+  shrink(callback) {
+    if (this.shrinking) { return }
+    this.shrinking = true;
+
+    setTimeout(() => {
+      // 1 + Math.log(0.95) / N
+      // where N is number of chips before max shrinking
+      // Here, it is 0.995 for N = 10
+      // 0.95 is max shrinking factor
+
+      const SHRINK_FACTOR = Math.max(0.95, Math.min(0.995, 0.995 ** Chip.count));
+
+      const interval = setInterval(() => {
+        this.diameter *= SHRINK_FACTOR ** 2;
+
+        if (this.diameter < 0.1) {
+          Chip.count--;
+          clearInterval(interval);
+          if (callback) callback();
+        }
+      }, 10)
+    }, 50)
+  }
 }

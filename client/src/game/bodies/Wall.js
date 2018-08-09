@@ -21,7 +21,7 @@ class Wall extends GameObject {
       fill: WALL_TINT,
       stroke: WALL_TINT,
       fillStyle: 'solid',
-      roughness: 0.2,
+      roughness: 0.8,
     });
   }
 
@@ -41,7 +41,7 @@ class Wall extends GameObject {
 
 export class VerticalWall extends Wall {
   constructor({x, y}) {
-    super({x, y, width: 4, height: CANVAS.HEIGHT});
+    super({x, y, width: 2, height: CANVAS.HEIGHT});
   }
 }
 

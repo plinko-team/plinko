@@ -134,9 +134,9 @@ export default class ClientEngine {
       chip.y = y;
       // chip.sprite.rotation = angle;
 
-      // if (y >= CANVAS.HEIGHT - 10 - chip.sprite.width / 2) {
-      //   chip.shrink();
-      // }
+      if (y >= CANVAS.HEIGHT - 5 - chip.diameter / 2) {
+        chip.shrink();
+      }
     });
 
     for (let id of Object.keys(this.chips)) {
@@ -151,12 +151,7 @@ export default class ClientEngine {
 
     currentSnapshot.pegs.forEach(pegInfo => {
       const peg = this.pegs[pegInfo.id];
-
       peg.ownerId = pegInfo.ownerId;
-
-      if (peg.ownerId !== null) {
-        // peg.sprite.tint = PLAYER_COLORS[peg.ownerId];
-      }
     });
   }
 
@@ -287,15 +282,15 @@ export default class ClientEngine {
   }
 
   _createWalls(stage, engine) {
-    // const leftWall = new VerticalWall({x: 0, y: CANVAS.HEIGHT});
-    // const rightWall = new VerticalWall({x: CANVAS.WIDTH, y: CANVAS.HEIGHT});
-    // const ground = new HorizontalWall();
-    // const walls = [leftWall, rightWall, ground];
-
-    // walls.forEach(w => this.renderer.addToStage(w));
-
+    const leftWall = new VerticalWall({x: 0, y: 0});
+    const rightWall = new VerticalWall({x: CANVAS.WIDTH - 2, y: 0});
     const ground = new HorizontalWall();
-    this.renderer.addToStage(ground);
+    const walls = [leftWall, rightWall, ground];
+
+    walls.forEach(w => this.renderer.addToStage(w));
+
+    // const ground = new HorizontalWall();
+    // this.renderer.addToStage(ground);
   }
 
   _createBucketWalls() {
@@ -307,14 +302,13 @@ export default class ClientEngine {
   }
 
   _createTriangles() {
-    // Positional calculations and vertices for the wall triangles.
     const triangles = [
-      // { x: 772, y: 290, side: 'right' },
-      // { x: 772, y: 158, side: 'right' },
-      // { x: 772, y: 422, side: 'right' },
-      { x: 0,  y: 305, side: 'left' },
-      { x: 0,  y: 173, side: 'left' },
-      // { x: 0,  y: 437, side: 'left' },
+      {y: 91, side: 'right'},
+      {y: 223, side: 'right'},
+      {y: 355, side: 'right'},
+      {y: 91, side: 'left'},
+      {y: 223, side: 'left'},
+      {y: 355, side: 'left'},
     ];
 
     triangles.forEach(triangle => {

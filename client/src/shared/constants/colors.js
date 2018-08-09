@@ -1,12 +1,12 @@
-export const CANVAS_COLOR = 0xffffff;
+export const CANVAS_COLOR = '#ffffff';
 export const WALL_TINT = '#e0e0e0';
-export const PEG_TINT = 0xe0e0e0;
+export const PEG_TINT = '#e0e0e0';
 export const HOVER_CHIP_TRANSPARENCY = 0.4;
 
-const pink = 0xffaaaa;
-const green = 0xaaffb1;
-const purple = 0xecb5ff;
-const yellow = 0xffee75;
+const pink = '#ffaaaa';
+const green = '#aaffb1';
+const purple = '#ecb5ff';
+const yellow = '#ffee75';
 
 export const PLAYER_COLORS = {
   0: pink,

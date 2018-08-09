@@ -12,18 +12,6 @@ export default class Renderer {
     this.rough = Rough.canvas(this.canvas);
     this.generator = this.rough.generator;
     this.stage = {};
-    // {
-    //   chips: {
-    //     {},
-    //     {},
-    //     {}
-    //   },
-    //   pegs: {
-    //     {},
-    //     {},
-    //     {}
-    //   }
-    // }
   }
 
   addToStage(body) {
