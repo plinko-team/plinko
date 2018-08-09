@@ -3,7 +3,7 @@ import { PING_MESSAGE,
          PONG_MESSAGE,
          INITIATE_SYNC,
          HANDSHAKE_COMPLETE } from '../shared/constants/events';
-
+import EventEmitter from 'eventemitter3';
 /**
 
   The synchronizer is a class that communicate to the server
@@ -16,7 +16,7 @@ import { PING_MESSAGE,
 export default class Synchronizer {
   constructor(socket, eventEmitter) {
     this.socket = socket;
-    this.eventEmitter = eventEmitter;
+    this.eventEmitter = eventEmitter || new EventEmitter();
   }
 
   init() {
@@ -75,7 +75,15 @@ export default class Synchronizer {
   }
 
   handshake() {
+    this.reset()
+
     this.pingInterval = this.pingOnInterval(150);
+
+    return new Promise((resolve) => {
+      this.eventEmitter.on(HANDSHAKE_COMPLETE, () => {
+        resolve(this.latency);
+      })
+    })
   }
 
   sync({ serverTime }) {
@@ -88,7 +96,6 @@ export default class Synchronizer {
     // Don't filter around median unless history buffer is full
     // Otherwise you will constantly filter out valid latencies
     if (this.history.length === 10) {
-      console.log(this.history)
       this.history = this._filterStandardDeviationAroundMedian(this.history);
 
       this.latency = avg(this.history);
