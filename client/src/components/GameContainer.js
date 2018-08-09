@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 
 import Game from './Game';
 import Lobby from './Lobby';
+import Synchronizer from '../game/synchronizer';
 
 export default class GameContainer extends Component {
   static propTypes = {
@@ -34,6 +35,7 @@ export default class GameContainer extends Component {
   componentDidMount() {
     if (this.hasUserId() && this.hasOpenSocket()) {
       this.props.socket.emit('rejoin game', { userId: this.props.userId });
+      this.synchronizer = new Synchronizer(this.props.socket).init();
 
       this.registerSocketEvents(this.props.socket);
       this.setState({
@@ -57,7 +59,7 @@ export default class GameContainer extends Component {
 
   handleUserJoin = (name) => {
     const socket = this.props.connectToSocket();
-
+    this.synchronizer = new Synchronizer(socket).init();
     this.registerSocketEvents(socket);
 
     socket.on('connection established', ({ message }) => {
@@ -80,6 +82,11 @@ export default class GameContainer extends Component {
     });
 
     socket.on('start game', () => {
+      this.synchronizer.handshake()
+      .then(latency => {
+        console.log('Latency: ', latency);
+      })
+
       this.setState({startBannerVisible: true});
       this.interval = setInterval(() => {
         if (this.state.startCount > 1) {
