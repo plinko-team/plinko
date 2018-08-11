@@ -1,6 +1,7 @@
 import { CHIP } from '../../shared/constants/bodies';
 import { PLAYER_COLORS } from '../../shared/constants/colors';
 import { CHIP_SPRITE } from '../../shared/constants/sprites';
+import { toDegrees } from '../../shared/utils/math';
 import GameObject from './GameObject';
 
 export default class Chip extends GameObject {
@@ -9,7 +10,7 @@ export default class Chip extends GameObject {
     'hachure',
     'zigzag',
     'cross-hatch',
-    'solid',
+    // 'solid',
   ];
 
   constructor({ id, x, y, ownerId }) {
@@ -18,16 +19,19 @@ export default class Chip extends GameObject {
     this.diameter = CHIP.DIAMETER;
     this.shrinking = false;
     this.fillStyle = Chip.fillStyles[Math.floor(Math.random() * Chip.fillStyles.length)];
-
+    this.angle = 0; // stored in radians
     Chip.count++;
   }
 
   draw(rough) {
+    console.log(this.angle)
+
     rough.circle(this.x, this.y, this.diameter, {
       fill: PLAYER_COLORS[this.ownerId],
       fillStyle: this.fillStyle,
-      fillWeight: 1.5,
-      roughness: 0.7,
+      fillWeight: 1,
+      roughness: 0.1,
+      hachureAngle: toDegrees(this.angle * -1), // convert to degrees for Rough and switch sign
     });
   }
 

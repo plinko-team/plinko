@@ -82,8 +82,9 @@ export default class ClientEngine {
     });
 
     this.socket.on(SNAPSHOT, (encodedSnapshot) => {
-      let { chips, pegs, score, winner, targetScore } = Serializer.decode(encodedSnapshot);
+      // let { chips, pegs, score, winner, targetScore } = Serializer.decode(encodedSnapshot);
 
+      let { chips, pegs, score, winner, targetScore } = encodedSnapshot; // not actually encoded right now
       if (this.isRunning) {
         this.snapshotBuffer.push(new Snapshot({ pegs, chips, score, winner, targetScore, timestamp: performance.now() }));
       }
@@ -132,6 +133,7 @@ export default class ClientEngine {
 
       chip.x = x;
       chip.y = y;
+      chip.angle = angle;
       // chip.sprite.rotation = angle;
 
       if (y >= CANVAS.HEIGHT - 5 - chip.diameter / 2) {

@@ -36,3 +36,7 @@ export function standardDeviation(array, sample=false) {
 
   return Math.sqrt(sum(meanSquares) / (sample ? array.length : array.length - 1))
 }
+
+export function toDegrees(rad) {
+  return rad * 360 / (Math.PI * 2);
+}

@@ -12,8 +12,6 @@ export default class Triangle extends GameObject {
     super({ y });
     this.id = Triangle.count++;
     this.side = side;
-    // this.vertices = side === 'right' ? TRIANGLE.RIGHT.VERTICES : TRIANGLE.LEFT.VERTICES;
-    console.log('new triangle!, x:', this.x, 'y:', this.y)
   }
 
   draw(rough) {
