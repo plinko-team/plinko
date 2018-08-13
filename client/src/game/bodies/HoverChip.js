@@ -1,45 +1,38 @@
 import { CHIP } from '../../shared/constants/bodies';
 import { DROP_BOUNDARY } from '../../shared/constants/game';
-import { CHIP_SPRITE } from '../../shared/constants/sprites';
 import { CANVAS_COLOR, PLAYER_COLORS, HOVER_CHIP_TRANSPARENCY } from '../../shared/constants/colors';
 
 import GameObject from './GameObject';
 import * as PIXI from 'pixi.js'
 
 export default class HoverChip extends GameObject {
+  static count = 0;
+
   constructor({ x, y, ownerId }) {
     super({ x, y, ownerId });
+    this.id = HoverChip.count++;
     this.type = 'hover_chip';
-    if (typeof window === 'object') { this.createSprite() };
+    this.diameter = CHIP.DIAMETER;
+    this.fill = PLAYER_COLORS[this.ownerId];
     this.registerListener();
   }
 
   registerListener() {
     document.querySelector('canvas').addEventListener('mousemove', (e) => {
-      const x = e.offsetX;
-      const y = e.offsetY;
+      this.x = e.offsetX;
+      this.y = e.offsetY;
 
       // Change color if cursor crosses boundary
-      this.sprite.tint = y > DROP_BOUNDARY ? CANVAS_COLOR : PLAYER_COLORS[this.ownerId];
-
-      this.sprite.position.x = x;
-      this.sprite.position.y = y;
+      this.fill = this.y > DROP_BOUNDARY ? '#ffffff' : PLAYER_COLORS[this.ownerId];
     });
   }
 
-  removeChip(stage) {
-    stage.removeChild(this.sprite);
-  }
-
-  createSprite() {
-    const chip = new PIXI.Sprite.fromImage(CHIP_SPRITE);
-    chip.position.x = this.x;
-    chip.position.y = this.y;
-    chip.alpha = HOVER_CHIP_TRANSPARENCY;
-    chip.height = CHIP.DIAMETER;
-    chip.width = CHIP.DIAMETER;
-    chip.anchor.set(0.5, 0.5);
-
-    this.sprite = chip;
+  draw(rough) {
+    rough.circle(this.x, this.y, this.diameter, {
+      fill: this.fill,
+      fillStyle: 'solid',
+      fillWeight: 1,
+      roughness: 0.1,
+    });
   }
 }

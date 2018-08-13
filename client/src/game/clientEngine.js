@@ -276,10 +276,10 @@ export default class ClientEngine {
     const x = e.offsetX;
     const y = e.offsetY;
     const hoverChip = new HoverChip({ x, y, ownerId: this.playerId });
-    // hoverChip.addToRenderer(this.renderer);
+    this.renderer.addToStage(hoverChip);
 
     e.target.addEventListener('mouseleave', () => {
-      // hoverChip.removeChip(this.stage);
+      this.renderer.removeFromStage(hoverChip);
     });
   }
 

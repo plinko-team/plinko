@@ -24,8 +24,6 @@ export default class Chip extends GameObject {
   }
 
   draw(rough) {
-    console.log(this.angle)
-
     rough.circle(this.x, this.y, this.diameter, {
       fill: PLAYER_COLORS[this.ownerId],
       fillStyle: this.fillStyle,
