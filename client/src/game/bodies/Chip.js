@@ -27,7 +27,7 @@ export default class Chip extends GameObject {
       fill: PLAYER_COLORS[this.ownerId],
       fillStyle: this.fillStyle,
       fillWeight: 1,
-      roughness: 0.3,
+      roughness: 1,
       hachureAngle: toDegrees(this.angle * -1), // convert to degrees for Rough and switch sign
     });
   }
@@ -42,12 +42,12 @@ export default class Chip extends GameObject {
       // Here, it is 0.995 for N = 10
       // 0.95 is max shrinking factor
 
-      const SHRINK_FACTOR = Math.max(0.95);
+      const SHRINK_FACTOR = 0.93;
 
       const interval = setInterval(() => {
         this.diameter *= SHRINK_FACTOR;
 
-        if (this.diameter < 1) {
+        if (this.diameter < 3) {
           Chip.count--;
           clearInterval(interval);
           if (callback) callback();

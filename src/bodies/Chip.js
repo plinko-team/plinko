@@ -41,7 +41,7 @@ export default class Chip extends GameObject {
       // Here, it is 0.995 for N = 10
       // 0.95 is max shrinking factor
 
-      const SHRINK_FACTOR = Math.max(0.95);
+      const SHRINK_FACTOR = 0.93;
 
       const interval = setInterval(() => {
         // this.area = this.area * SHRINK_FACTOR;
@@ -50,7 +50,7 @@ export default class Chip extends GameObject {
         // Body.set(this.body, {area: this.area});
         // console.log('new area:', this.body.area);
 
-        if (this.body.area < Math.PI * (0.5 ** 2)) {
+        if (this.body.area < Math.PI * (1.5 ** 2)) {
           Chip.count--;
           clearInterval(interval);
           callback();
