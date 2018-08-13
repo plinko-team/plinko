@@ -14,8 +14,6 @@ export default class Chip extends GameObject {
     this.body.parentObject = this;
 
     Chip.count++;
-    console.log("CHIP++ ", Chip.count)
-
   }
 
   createPhysics() {
@@ -25,6 +23,7 @@ export default class Chip extends GameObject {
     }
 
     this.body = Bodies.circle(this.x, this.y, CHIP.RADIUS, options);
+    this.area = this.body.area;
 
     Body.setDensity(this.body, CHIP.DENSITY)
     this.body.label = this.type;
@@ -42,13 +41,16 @@ export default class Chip extends GameObject {
       // Here, it is 0.995 for N = 10
       // 0.95 is max shrinking factor
 
-      const SHRINK_FACTOR = Math.max(0.95, Math.min(0.995, 0.995 ** Chip.count));
+      const SHRINK_FACTOR = Math.max(0.95);
 
       const interval = setInterval(() => {
+        // this.area = this.area * SHRINK_FACTOR;
         Body.scale(this.body, SHRINK_FACTOR, SHRINK_FACTOR)
-        this.body.circleRadius *= SHRINK_FACTOR
 
-        if (this.body.circleRadius < 0.1) {
+        // Body.set(this.body, {area: this.area});
+        // console.log('new area:', this.body.area);
+
+        if (this.body.area < Math.PI * (0.5 ** 2)) {
           Chip.count--;
           clearInterval(interval);
           callback();

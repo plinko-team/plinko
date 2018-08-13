@@ -14,18 +14,31 @@ export default class Renderer {
   }
 
   addToStage(body) {
+    let id = body.id;
+
     if (this.stage[body.type + 's'] === undefined) {
       this.stage[body.type + 's'] = {};
     }
 
     const bodies = this.stage[body.type + 's'];
-    bodies[body.id] = body;
+
+    if (body.type === 'chip') {
+      id = String(body.ownerId) + String(body.id);
+    }
+
+    bodies[id] = body;
   }
 
   removeFromStage(body) {
+    let id = body.id;
     const bodies = this.stage[body.type + 's'];
-    if (bodies[body.id]) {
-      delete bodies[body.id];
+
+    if (body.type === 'chip') {
+      id = String(body.ownerId) + String(body.id);
+    }
+
+    if (bodies[id]) {
+      delete bodies[id];
     }
   }
 

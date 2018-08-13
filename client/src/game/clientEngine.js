@@ -131,10 +131,11 @@ export default class ClientEngine {
       chip.x = x;
       chip.y = y;
       chip.angle = angle;
-      // chip.sprite.rotation = angle;
 
-      if (y >= CANVAS.HEIGHT - 5 - chip.diameter / 2) {
-        chip.shrink();
+      if (chip.y >= CANVAS.HEIGHT - 5 - (chip.diameter / 2)) {
+        chip.shrink(() => {
+          this.renderer.removeFromStage(chip);
+        });
       }
     });
 
@@ -253,7 +254,7 @@ export default class ClientEngine {
     if (!this.isRunning) { return }
 
     // Short circuit handler if outside of drop boundary
-    if (e.offsetY > DROP_BOUNDARY) { return }
+    // if (e.offsetY > DROP_BOUNDARY) { return }
 
     const x = e.offsetX;
     const y = e.offsetY;

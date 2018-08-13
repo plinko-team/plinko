@@ -21,7 +21,7 @@ class Wall extends GameObject {
       fill: WALL_TINT,
       stroke: WALL_TINT,
       fillStyle: 'solid',
-      roughness: 0.8,
+      roughness: 0,
     });
   }
 

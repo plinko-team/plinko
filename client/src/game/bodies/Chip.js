@@ -42,12 +42,12 @@ export default class Chip extends GameObject {
       // Here, it is 0.995 for N = 10
       // 0.95 is max shrinking factor
 
-      const SHRINK_FACTOR = Math.max(0.95, Math.min(0.995, 0.995 ** Chip.count));
+      const SHRINK_FACTOR = Math.max(0.95);
 
       const interval = setInterval(() => {
-        this.diameter *= SHRINK_FACTOR ** 2;
+        this.diameter *= SHRINK_FACTOR;
 
-        if (this.diameter < 0.1) {
+        if (this.diameter < 1) {
           Chip.count--;
           clearInterval(interval);
           if (callback) callback();
