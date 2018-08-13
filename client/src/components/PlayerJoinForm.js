@@ -20,7 +20,7 @@ const PlayerJoinForm = ({ userName, isJoinDisabled, handleSubmit, handleChange }
 
   return (
     <div className="name-form">
-      <input type="text" placeholder="Your Name" value={userName} onChange={updateName} onKeyUp={handleKeyUp} maxlength="15"/>
+      <input type="text" placeholder="Your Name" value={userName} onChange={updateName} onKeyUp={handleKeyUp} maxLength="15"/>
       <button className={"join button-primary"} disabled={isJoinDisabled} onClick={joinGame}>Join</button>
     </div>
   )
