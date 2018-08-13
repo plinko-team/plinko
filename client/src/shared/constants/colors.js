@@ -1,5 +1,5 @@
 export const CANVAS_COLOR = '#ffffff';
-export const WALL_TINT = '#e0e0e0';
+export const WALL_TINT = '#c6c6c6';
 export const PEG_TINT = '#e0e0e0';
 export const HOVER_CHIP_TRANSPARENCY = 0.4;
 

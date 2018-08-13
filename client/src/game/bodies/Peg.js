@@ -14,6 +14,7 @@ export default class Peg extends GameObject {
       fill: PLAYER_COLORS[this.ownerId],
       fillStyle: 'solid',
       roughness: 0.5,
+      strokeWidth: 0.7,
     });
   }
 }
