@@ -9,17 +9,14 @@ import Triangle from './bodies/Triangle';
 import HoverChip from './bodies/HoverChip';
 import { VerticalWall, HorizontalWall, BucketWall } from './bodies/Wall';
 import { DROP_BOUNDARY, TIMESTEP } from '../shared/constants/game'
-import { PLAYER_COLORS } from '../shared/constants/colors';
 import { Snapshot, SnapshotBuffer } from './snapshot.js';
-
-import { CHIP } from '../shared/constants/bodies';
 
 import {
   NEW_CHIP,
   SNAPSHOT,
   // INITIATE_SYNC,
   // HANDSHAKE_COMPLETE,
-  SERVER_FRAME,
+  // SERVER_FRAME,
   // REQUEST_SERVER_FRAME
 } from '../shared/constants/events'
 
