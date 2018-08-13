@@ -1,6 +1,4 @@
 import { PEG } from '../../shared/constants/bodies';
-import { PEG_TINT } from '../../shared/constants/colors';
-import { PEG_SPRITE } from '../../shared/constants/sprites';
 import { PLAYER_COLORS } from '../../shared/constants/colors';
 import GameObject from './GameObject';
 

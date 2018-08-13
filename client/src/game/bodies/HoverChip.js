@@ -1,9 +1,8 @@
 import { CHIP } from '../../shared/constants/bodies';
 import { DROP_BOUNDARY } from '../../shared/constants/game';
-import { CANVAS_COLOR, PLAYER_COLORS, HOVER_CHIP_TRANSPARENCY } from '../../shared/constants/colors';
+import { PLAYER_COLORS } from '../../shared/constants/colors';
 
 import GameObject from './GameObject';
-import * as PIXI from 'pixi.js'
 
 export default class HoverChip extends GameObject {
   static count = 0;

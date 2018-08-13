@@ -1,6 +1,5 @@
 import Rough from 'roughjs';
 
-import { CANVAS_COLOR } from '../shared/constants/colors';
 import { CANVAS } from '../shared/constants/canvas';
 
 export default class Renderer {
@@ -21,7 +20,6 @@ export default class Renderer {
 
     const bodies = this.stage[body.type + 's'];
     bodies[body.id] = body;
-    // console.log(this.stage)
   }
 
   removeFromStage(body) {

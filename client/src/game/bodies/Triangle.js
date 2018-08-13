@@ -1,5 +1,3 @@
-import { TRIANGLE } from '../../shared/constants/bodies';
-import { TRIANGLE_LEFT_SPRITE, TRIANGLE_RIGHT_SPRITE } from '../../shared/constants/sprites';
 import { WALL_TINT } from '../../shared/constants/colors';
 import GameObject from './GameObject';
 

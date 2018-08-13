@@ -1,6 +1,5 @@
 import { CHIP } from '../../shared/constants/bodies';
 import { PLAYER_COLORS } from '../../shared/constants/colors';
-import { CHIP_SPRITE } from '../../shared/constants/sprites';
 import { toDegrees } from '../../shared/utils/math';
 import GameObject from './GameObject';
 
