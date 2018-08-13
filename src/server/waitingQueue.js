@@ -8,8 +8,12 @@ export default class WaitingQueue {
   }
 
   enqueue(user) {
-    user.setWaiting();
-    this.queue.push(user);
+    if (user) {
+      user.setWaiting();
+      this.queue.push(user);
+    } else {
+      console.log('Caution: attempted to enqueue a user that does not exist')
+    }
   }
 
   dequeue() {
