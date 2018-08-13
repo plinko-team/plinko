@@ -297,17 +297,17 @@ canvas {
 .player-1 .dot,
 .player-1 .score-bar,
 .player-1.banner  {
-  background-color: #ffee75;
+  background-color: #aaffb1;
 }
 .player-2 .dot,
 .player-2 .score-bar,
 .player-2.banner  {
-  background-color: #ecb5ff;
+  background-color: #ffc519;
 }
 .player-3 .dot,
 .player-3 .score-bar,
 .player-3.banner  {
-  background-color: #aaffb1;
+  background-color: #ecb5ff;
 }
 
 /* Pages */
