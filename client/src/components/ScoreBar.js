@@ -10,7 +10,7 @@ const ScoreBar = ({ playerName, playerId, score, isWinner, targetPercentage }) =
     <li className={`player-${playerId}` + (isWinner ? " winner" : "")}>
       <span className="score-name">{playerName}</span>
       <span className="score-bar-container">
-        <span className="score-bar" style={{width: widthPercentage}}>{score}</span>
+        <span className="score-bar" style={{width: widthPercentage}}></span>
         <span className="target-border" style={{left: leftPercentage + "%"}}></span>
       </span>
     </li>
