@@ -13,7 +13,7 @@ const PlayerJoinForm = ({ userName, isJoinDisabled, handleSubmit, handleChange }
 
   const handleKeyUp = (e) => {
     // if user pressed enter key
-    if (e.keyCode == 13) {
+    if (e.keyCode === 13) {
       joinGame();
     }
   }
