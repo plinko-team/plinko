@@ -14,16 +14,16 @@ export default class Renderer {
   }
 
   addToStage(body) {
-    console.log('adding', body)
     this.stage[body.renderId] = body;
+    console.log('added, new body count:', Object.keys(this.stage).length)
   }
 
   removeFromStage(body) {
-    console.log('removing', body)
-
     if (this.stage[body.renderId]) {
       delete this.stage[body.renderId];
     }
+
+    console.log('deleted, new body count:', Object.keys(this.stage).length)
   }
 
   render() {
