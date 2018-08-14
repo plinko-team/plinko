@@ -7,26 +7,27 @@ const PlayerJoinForm = ({ userName, isJoinDisabled, handleSubmit, handleChange }
   }
 
   const joinGame = (e) => {
-    // validation here
     handleSubmit();
   }
 
   const handleKeyUp = (e) => {
     // if user pressed enter key
-    if (e.keyCode == 13) {
+    if (e.keyCode === 13) {
       joinGame();
     }
   }
 
   return (
     <div className="name-form">
-      <input type="text" placeholder="Your Name" value={userName} onChange={updateName} onKeyUp={handleKeyUp} maxlength="15"/>
+      <input type="text" placeholder="Your Name" value={userName} onChange={updateName} onKeyUp={handleKeyUp} maxLength="15"/>
       <button className={"join button-primary"} disabled={isJoinDisabled} onClick={joinGame}>Join</button>
     </div>
   )
 }
 
 PlayerJoinForm.propTypes = {
+  userName: PropTypes.string,
+  isJoinDisabled: PropTypes.bool,
   handleChange: PropTypes.func,
   handleSubmit: PropTypes.func,
 }

@@ -1,24 +1,54 @@
-import * as PIXI from 'pixi.js';
-import { CANVAS_COLOR } from '../shared/constants/colors';
-import { CANVAS } from '../shared/constants/canvas';
+import Rough from 'roughjs';
 
-const defaultOptions = {
-  width: CANVAS.WIDTH,
-  height: CANVAS.HEIGHT,
-  backgroundColor: CANVAS_COLOR,
-  antialias: false,
-  resolution: 2,
-}
+import { CANVAS } from '../shared/constants/canvas';
 
 export default class Renderer {
   constructor(options) {
-    this.renderer = new PIXI.CanvasRenderer(Object.assign(defaultOptions, options));
-    this.stage = new PIXI.Container();
-
-    document.querySelector('.canvas').appendChild(this.renderer.view)
+    this.canvas = document.querySelector('#canvas');
+    this.canvas.width = CANVAS.WIDTH;
+    this.canvas.height = CANVAS.HEIGHT;
+    this.ctx = this.canvas.getContext('2d');
+    this.rough = Rough.canvas(this.canvas);
+    this.generator = this.rough.generator;
+    this.stage = {};
   }
 
-  render(stage=this.stage) {
-    this.renderer.render(stage)
+  addToStage(body) {
+    let id = body.id;
+
+    if (this.stage[body.type + 's'] === undefined) {
+      this.stage[body.type + 's'] = {};
+    }
+
+    const bodies = this.stage[body.type + 's'];
+
+    if (body.type === 'chip') {
+      id = String(body.ownerId) + String(body.id);
+    }
+
+    bodies[id] = body;
+  }
+
+  removeFromStage(body) {
+    let id = body.id;
+    const bodies = this.stage[body.type + 's'];
+
+    if (body.type === 'chip') {
+      id = String(body.ownerId) + String(body.id);
+    }
+
+    if (bodies[id]) {
+      delete bodies[id];
+    }
+  }
+
+  render() {
+    this.ctx.clearRect(0, 0, CANVAS.WIDTH, CANVAS.HEIGHT);
+
+    Object.values(this.stage).forEach(bodies => {
+      Object.values(bodies).forEach(body => {
+        body.draw(this.rough);
+      });
+    });
   }
 }

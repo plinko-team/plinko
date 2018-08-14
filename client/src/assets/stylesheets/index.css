@@ -4,7 +4,7 @@
 @import url('https://fonts.googleapis.com/css?family=Fredoka+One|Lato:400,700');
 
 body {
-  background: #e0e0e0;
+  background: #c6c6c6;
   color: white;
   box-sizing: border-box;
   font-family: 'Lato', sans-serif;
@@ -66,7 +66,7 @@ h2, h3, h4 {
 }
 
 main {
-  background: #e0e0e0;
+  background: #c6c6c6;
 }
 
 .button {
@@ -85,8 +85,8 @@ main {
 
 .button-primary:disabled,
 .button-primary:disabled:hover {
-  background-color: #e0e0e0;
-  border-color: #e0e0e0;
+  background-color: #c6c6c6;
+  border-color: #c6c6c6;
 }
 
 .banner {
@@ -105,8 +105,8 @@ main {
   color: #fff;
 }
 
-.canvas,
-.main-content {
+.main-content,
+.canvas-container {
   max-width: 800px;
   min-height: 50vh;
   margin: 2rem auto;
@@ -116,7 +116,7 @@ main {
   color: #555;
 }
 
-.canvas {
+.canvas-container {
   width: 800px;
   height: 600px;
   padding: 0;
@@ -297,17 +297,17 @@ canvas {
 .player-1 .dot,
 .player-1 .score-bar,
 .player-1.banner  {
-  background-color: #ffee75;
+  background-color: #aaffb1;
 }
 .player-2 .dot,
 .player-2 .score-bar,
 .player-2.banner  {
-  background-color: #ecb5ff;
+  background-color: #ffc519;
 }
 .player-3 .dot,
 .player-3 .score-bar,
 .player-3.banner  {
-  background-color: #aaffb1;
+  background-color: #ecb5ff;
 }
 
 /* Pages */
@@ -315,5 +315,5 @@ canvas {
 .left-rule {
   margin-left: 1rem;
   padding-left: 1rem;
-  border-left: 1px solid #e0e0e0;
+  border-left: 1px solid #c6c6c6;
 }

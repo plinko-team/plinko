@@ -1,29 +1,41 @@
-import { TRIANGLE } from '../../shared/constants/bodies';
-import { TRIANGLE_LEFT_SPRITE, TRIANGLE_RIGHT_SPRITE } from '../../shared/constants/sprites';
 import { WALL_TINT } from '../../shared/constants/colors';
 import GameObject from './GameObject';
 
-let PIXI = require('pixi.js');
+import { CANVAS } from '../../shared/constants/canvas';
 
 export default class Triangle extends GameObject {
-  constructor({ x, y, side }) {
-    super({ x, y })
+  static count = 0;
+
+  constructor({ y, side }) {
+    super({ y });
+    this.id = Triangle.count++;
     this.side = side;
-    this.vertices = side === 'right' ? TRIANGLE.RIGHT.VERTICES : TRIANGLE.LEFT.VERTICES;
-    this.createSprite();
   }
 
-  createSprite() {
-    const sprite = this.side === 'left' ? TRIANGLE_LEFT_SPRITE : TRIANGLE_RIGHT_SPRITE;
-    const triangle = new PIXI.Sprite.fromImage(sprite);
+  draw(rough) {
+    const height = 150;
+    const width = 35;
+    let vertices;
 
-    // The sprite is located based on the actual x, y passed into Triangle
-    triangle.position.x = this.x;
-    triangle.position.y = this.y;
-    triangle.scale.set(0.33, 0.33);
-    triangle.anchor.set(0.5, 0.5);
-    triangle.tint = WALL_TINT;
+    if (this.side === 'left') {
+      vertices = [
+        [0, this.y],                                    // top left
+        [0 + width, this.y + (height / 2)],             // middle right
+        [0, this.y + height],                           // bottom left
+      ];
+    } else {
+      vertices = [
+        [CANVAS.WIDTH, this.y],                         // top right
+        [CANVAS.WIDTH - width, this.y + (height / 2)],  // middle left
+        [CANVAS.WIDTH, this.y + height],                // bottom right
+      ]
+    }
 
-    this.sprite = triangle;
+    rough.polygon(vertices, {
+      fill: WALL_TINT,
+      stroke: WALL_TINT,
+      fillStyle: 'solid',
+      roughness: 0.8,
+    });
   }
 }

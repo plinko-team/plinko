@@ -1,33 +1,35 @@
 import { CHIP } from '../../shared/constants/bodies';
 import { PLAYER_COLORS } from '../../shared/constants/colors';
-import { CHIP_SPRITE } from '../../shared/constants/sprites';
+import { toDegrees } from '../../shared/utils/math';
 import GameObject from './GameObject';
-
-let PIXI = require('pixi.js');
 
 export default class Chip extends GameObject {
   static count = 0;
+  static fillStyles = [
+    'hachure',
+    'zigzag',
+    'cross-hatch',
+    // 'solid',
+  ];
 
   constructor({ id, x, y, ownerId }) {
     super({ id, x, y, ownerId });
     this.type = 'chip';
-    this.createSprite()
-    this.sprite.parentObject = this;
-
+    this.diameter = CHIP.DIAMETER;
+    this.shrinking = false;
+    this.fillStyle = Chip.fillStyles[Math.floor(Math.random() * Chip.fillStyles.length)];
+    this.angle = 0; // stored in radians
     Chip.count++;
   }
 
-  createSprite() {
-    const chip = new PIXI.Sprite.fromImage(CHIP_SPRITE);
-    chip.position.x = this.x;
-    chip.position.y = this.y;
-    chip.height = CHIP.DIAMETER;
-    chip.width = CHIP.DIAMETER;
-    chip.anchor.set(0.5, 0.5);
-    chip.tint = PLAYER_COLORS[this.ownerId];
-
-    this.sprite = chip;
-    this.shrinking = false;
+  draw(rough) {
+    rough.circle(this.x, this.y, this.diameter, {
+      fill: PLAYER_COLORS[this.ownerId],
+      fillStyle: this.fillStyle,
+      fillWeight: 1,
+      roughness: 1,
+      hachureAngle: toDegrees(this.angle * -1), // convert to degrees for Rough and switch sign
+    });
   }
 
   shrink(callback) {
@@ -40,13 +42,12 @@ export default class Chip extends GameObject {
       // Here, it is 0.995 for N = 10
       // 0.95 is max shrinking factor
 
-      const SHRINK_FACTOR = Math.max(0.95, Math.min(0.995, 0.995 ** Chip.count));
+      const SHRINK_FACTOR = 0.93;
 
       const interval = setInterval(() => {
-        this.sprite.width *= SHRINK_FACTOR ** 2;
-        this.sprite.height *= SHRINK_FACTOR ** 2;
+        this.diameter *= SHRINK_FACTOR;
 
-        if (this.sprite.width < 0.1) {
+        if (this.diameter < 3) {
           Chip.count--;
           clearInterval(interval);
           if (callback) callback();

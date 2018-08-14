@@ -9,7 +9,6 @@ import Triangle from './bodies/Triangle';
 import HoverChip from './bodies/HoverChip';
 import { VerticalWall, HorizontalWall, BucketWall } from './bodies/Wall';
 import { DROP_BOUNDARY, TIMESTEP } from '../shared/constants/game'
-import { PLAYER_COLORS } from '../shared/constants/colors';
 import { Snapshot, SnapshotBuffer } from './snapshot.js';
 
 import {
@@ -17,7 +16,7 @@ import {
   SNAPSHOT,
   // INITIATE_SYNC,
   // HANDSHAKE_COMPLETE,
-  SERVER_FRAME,
+  // SERVER_FRAME,
   // REQUEST_SERVER_FRAME
 } from '../shared/constants/events'
 
@@ -55,7 +54,6 @@ export default class ClientEngine {
     this.pegs = {};
     this.isRunning = false;
     this.lastChipId = 0;
-    this.stage = this.renderer.stage;
 
     this.createEnvironment();
     this.registerCanvasEvents();
@@ -81,8 +79,9 @@ export default class ClientEngine {
     });
 
     this.socket.on(SNAPSHOT, (encodedSnapshot) => {
-      let { chips, pegs, score, winner, targetScore } = Serializer.decode(encodedSnapshot);
+      // let { chips, pegs, score, winner, targetScore } = Serializer.decode(encodedSnapshot);
 
+      let { chips, pegs, score, winner, targetScore } = encodedSnapshot; // not actually encoded right now
       if (this.isRunning) {
         this.snapshotBuffer.push(new Snapshot({ pegs, chips, score, winner, targetScore, timestamp: performance.now() }));
       }
@@ -121,7 +120,7 @@ export default class ClientEngine {
       if (typeof this.chips[combinedId] === 'undefined') {
         const chip = new Chip({ id, ownerId, x, y });
 
-        chip.addToRenderer(this.stage);
+        this.renderer.addToStage(chip);
         this.chips[combinedId] = chip;
       }
 
@@ -129,12 +128,14 @@ export default class ClientEngine {
 
       const chip = this.chips[combinedId];
 
-      chip.sprite.position.x = x;
-      chip.sprite.position.y = y;
-      chip.sprite.rotation = angle;
+      chip.x = x;
+      chip.y = y;
+      chip.angle = angle;
 
-      if (y >= CANVAS.HEIGHT - 10 - chip.sprite.width / 2) {
-        chip.shrink();
+      if (chip.y >= CANVAS.HEIGHT - 5 - (chip.diameter / 2)) {
+        chip.shrink(() => {
+          this.renderer.removeFromStage(chip);
+        });
       }
     });
 
@@ -143,19 +144,14 @@ export default class ClientEngine {
       // this removes chips that the server has created (and returned to the client)
       // and have reached the bottom
       if (!chipsInCurrentSnapshot[id] && !this.chips[id].recentlyDropped) {
-        this.stage.removeChild(this.chips[id].sprite)
-        delete this.chips[id]
+        this.renderer.removeFromStage(this.chips[id]);
+        delete this.chips[id];
       }
     }
 
     currentSnapshot.pegs.forEach(pegInfo => {
       const peg = this.pegs[pegInfo.id];
-
       peg.ownerId = pegInfo.ownerId;
-
-      if (peg.ownerId !== null) {
-        peg.sprite.tint = PLAYER_COLORS[peg.ownerId];
-      }
     });
   }
 
@@ -227,7 +223,7 @@ export default class ClientEngine {
       this.delta -= TIMESTEP;
     }
 
-    this.renderer.render(this.stage);
+    this.renderer.render();
 
     this.frameID = requestAnimationFrame(this.animate.bind(this));
   }
@@ -239,7 +235,7 @@ export default class ClientEngine {
 
     requestAnimationFrame((timestamp) => {
       this.lastSyncTime = timestamp;
-      this.renderer.render(this.stage);
+      this.renderer.render();
       this.lastFrameTime = timestamp;
       this.delta = 0;
 
@@ -258,7 +254,7 @@ export default class ClientEngine {
     if (!this.isRunning) { return }
 
     // Short circuit handler if outside of drop boundary
-    if (e.offsetY > DROP_BOUNDARY) { return }
+    // if (e.offsetY > DROP_BOUNDARY) { return }
 
     const x = e.offsetX;
     const y = e.offsetY;
@@ -269,7 +265,7 @@ export default class ClientEngine {
 
     let chip = new Chip({ id, ownerId, x, y });
     chip.recentlyDropped = true;
-    chip.addToRenderer(this.stage);
+    this.renderer.addToStage(chip);
     this.chips[String(ownerId) + String(id)] = chip;
     this.socket.emit(NEW_CHIP, { frame, id, x, y, ownerId });
   }
@@ -278,44 +274,46 @@ export default class ClientEngine {
     const x = e.offsetX;
     const y = e.offsetY;
     const hoverChip = new HoverChip({ x, y, ownerId: this.playerId });
-    hoverChip.addToRenderer(this.stage);
+    this.renderer.addToStage(hoverChip);
 
     e.target.addEventListener('mouseleave', () => {
-      hoverChip.removeChip(this.stage);
+      this.renderer.removeFromStage(hoverChip);
     });
   }
 
   _createWalls(stage, engine) {
-    const leftWall = new VerticalWall({x: 0, y: CANVAS.HEIGHT / 2});
-    const rightWall = new VerticalWall({x: CANVAS.WIDTH, y: CANVAS.HEIGHT / 2});
+    const leftWall = new VerticalWall({x: 0, y: 0});
+    const rightWall = new VerticalWall({x: CANVAS.WIDTH - 2, y: 0});
     const ground = new HorizontalWall();
     const walls = [leftWall, rightWall, ground];
 
-    walls.forEach(w => w.addToRenderer(this.stage));
+    walls.forEach(w => this.renderer.addToStage(w));
+
+    // const ground = new HorizontalWall();
+    // this.renderer.addToStage(ground);
   }
 
   _createBucketWalls() {
     for (let i = 1; i < COLS; i++) {
       let bucket = new BucketWall({ x: i * COL_SPACING });
 
-      bucket.addToRenderer(this.stage)
+      this.renderer.addToStage(bucket);
     }
   }
 
   _createTriangles() {
-    // Positional calculations and vertices for the wall triangles.
     const triangles = [
-                { x: 772, y: 290, side: 'right' },
-                { x: 772, y: 158, side: 'right' },
-                { x: 772, y: 422, side: 'right' },
-                { x: 28,  y: 305, side: 'left' },
-                { x: 28,  y: 173, side: 'left' },
-                { x: 28,  y: 437, side: 'left' },
-              ];
+      {y: 91, side: 'right'},
+      {y: 223, side: 'right'},
+      {y: 355, side: 'right'},
+      {y: 91, side: 'left'},
+      {y: 223, side: 'left'},
+      {y: 355, side: 'left'},
+    ];
 
     triangles.forEach(triangle => {
       let t = new Triangle(triangle);
-      t.addToRenderer(this.stage);
+      this.renderer.addToStage(t);
     });
   }
 
@@ -340,7 +338,7 @@ export default class ClientEngine {
         this.pegs[id] = peg;
         id++;
 
-        peg.addToRenderer(this.stage)
+        this.renderer.addToStage(peg);
       }
     }
   }
