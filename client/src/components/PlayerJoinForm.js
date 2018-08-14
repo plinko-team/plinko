@@ -7,7 +7,6 @@ const PlayerJoinForm = ({ userName, isJoinDisabled, handleSubmit, handleChange }
   }
 
   const joinGame = (e) => {
-    // validation here
     handleSubmit();
   }
 
@@ -27,6 +26,8 @@ const PlayerJoinForm = ({ userName, isJoinDisabled, handleSubmit, handleChange }
 }
 
 PlayerJoinForm.propTypes = {
+  userName: PropTypes.string,
+  isJoinDisabled: PropTypes.bool,
   handleChange: PropTypes.func,
   handleSubmit: PropTypes.func,
 }
