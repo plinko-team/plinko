@@ -15,15 +15,12 @@ export default class Renderer {
 
   addToStage(body) {
     this.stage[body.renderId] = body;
-    console.log('added, new body count:', Object.keys(this.stage).length)
   }
 
   removeFromStage(body) {
     if (this.stage[body.renderId]) {
       delete this.stage[body.renderId];
     }
-
-    console.log('deleted, new body count:', Object.keys(this.stage).length)
   }
 
   render() {
