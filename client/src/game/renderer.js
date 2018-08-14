@@ -14,41 +14,23 @@ export default class Renderer {
   }
 
   addToStage(body) {
-    let id = body.id;
-
-    if (this.stage[body.type + 's'] === undefined) {
-      this.stage[body.type + 's'] = {};
-    }
-
-    const bodies = this.stage[body.type + 's'];
-
-    if (body.type === 'chip') {
-      id = String(body.ownerId) + String(body.id);
-    }
-
-    bodies[id] = body;
+    console.log('adding', body)
+    this.stage[body.renderId] = body;
   }
 
   removeFromStage(body) {
-    let id = body.id;
-    const bodies = this.stage[body.type + 's'];
+    console.log('removing', body)
 
-    if (body.type === 'chip') {
-      id = String(body.ownerId) + String(body.id);
-    }
-
-    if (bodies[id]) {
-      delete bodies[id];
+    if (this.stage[body.renderId]) {
+      delete this.stage[body.renderId];
     }
   }
 
   render() {
     this.ctx.clearRect(0, 0, CANVAS.WIDTH, CANVAS.HEIGHT);
 
-    Object.values(this.stage).forEach(bodies => {
-      Object.values(bodies).forEach(body => {
-        body.draw(this.rough);
-      });
+    Object.values(this.stage).forEach(body => {
+      body.draw(this.rough);
     });
   }
 }
