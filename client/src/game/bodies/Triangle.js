@@ -4,11 +4,8 @@ import GameObject from './GameObject';
 import { CANVAS } from '../../shared/constants/canvas';
 
 export default class Triangle extends GameObject {
-  static count = 0;
-
   constructor({ y, side }) {
     super({ y });
-    this.id = Triangle.count++;
     this.side = side;
   }
 

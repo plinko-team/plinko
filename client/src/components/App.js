@@ -21,7 +21,7 @@ class App extends Component {
   }
 
   connectToSocket = () => {
-    const socket = openSocketConnection('http://206.189.74.63:3001');
+    const socket = openSocketConnection('localhost:3001');
     this.setState({ socket });
 
     return socket;

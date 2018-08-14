@@ -5,11 +5,8 @@ import { PLAYER_COLORS } from '../../shared/constants/colors';
 import GameObject from './GameObject';
 
 export default class HoverChip extends GameObject {
-  static count = 0;
-
   constructor({ x, y, ownerId }) {
     super({ x, y, ownerId });
-    this.id = HoverChip.count++;
     this.type = 'hover_chip';
     this.diameter = CHIP.DIAMETER;
     this.fill = PLAYER_COLORS[this.ownerId];
