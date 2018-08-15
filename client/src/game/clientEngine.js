@@ -154,7 +154,7 @@ export default class ClientEngine {
       let { id, ownerId, x, y, angle, velocity, angularVelocity } = chipInfo;
       let combinedId = String(ownerId) + String(id)
 
-      if (this.deletedChips[combinedId]) {
+      if (!!this.deletedChips[combinedId]) {
         return;
       }
 
