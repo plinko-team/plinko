@@ -128,7 +128,7 @@ export default class ClientEngine {
 
       this.nextWholeFrame = estimatedServerFrame
 
-      if (Math.abs(estimatedServerFrame - this.frame) > 5) {
+      if ((estimatedServerFrame - this.frame) > 3) {
         this.awaitingFrame = true;
       }
 
