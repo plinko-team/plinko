@@ -184,7 +184,7 @@ export default class ClientEngine {
 
     this.engine.reenactment = true;
     // Catch up to current frame from snapshot
-    while (frame < this.frame - 1) {
+    while (frame <= this.frame) {
       // console.log("Catching up!")
       frame++;
       Engine.update(this.engine, TIMESTEP);
@@ -196,7 +196,6 @@ export default class ClientEngine {
   }
 
   update() {
-    this.frame++;
     Engine.update(this.engine, TIMESTEP);
   }
 
@@ -222,7 +221,8 @@ export default class ClientEngine {
     while (this.delta >= TIMESTEP) {
       // Step engine forward or process snapshot
       !!this.latestSnapshot ? this.frameSync() : this.update();
-      console.log(frame);
+      this.frame++
+      console.log(this.frame);
       this.delta -= TIMESTEP;
     }
 
