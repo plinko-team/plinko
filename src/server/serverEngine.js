@@ -476,7 +476,7 @@ export default class ServerEngine {
     this.takeSnapshot(snapshot);
 
     let fps = 30;
-    let broadcastRate = 10
+    let broadcastRate = 5
 
     if (this.frame % (fps / broadcastRate) === 0) {
       this.broadcastSnapshot(snapshot);
