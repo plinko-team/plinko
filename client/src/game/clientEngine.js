@@ -168,10 +168,10 @@ export default class ClientEngine {
         this.chips[combinedId] = chip;
       }
 
+      chip.bendingCount = 3; // Counts down to 0
+
       const chip = this.chips[combinedId];
       const body = chip.body;
-
-      chip.bendingCount = 3; // Counts down to 0
 
       Body.setPosition(body, { x, y });
       Body.setAngle(body, angle);
@@ -181,12 +181,15 @@ export default class ClientEngine {
 
     let frame = currentSnapshot.frame;
 
+    this.engine.reenactment = true;
     // Catch up to current frame from snapshot
     while (frame < this.frame) {
       // console.log("Catching up!")
       frame++;
       Engine.update(this.engine, TIMESTEP);
     }
+
+    this.engine.reenactment = false;
 
     // console.log("Reenactment took: ", performance.now() - startTime)
   }

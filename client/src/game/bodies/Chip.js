@@ -27,8 +27,7 @@ export default class Chip extends GameObject {
 
   registerUpdateListener(engine) {
     Events.on(engine, 'afterUpdate', () => {
-      if (typeof this.bendingCount === 'number') {
-
+      if (!engine.reenactment && typeof this.bendingCount === 'number') {
         let deltaX = (this.body.position.x - this.x) * (1 / this.bendingCount)
         let deltaY = (this.body.position.y - this.y) * (1 / this.bendingCount)
         let deltaAngle = (this.body.angle - this.angle) * (1 / this.bendingCount)
