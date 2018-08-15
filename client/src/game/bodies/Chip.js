@@ -68,8 +68,7 @@ export default class Chip extends GameObject {
   }
 
   draw(rough) {
-    const color = PLAYER_COLORS[this.ownerId];
-
+    let color = this.bendingCount ? '#0000FF' : PLAYER_COLORS[this.ownerId];
     rough.circle(this.x, this.y, this.diameter, {
       fill: color,
       fillStyle: this.fillStyle,
