@@ -336,6 +336,7 @@ export default class ServerEngine {
   catchUpToCurrentFrameFrom(frame) {
     let start = this.now();
     let reenactmentCount = 0;
+
     while (frame < this.frame) {
       reenactmentCount++
 
