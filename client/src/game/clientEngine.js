@@ -177,7 +177,7 @@ export default class ClientEngine {
       const body = chip.body;
 
       //// Turn this on for bending behaviour
-      // chip.bendingCount = 3; // Counts down to 0
+      chip.bendingCount = 3; // Counts down to 0
 
       Body.setPosition(body, { x, y });
       Body.setAngle(body, angle);
