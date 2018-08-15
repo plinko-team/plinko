@@ -22,6 +22,7 @@ export default class GameContainer extends Component {
     waitingUsers: {},
     startBannerVisible: false,
     startCount: 5,
+    latency: 0,
   }
 
   hasOpenSocket() {
@@ -85,9 +86,11 @@ export default class GameContainer extends Component {
       this.synchronizer.handshake()
       .then(latency => {
         console.log('Latency: ', latency);
+        this.setState({ latency })
       })
 
       this.setState({startBannerVisible: true});
+
       this.interval = setInterval(() => {
         if (this.state.startCount > 1) {
           this.setState((prevState) => {
@@ -135,6 +138,7 @@ export default class GameContainer extends Component {
           socket={this.props.socket}
           userId={this.props.userId}
           players={this.state.activeUsers}
+          latency={this.state.latency}
         />
       )
     } else {

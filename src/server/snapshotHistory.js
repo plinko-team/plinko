@@ -35,7 +35,7 @@ export default class SnapshotHistory {
 
   at(frame) {
     if (this.history[frame] === undefined) {
-      throw new Error('Frame does not exist')
+      throw new Error(`Frame ${frame} does not exist`)
     }
 
     return this.history[frame];

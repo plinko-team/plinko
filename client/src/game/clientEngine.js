@@ -10,13 +10,14 @@ import HoverChip from './bodies/HoverChip';
 import { VerticalWall, HorizontalWall, BucketWall } from './bodies/Wall';
 import { DROP_BOUNDARY, TIMESTEP } from '../shared/constants/game'
 import { Snapshot, SnapshotBuffer } from './snapshot.js';
+import { Body, Engine, Render, Events, World } from 'matter-js';
 
 import {
   NEW_CHIP,
   SNAPSHOT,
   // INITIATE_SYNC,
-  // HANDSHAKE_COMPLETE,
-  // SERVER_FRAME,
+  HANDSHAKE_COMPLETE,
+  SERVER_FRAME,
   // REQUEST_SERVER_FRAME
 } from '../shared/constants/events'
 
@@ -39,17 +40,23 @@ import {
 **/
 
 export default class ClientEngine {
-  constructor({ playerId, socket }) {
+  constructor({ playerId, socket, latency }) {
     this.playerId = playerId;
     this.socket = socket;
+    this.engine = Engine.create();
+    this.engine.world.gravity.y = 0.35;
+
     this.renderer = new Renderer();
     this.eventEmitter = new EventEmitter();
-    this.synchronizer = new Synchronizer(this.socket, this.eventEmitter).init();
+    // this.synchronizer = new Synchronizer(this.socket, this.eventEmitter).init();
     this.snapshotBuffer = new SnapshotBuffer();
+    this.latency = latency
+
   }
 
   init() {
-    this.logged = false
+    this.frame = 0;
+    this.deletedChips = {};
     this.chips = {};
     this.pegs = {};
     this.isRunning = false;
@@ -58,9 +65,7 @@ export default class ClientEngine {
     this.createEnvironment();
     this.registerCanvasEvents();
     this.registerSocketEvents();
-
-    // Wait 250ms so that the socket.io connection can complete
-    // setTimeout(this.establishSynchronization.bind(this), 250)
+    this.registerPhysicsEvents();
 
     return this;
   }
@@ -73,17 +78,58 @@ export default class ClientEngine {
   //   })
   // }
 
+  onCollisionStart = (event) => {
+    const pairs = event.pairs;
+
+    for (let i = 0; i < pairs.length; i++) {
+      const pair = pairs[i];
+      const bodyA = pair.bodyA;
+      const bodyB = pair.bodyB;
+      //
+      // if (bodyA.label === 'peg' && bodyB.label === 'chip' && !this.winner) {
+      //   this.updateScore(bodyA, bodyB);
+      // }
+
+      if (bodyA.label === 'peg') {
+        bodyA.parentObject.ownerId = bodyB.parentObject.ownerId;
+      }
+
+      if (bodyA.label === 'ground') {
+        const chip = bodyB.parentObject;
+        const combinedId = String(chip.ownerId) + String(chip.id);
+
+        this.deletedChips[combinedId] = true;
+
+        World.remove(this.engine.world, chip.body);
+        this.renderer.removeFromStage(chip);
+        delete this.chips[combinedId];
+      }
+    }
+  }
+
+  registerPhysicsEvents() {
+    Events.on(this.engine, 'collisionStart', this.onCollisionStart);
+  }
+
+  unregisterSocketEvents() {
+    this.socket.off('game started');
+    this.socket.off(SNAPSHOT);
+  }
+
   registerSocketEvents() {
-    this.socket.on('start game', () => {
-      this.frame = 0;
+    this.socket.on('game started', ({ frame }) => {
+      this.frame = frame + Math.ceil(this.latency / TIMESTEP);
     });
 
-    this.socket.on(SNAPSHOT, (encodedSnapshot) => {
+    this.socket.on(SNAPSHOT, ({ frame, chips, pegs, score, winner, targetScore }) => {
       // let { chips, pegs, score, winner, targetScore } = Serializer.decode(encodedSnapshot);
+      let estimatedServerFrame = frame + Math.ceil(this.latency / TIMESTEP);
 
-      let { chips, pegs, score, winner, targetScore } = encodedSnapshot; // not actually encoded right now
+      this.nextWholeFrame = estimatedServerFrame
+
       if (this.isRunning) {
-        this.snapshotBuffer.push(new Snapshot({ pegs, chips, score, winner, targetScore, timestamp: performance.now() }));
+        // this.snapshotBuffer.push(new Snapshot({ frame, pegs, chips, score, winner, targetScore, timestamp: performance.now() }));
+        this.latestSnapshot = new Snapshot({ frame, pegs, chips, score, winner, targetScore, timestamp: performance.now() })
       }
     });
   }
@@ -99,60 +145,50 @@ export default class ClientEngine {
   }
 
   frameSync() {
-    // If we have too many snapshots shorten it
-    while (this.snapshotBuffer.length > 5) {
-      this.snapshotBuffer.shift();
-    }
+    let startTime = performance.now();
 
-    let currentSnapshot = this.snapshotBuffer.shift();
-
-    if (!currentSnapshot) { return }
-
-    let chipsInCurrentSnapshot = {}
+    const currentSnapshot = this.latestSnapshot;
+    delete this.latestSnapshot;
 
     currentSnapshot.chips.forEach(chipInfo => {
-      const { id, ownerId, x, y, angle } = chipInfo;
-
+      let { id, ownerId, x, y, angle, velocity, angularVelocity } = chipInfo;
       let combinedId = String(ownerId) + String(id)
 
-      chipsInCurrentSnapshot[combinedId] = true
+      if (this.deletedChips[combinedId]) {
+        return;
+      }
 
       if (typeof this.chips[combinedId] === 'undefined') {
         const chip = new Chip({ id, ownerId, x, y });
 
+        chip.addToEngine(this.engine.world);
+        chip.registerUpdateListener(this.engine);
         this.renderer.addToStage(chip);
+
         this.chips[combinedId] = chip;
       }
 
-      this.chips[combinedId].recentlyDropped = undefined;
-
       const chip = this.chips[combinedId];
+      const body = chip.body;
 
-      chip.x = x;
-      chip.y = y;
-      chip.angle = angle;
+      chip.bendingCount = 3; // Counts down to 0
 
-      if (chip.y >= CANVAS.HEIGHT - 5 - (chip.diameter / 2)) {
-        chip.shrink(() => {
-          this.renderer.removeFromStage(chip);
-        });
-      }
-    });
+      Body.setPosition(body, { x, y });
+      Body.setAngle(body, angle);
+      Body.setVelocity(body, velocity);
+      Body.setAngularVelocity(body, angularVelocity);
+    })
 
-    for (let id of Object.keys(this.chips)) {
+    let frame = currentSnapshot.frame;
 
-      // this removes chips that the server has created (and returned to the client)
-      // and have reached the bottom
-      if (!chipsInCurrentSnapshot[id] && !this.chips[id].recentlyDropped) {
-        this.renderer.removeFromStage(this.chips[id]);
-        delete this.chips[id];
-      }
+    // Catch up to current frame from snapshot
+    while (frame < this.frame) {
+      // console.log("Catching up!")
+      frame++;
+      Engine.update(this.engine, TIMESTEP);
     }
 
-    currentSnapshot.pegs.forEach(pegInfo => {
-      const peg = this.pegs[pegInfo.id];
-      peg.ownerId = pegInfo.ownerId;
-    });
+    // console.log("Reenactment took: ", performance.now() - startTime)
   }
 
   updateTargetScore(targetScore) {
@@ -193,58 +229,62 @@ export default class ClientEngine {
 
   update() {
     this.frame++;
-    this.frameSync()
+    Engine.update(this.engine, TIMESTEP);
   }
 
   animate(timestamp) {
+    let start = performance.now()
+    // Schedule for next rAF and return
+    // if not enough time passed for engine update
+
     if (timestamp < this.lastFrameTime + TIMESTEP) {
       this.frameID = requestAnimationFrame(this.animate.bind(this));
       return;
     }
 
-    // This code is used for repeated synchronization handshakes
-
-    // let timeSinceLastSync = timestamp - this.lastSyncTime
-    //
-    // if (timeSinceLastSync > 6000) {
-    //   this.lastSyncTime = timestamp;
-    // } else if (timeSinceLastSync > 5000) {
-    //   this.eventEmitter.emit(INITIATE_SYNC);
-    //   this.lastSyncTime = timestamp;
-    // }
-
-    // Wait for next rAF if not enough time passed for engine update
+    // Set frame to estimatedServerFrame that we got from the latest snapshot
+    if (typeof this.nextWholeFrame !== 'undefined') {
+      this.frame = this.nextWholeFrame;
+      this.nextWholeFrame = undefined;
+    }
 
     this.delta += timestamp - this.lastFrameTime;
     this.lastFrameTime = timestamp;
 
     while (this.delta >= TIMESTEP) {
-      this.frameSync();
+      // Step engine forward or process snapshot
+      !!this.latestSnapshot ? this.frameSync() : this.update();
+
       this.delta -= TIMESTEP;
     }
 
-    this.renderer.render();
+    // this.renderer.spriteUpdate(this.chips);
+
+    this.renderer.render(this.chips);
 
     this.frameID = requestAnimationFrame(this.animate.bind(this));
+
+    if (performance.now() - start > 30) {
+      console.log("Game loop took: ", performance.now() - start)
+    }
   }
 
   startGame() {
-    // Entry point for updates and rendering
-    // Only gets called once
+    // Entry point for updates and rendering; Only gets called once
     this.isRunning = true;
 
-    requestAnimationFrame((timestamp) => {
+    requestAnimationFrame(timestamp => {
       this.lastSyncTime = timestamp;
       this.renderer.render();
       this.lastFrameTime = timestamp;
       this.delta = 0;
-
       requestAnimationFrame(this.animate.bind(this));
     })
   }
 
   stopGame() {
-    clearInterval(this.loop);
+    this.isRunning = false;
+    clearInterval(this.frameID);
   }
 
   onClick = (e) => {
@@ -266,6 +306,9 @@ export default class ClientEngine {
     let chip = new Chip({ id, ownerId, x, y });
     chip.recentlyDropped = true;
     this.renderer.addToStage(chip);
+    chip.addToEngine(this.engine.world);
+    chip.registerUpdateListener(this.engine);
+
     this.chips[String(ownerId) + String(id)] = chip;
     this.socket.emit(NEW_CHIP, { frame, id, x, y, ownerId });
   }
@@ -287,7 +330,10 @@ export default class ClientEngine {
     const ground = new HorizontalWall();
     const walls = [leftWall, rightWall, ground];
 
-    walls.forEach(w => this.renderer.addToStage(w));
+    walls.forEach(w => {
+      w.addToEngine(this.engine.world);
+      this.renderer.addToStage(w);
+    });
 
     // const ground = new HorizontalWall();
     // this.renderer.addToStage(ground);
@@ -297,6 +343,7 @@ export default class ClientEngine {
     for (let i = 1; i < COLS; i++) {
       let bucket = new BucketWall({ x: i * COL_SPACING });
 
+      bucket.addToEngine(this.engine.world);
       this.renderer.addToStage(bucket);
     }
   }
@@ -313,6 +360,7 @@ export default class ClientEngine {
 
     triangles.forEach(triangle => {
       let t = new Triangle(triangle);
+      t.addToEngine(this.engine.world);
       this.renderer.addToStage(t);
     });
   }
@@ -338,6 +386,7 @@ export default class ClientEngine {
         this.pegs[id] = peg;
         id++;
 
+        peg.addToEngine(this.engine.world);
         this.renderer.addToStage(peg);
       }
     }

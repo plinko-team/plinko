@@ -1,3 +1,5 @@
+// Deprecated
+
 import localtunnel from 'localtunnel';
 
 function startLocalTunnel() {

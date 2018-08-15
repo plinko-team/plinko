@@ -11,6 +11,8 @@ import { Input, InputBuffer } from './inputBuffer';
 import User from './user';
 import UserCollection from './userCollection';
 import WaitingQueue from './waitingQueue';
+import SnapshotHistory from './snapshotHistory'
+
 
 import { CANVAS,
          ROWS,
@@ -41,8 +43,10 @@ export default class ServerEngine {
   constructor({ io }) {
     this.users = new UserCollection();
     this.activeUsers = new UserCollection();
+    this.snapshotHistory = new SnapshotHistory();
     this.io = io;
     this.engine = Engine.create();
+    this.engine.world.gravity.y = 0.35;
     this.frame = 0;
     this.inputBuffer = new InputBuffer();
     this.waitingQueue = new WaitingQueue();
@@ -54,6 +58,8 @@ export default class ServerEngine {
   }
 
   init() {
+    this.chipsToBeDeleted = {}
+    this.inputHistory = {};
     this.logged = false
     this.chips = {};
     this.pegs = [];
@@ -64,6 +70,16 @@ export default class ServerEngine {
     this.registerSocketEvents();
 
     return this;
+  }
+
+  now() {
+    // High resolution time
+
+    const time = process.hrtime()
+    const seconds = time[0];
+    const microseconds = time[1]
+
+    return seconds * 1000 + microseconds / 1000000
   }
 
   initializeScore() {
@@ -113,11 +129,21 @@ export default class ServerEngine {
         const chip = bodyB.parentObject;
         const combinedId = String(chip.ownerId) + String(chip.id);
 
-        chip.shrink(() => {
-          World.remove(this.engine.world, chip.body);
-          delete this.chips[combinedId];
-        })
+        this.chipsToBeDeleted[combinedId] = chip;
+
+        World.remove(this.engine.world, chip.body);
+        delete this.chips[combinedId];
       }
+
+      // if (bodyA.label === 'ground') {
+      //   const chip = bodyB.parentObject;
+      //   const combinedId = String(chip.ownerId) + String(chip.id);
+      //
+      //   chip.shrink(() => {
+      //     World.remove(this.engine.world, chip.body);
+      //     delete this.chips[combinedId];
+      //   })
+      // }
     }
   }
 
@@ -178,6 +204,13 @@ export default class ServerEngine {
 
       // Events must be set on socket established through connection
       socket.on(NEW_CHIP, (chipInfo) => {
+        // console.log(`New chip from client: frame ${chipInfo.frame} on server frame ${this.frame}`)
+
+        // In case client somehow thinks it's ahead of the server
+        if (chipInfo.frame > this.frame) {
+          chipInfo.frame = this.frame
+        }
+
         this.inputBuffer.insert(new Input(chipInfo));
       });
 
@@ -190,6 +223,7 @@ export default class ServerEngine {
       });
 
       socket.on('start game', () => {
+        this.frame = 0;
         this.activeUsers.broadcastAll('start game');
         this.users.broadcastAll('game started');
         setTimeout(this.startGame.bind(this), 5000);
@@ -270,16 +304,18 @@ export default class ServerEngine {
     console.log("Active: ", activeUsers, "\nWaiting: ",  waitingUsers)
   }
 
-  processInputBuffer() {
+  processInputs() {
+    let frame = this.inputBuffer.first.frame;
+
     while (!this.inputBuffer.isEmpty()) {
       let input = this.inputBuffer.shift()
-
-      let chip = new Chip({ id: input.id, ownerId: input.ownerId, x: input.x, y: input.y })
-      chip.addToEngine(this.engine.world);
-
-      let combinedId = String(input.ownerId) + String(input.id)
-      this.chips[combinedId] = chip;
+      this.inputHistory[input.frame] = input;
     }
+
+    let snapshot = this.snapshotHistory.at(frame)
+
+    this.restoreWorldFromSnapshot(snapshot);
+    this.catchUpToCurrentFrameFrom(frame);
   }
 
   gameIsOver() {
@@ -297,36 +333,155 @@ export default class ServerEngine {
     }, 1000);
   }
 
-  startGame() {
-    this.gameIsRunning = true;
 
-    this.nextTimestep = this.nextTimestep || Date.now();
+  catchUpToCurrentFrameFrom(frame) {
+    let start = this.now();
+    let reenactmentCount = 0;
+    while (frame <= this.frame) {
+      reenactmentCount++
 
-    while (Date.now() > this.nextTimestep) {
-      this.frame++
+      if (this.inputHistory[frame]) {
+        let chipInfo = this.inputHistory[frame];
+        let chip = new Chip({ id: chipInfo.id, ownerId: chipInfo.ownerId, x: chipInfo.x, y: chipInfo.y })
+        chip.addToEngine(this.engine.world);
 
-      !this.inputBuffer.isEmpty() && this.processInputBuffer();
+        let combinedId = String(chipInfo.ownerId) + String(chipInfo.id)
+        this.chips[combinedId] = chip;
+      }
 
+      let generatedSnapshot = this.generateSnapshot(this.chips, this.pegs, this.score,
+                                           this.winner, this.targetScore);
+
+      this.snapshotHistory.update(frame, generatedSnapshot);
 
       Engine.update(this.engine, TIMESTEP);
 
-      if (!this.targetScoreInterval) { this.reduceTargetScoreInterval() }
-
-      if (!this.winner && this.gameIsOver()) {
-        this.winner = true;
-        clearInterval(this.targetScoreInterval);
-        this.endRound();
-      }
-
-      let snapshot = this.generateSnapshot(this.chips, this.pegs, this.score,
-                                           this.winner, this.targetScore);
-
-      this.broadcastSnapshot(snapshot);
-
-      this.nextTimestep += TIMESTEP;
+      frame++;
     }
 
-    this.gameLoop = setImmediate(this.startGame.bind(this))
+    console.log("# Reenactment steps: ", reenactmentCount)
+
+
+    // console.log("Catch up took: ", this.now() - start, " ms")
+  }
+
+  restoreWorldFromSnapshot(snapshot) {
+    let start = this.now();
+
+    let chips = snapshot.chips;
+    let pegs = snapshot.pegs;
+    let chipsThatExistAtSnapshot = [];
+
+    chips.forEach(chipInfo => {
+      const { id, ownerId, x, y, angle, velocity, angularVelocity } = chipInfo;
+
+      let combinedId = String(ownerId) + String(id);
+      chipsThatExistAtSnapshot.push(combinedId);
+
+      if (typeof this.chips[combinedId] === 'undefined') {
+        const chip = new Chip({ id, ownerId, x, y });
+        chip.addToEngine(this.engine.world);
+        this.chips[combinedId] = chip;
+      }
+
+      const chip = this.chips[combinedId];
+      const body = chip.body;
+
+      Body.setPosition(body, { x, y });
+      Body.setAngle(body, angle);
+      Body.setVelocity(body, velocity);
+      Body.setAngularVelocity(body, angularVelocity);
+    });
+
+    // This code gets rid of chips that exist in the current frame, but
+    // did not exist in the frame from which we restored the world
+    let chipsThatExist = {};
+
+    chipsThatExistAtSnapshot.forEach(combinedId => {
+      chipsThatExist[combinedId] = this.chips[combinedId];
+    });
+
+    this.chips = chipsThatExist;
+    // console.log("restore world took: ", this.now() - start, " ms")
+  }
+
+  processChipsToBeDeleted() {
+    Object.keys(this.chipsToBeDeleted).forEach((combinedId) => {
+      delete this.chips[combinedId];
+      delete this.chipsToBeDeleted[combinedId]
+    });
+
+    this.chipsToBeDeleted = {};
+  }
+
+  animate() {
+    let start = this.now();
+
+    if (this.now() < this.lastFrameTime + TIMESTEP) {
+      this.gameLoop = setImmediate(this.animate.bind(this));
+      return;
+    }
+
+    // Schedule next animate
+    this.gameLoop = setImmediate(this.animate.bind(this))
+
+    while (this.now() > this.nextTimestep) {
+
+      this.processChipsToBeDeleted();
+
+      // If input buffer is empty, update like normal
+      // If there are inputs, reenact steps from first input in buffer
+      this.inputBuffer.isEmpty() ? this.update() : this.processInputs();
+    }
+
+    // For benchmarking
+    if (this.now() - start > 33) {
+      console.log("!! Entire game loop took: ", this.now() - start, " ms")
+    }
+  }
+
+  startGame() {
+    this.gameIsRunning = true;
+    this.nextTimestep = this.now(); // initialize nextTimestep which get
+                                    // incremented in update()
+
+    this.gameLoop = setImmediate(this.animate.bind(this))
+  }
+
+  update() {
+    let start = this.now();
+
+    this.frame++;
+    Engine.update(this.engine, TIMESTEP);
+
+    // Deal with score and win conditions
+    if (!this.targetScoreInterval) { this.reduceTargetScoreInterval() }
+
+    if (!this.winner && this.gameIsOver()) {
+      this.winner = true;
+      clearInterval(this.targetScoreInterval);
+      this.endRound();
+    }
+
+    let snapshot = this.generateSnapshot(this.chips, this.pegs, this.score,
+                                         this.winner, this.targetScore);
+
+    this.takeSnapshot(snapshot);
+
+    let fps = 30;
+    let broadcastRate = 10
+
+    if (this.frame % (fps / broadcastRate) === 0) {
+      this.broadcastSnapshot(snapshot);
+    }
+
+    this.nextTimestep += TIMESTEP;
+
+    // console.log("Update took: ", this.now() - start, " ms")
+  }
+
+  takeSnapshot(snapshot) {
+    this.snapshotHistory.push(this.frame, snapshot);
   }
 
   endRound() {
@@ -358,9 +513,9 @@ export default class ServerEngine {
   }
 
   resetGame() {
-    this.logged = false
     this.activeUsers = new UserCollection();
     this.engine = Engine.create();
+    this.engine.world.gravity.y = 0.35
     this.frame = 0;
     this.inputBuffer = new InputBuffer();
     this.gameLoop = undefined;
@@ -383,7 +538,9 @@ export default class ServerEngine {
            ownerId: chip.ownerId,
            x: chip.body.position.x,
            y: chip.body.position.y,
-           angle: chip.body.angle
+           angle: chip.body.angle,
+           velocity: chip.body.velocity,
+           angularVelocity: chip.body.angularVelocity,
          };
     });
 
@@ -398,7 +555,7 @@ export default class ServerEngine {
     // let encodedSnapshot = Serializer.encode({ chips, pegs, score, winner, targetScore })
 
     this.activeUsers.forEach(user => {
-      user.socket.emit(SNAPSHOT, { chips, pegs, score, winner, targetScore });
+      user.socket.emit(SNAPSHOT, { frame: this.frame, chips, pegs, score, winner, targetScore });
     })
   }
 

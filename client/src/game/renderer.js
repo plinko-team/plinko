@@ -42,7 +42,7 @@ export default class Renderer {
     }
   }
 
-  render() {
+  render(chips) {
     this.ctx.clearRect(0, 0, CANVAS.WIDTH, CANVAS.HEIGHT);
 
     Object.values(this.stage).forEach(bodies => {

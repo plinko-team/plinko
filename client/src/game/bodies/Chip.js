@@ -2,6 +2,7 @@ import { CHIP } from '../../shared/constants/bodies';
 import { PLAYER_COLORS } from '../../shared/constants/colors';
 import { toDegrees } from '../../shared/utils/math';
 import GameObject from './GameObject';
+import { Events, Body, Bodies } from 'matter-js';
 
 export default class Chip extends GameObject {
   static count = 0;
@@ -20,11 +21,57 @@ export default class Chip extends GameObject {
     this.fillStyle = Chip.fillStyles[Math.floor(Math.random() * Chip.fillStyles.length)];
     this.angle = 0; // stored in radians
     Chip.count++;
+
+    this.createPhysics();
+  }
+
+  registerUpdateListener(engine) {
+    Events.on(engine, 'afterUpdate', () => {
+      if (typeof this.bendingCount === 'number') {
+
+        let deltaX = (this.body.position.x - this.x) * (1 / this.bendingCount)
+        let deltaY = (this.body.position.y - this.y) * (1 / this.bendingCount)
+        let deltaAngle = (this.body.angle - this.angle) * (1 / this.bendingCount)
+
+        this.x += deltaX / this.bendingCount
+        this.y += deltaY / this.bendingCount
+        this.angle += deltaAngle / this.bendingCount
+
+        this.bendingCount--
+
+        if (this.bendingCount === 0) {
+          delete this.bendingCount
+        }
+      } else {
+        this.x = this.body.position.x;
+        this.y = this.body.position.y;
+        this.angle = this.body.angle;
+      }
+    })
+  }
+
+  createPhysics() {
+    Chip.count++
+
+    const options = {
+      restitution: CHIP.RESTITUTION,
+      friction: CHIP.FRICTION,
+    }
+
+    this.body = Bodies.circle(this.x, this.y, CHIP.RADIUS, options);
+    this.body.parentObject = this;
+
+    Body.setDensity(this.body, CHIP.DENSITY)
+    this.body.label = this.type;
+    this.body.position.x = this.x;
+    this.body.position.y = this.y;
   }
 
   draw(rough) {
+    const color = PLAYER_COLORS[this.ownerId];
+
     rough.circle(this.x, this.y, this.diameter, {
-      fill: PLAYER_COLORS[this.ownerId],
+      fill: color,
       fillStyle: this.fillStyle,
       fillWeight: 1,
       roughness: 1,

@@ -13,6 +13,7 @@ export default class Game extends Component {
     socket: PropTypes.object,
     userId: PropTypes.string,
     players: PropTypes.object,
+    latency: PropTypes.number
   }
 
   state = {
@@ -24,7 +25,11 @@ export default class Game extends Component {
   componentDidMount() {
     const playerId = this.props.players[this.props.userId].playerId;
     this.setState({players: this.props.players});
-    this.client = new ClientEngine({ playerId, socket: this.props.socket });
+    this.client = new ClientEngine({
+      latency: this.props.latency,
+      playerId,
+      socket: this.props.socket
+    });
     this.registerSocketEvents();
     this.client.init();
     this.client.startGame();
@@ -33,6 +38,9 @@ export default class Game extends Component {
   componentWillUnmount() {
     // unregister socket events on unmount
     this.props.socket.off(SNAPSHOT);
+    this.client.stopGame
+    this.client.unregisterSocketEvents();
+    delete this.client
   }
 
   registerSocketEvents = () => {

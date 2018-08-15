@@ -1,7 +1,11 @@
 import { WALL_TINT } from '../../shared/constants/colors';
 import GameObject from './GameObject';
-
+import { Bodies, Vertices } from 'matter-js';
+import { TRIANGLE } from '../../shared/constants/bodies'
 import { CANVAS } from '../../shared/constants/canvas';
+import decomp from 'poly-decomp';
+
+window.decomp = decomp;
 
 export default class Triangle extends GameObject {
   static count = 0;
@@ -9,7 +13,26 @@ export default class Triangle extends GameObject {
   constructor({ y, side }) {
     super({ y });
     this.id = Triangle.count++;
-    this.side = side;
+    this.vertices = side === 'right' ? TRIANGLE.RIGHT.VERTICES : TRIANGLE.LEFT.VERTICES;
+    this.createPhysics();
+  }
+
+  createPhysics() {
+    let options = {
+      restitution: TRIANGLE.RESTITUTION,
+      friction: TRIANGLE.FRICTION,
+    }
+
+    let triangleVertices = Vertices.fromPath(this.vertices);
+
+    // The simulated triangle is created based on the x, y passed in plus/minus their respective offsets
+    if (this.side === 'left') {
+      this.body = Bodies.fromVertices(this.x - TRIANGLE.LEFT.X_OFFSET, this.y - TRIANGLE.LEFT.Y_OFFSET, [triangleVertices], options)
+    } else {
+      this.body = Bodies.fromVertices(this.x + TRIANGLE.RIGHT.X_OFFSET, this.y + TRIANGLE.RIGHT.Y_OFFSET, [triangleVertices], options)
+    }
+
+    this.body.isStatic = true;
   }
 
   draw(rough) {

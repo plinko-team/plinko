@@ -1,6 +1,8 @@
 import { WALL_TINT } from '../../shared/constants/colors';
 import { CANVAS } from '../../shared/constants/canvas';
+import { WALL } from '../../shared/constants/bodies'
 import GameObject from './GameObject';
+import { Bodies } from 'matter-js';
 
 // in canvas, a rectangle's top left corner is rendered at x,y
 // grid's x,y starts at 0,0 in top left corner of canvas
@@ -14,6 +16,20 @@ class Wall extends GameObject {
     this.width = width;
     this.height = height;
     this.type = 'wall';
+    this.createPhysics({ width, height });
+  }
+
+  createPhysics({ width, height }) {
+    let options = {
+      restitution: WALL.RESTITUTION,
+      friction: WALL.FRICTION,
+    }
+
+    this.body = Bodies.rectangle(this.x + this.width / 2, this.y + this.height / 2, this.width, this.height, options);
+    this.body.isStatic = true;
+    this.body.position.x = this.x + this.width / 2;
+    this.body.position.y = this.y + this.height / 2;
+    this.body.label = this.type;
   }
 
   draw(rough) {
@@ -24,19 +40,6 @@ class Wall extends GameObject {
       roughness: 0,
     });
   }
-
-  // createSprite() {
-  //   const texture = PIXI.Texture.WHITE;
-  //   const wall = new PIXI.Sprite(texture);
-  //   wall.position.x = this.x;
-  //   wall.position.y = this.y;
-  //   wall.height = this.height;
-  //   wall.width = this.width;
-  //   wall.tint = WALL_TINT;
-  //   wall.anchor.set(0.5, 0.5);
-  //
-  //   this.sprite = wall;
-  // }
 }
 
 export class VerticalWall extends Wall {
