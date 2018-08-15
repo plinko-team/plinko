@@ -123,7 +123,7 @@ export default class ClientEngine {
 
     this.socket.on(SNAPSHOT, ({ frame, chips, pegs, score, winner, targetScore }) => {
       // let { chips, pegs, score, winner, targetScore } = Serializer.decode(encodedSnapshot);
-      let estimatedServerFrame = frame + Math.ceil(this.latency / TIMESTEP);
+      let estimatedServerFrame = frame + Math.round(this.latency / TIMESTEP);
 
       this.nextWholeFrame = estimatedServerFrame
 
