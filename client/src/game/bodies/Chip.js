@@ -37,6 +37,7 @@ export default class Chip extends GameObject {
         this.y += deltaY / this.bendingCount
         this.angle += deltaAngle / this.bendingCount
 
+        console.log(this.bendingCount)
         this.bendingCount--;
 
         if (this.bendingCount === 0) {
