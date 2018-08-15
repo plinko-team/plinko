@@ -28,9 +28,11 @@ export default class Chip extends GameObject {
   registerUpdateListener(engine) {
     Events.on(engine, 'afterUpdate', () => {
       if (!engine.reenactment && typeof this.bendingCount === 'number') {
-        let deltaX = (this.body.position.x - this.x) * (1 / this.bendingCount)
-        let deltaY = (this.body.position.y - this.y) * (1 / this.bendingCount)
-        let deltaAngle = (this.body.angle - this.angle) * (1 / this.bendingCount)
+        let bendingFactor = (4 - this.bendingCount) / 3
+
+        let deltaX = (this.body.position.x - this.x) * bendingFactor;
+        let deltaY = (this.body.position.y - this.y) * bendingFactor;
+        let deltaAngle = (this.body.angle - this.angle) * bendingFactor;
 
         this.x += deltaX / this.bendingCount
         this.y += deltaY / this.bendingCount
@@ -69,7 +71,9 @@ export default class Chip extends GameObject {
   }
 
   draw(rough) {
-    let color = this.bendingCount ? '#0000FF' : PLAYER_COLORS[this.ownerId];
+    // let color = this.bendingCount ? '#0000FF' : PLAYER_COLORS[this.ownerId];
+    let color = PLAYER_COLORS[this.ownerId];
+
     console.log(this.bendingCount)
 
     rough.circle(this.x, this.y, this.diameter, {

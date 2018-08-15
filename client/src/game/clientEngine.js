@@ -173,7 +173,6 @@ export default class ClientEngine {
 
       chip.bendingCount = 3; // Counts down to 0
 
-
       Body.setPosition(body, { x, y });
       Body.setAngle(body, angle);
       Body.setVelocity(body, velocity);
