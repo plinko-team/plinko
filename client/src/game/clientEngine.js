@@ -184,7 +184,7 @@ export default class ClientEngine {
 
     this.engine.reenactment = true;
     // Catch up to current frame from snapshot
-    while (frame < this.frame) {
+    while (frame < this.frame - 2) {
       // console.log("Catching up!")
       frame++;
       Engine.update(this.engine, TIMESTEP);
