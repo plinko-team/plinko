@@ -337,7 +337,7 @@ export default class ServerEngine {
     let start = this.now();
     let reenactmentCount = 0;
 
-    while (frame < this.frame) {
+    while (frame <= this.frame) {
       reenactmentCount++;
 
       if (this.inputHistory[frame]) {
@@ -415,7 +415,6 @@ export default class ServerEngine {
 
   animate() {
     if (this.now() - this.gameStartedAt >= 1000) {
-      console.log(this.frameCounter)
       this.gameStartedAt = this.now()
       this.frameCounter = 0;
     }
