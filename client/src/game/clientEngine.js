@@ -44,7 +44,7 @@ export default class ClientEngine {
     this.playerId = playerId;
     this.socket = socket;
     this.engine = Engine.create();
-    this.engine.world.gravity.y = 0.35;
+    this.engine.world.gravity.y = 0.5;
 
     this.renderer = new Renderer();
     this.eventEmitter = new EventEmitter();

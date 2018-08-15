@@ -476,7 +476,7 @@ export default class ServerEngine {
     this.takeSnapshot(snapshot);
 
     let fps = 30;
-    let broadcastRate = 5
+    let broadcastRate = 10
 
     if (this.frame % (fps / broadcastRate) === 0) {
       this.broadcastSnapshot(snapshot);
@@ -522,7 +522,7 @@ export default class ServerEngine {
   resetGame() {
     this.activeUsers = new UserCollection();
     this.engine = Engine.create();
-    this.engine.world.gravity.y = 0.35
+    this.engine.world.gravity.y = 0.5
     this.frame = 0;
     this.inputBuffer = new InputBuffer();
     this.gameLoop = undefined;
