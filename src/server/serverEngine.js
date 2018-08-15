@@ -313,7 +313,7 @@ export default class ServerEngine {
     }
 
     let snapshot = this.snapshotHistory.at(frame)
-
+    console.log(`Snapshot frame: ${frame}, Current frame: ${this.frame}`)
     this.restoreWorldFromSnapshot(snapshot);
     this.catchUpToCurrentFrameFrom(frame);
   }
@@ -338,7 +338,7 @@ export default class ServerEngine {
     let reenactmentCount = 0;
 
     while (frame < this.frame) {
-      reenactmentCount++
+      reenactmentCount++;
 
       if (this.inputHistory[frame]) {
         let chipInfo = this.inputHistory[frame];
@@ -360,7 +360,6 @@ export default class ServerEngine {
     }
 
     console.log("# Reenactment steps: ", reenactmentCount)
-
 
     // console.log("Catch up took: ", this.now() - start, " ms")
   }
@@ -438,6 +437,7 @@ export default class ServerEngine {
 
       // If input buffer is empty, update like normal
       // If there are inputs, reenact steps from first input in buffer
+
       this.inputBuffer.isEmpty() ? this.update() : this.processInputs();
     }
 
