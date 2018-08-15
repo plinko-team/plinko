@@ -124,13 +124,13 @@ export default class ClientEngine {
 
     this.socket.on(SNAPSHOT, ({ frame, chips, pegs, score, winner, targetScore }) => {
       // let { chips, pegs, score, winner, targetScore } = Serializer.decode(encodedSnapshot);
-      let estimatedServerFrame = frame + Math.ceil(this.latency / TIMESTEP);
+      let estimatedServerFrame = frame // + Math.ceil(this.latency / TIMESTEP);
 
       this.nextWholeFrame = estimatedServerFrame
 
-      if ((estimatedServerFrame - this.frame) > 3) {
+      // if ((estimatedServerFrame - this.frame) > 3) {
         this.awaitingFrame = true;
-      }
+      // }
 
       if (this.isRunning) {
         // this.snapshotBuffer.push(new Snapshot({ frame, pegs, chips, score, winner, targetScore, timestamp: performance.now() }));
