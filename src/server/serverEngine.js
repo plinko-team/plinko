@@ -332,12 +332,11 @@ export default class ServerEngine {
     }, 1000);
   }
 
-
   catchUpToCurrentFrameFrom(frame) {
     let start = this.now();
     let reenactmentCount = 0;
 
-    while (frame <= this.frame) {
+    while (frame < this.frame) {
       reenactmentCount++;
 
       if (this.inputHistory[frame]) {
