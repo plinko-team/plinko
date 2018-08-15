@@ -207,9 +207,9 @@ export default class ServerEngine {
         // console.log(`New chip from client: frame ${chipInfo.frame} on server frame ${this.frame}`)
 
         // In case client somehow thinks it's ahead of the server
-        if (chipInfo.frame > this.frame) {
-          chipInfo.frame = this.frame
-        }
+        // if (chipInfo.frame > this.frame) {
+        //   chipInfo.frame = this.frame
+        // }
 
         this.inputBuffer.insert(new Input(chipInfo));
       });
