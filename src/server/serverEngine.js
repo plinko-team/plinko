@@ -328,7 +328,6 @@ export default class ServerEngine {
 
   reduceTargetScoreInterval() {
     this.targetScoreInterval = setInterval(() => {
-      console.log(this.targetScore);
       this.targetScore -= 1;
     }, 1000);
   }
@@ -337,7 +336,7 @@ export default class ServerEngine {
   catchUpToCurrentFrameFrom(frame) {
     let start = this.now();
     let reenactmentCount = 0;
-    while (frame <= this.frame) {
+    while (frame < this.frame) {
       reenactmentCount++
 
       if (this.inputHistory[frame]) {
@@ -415,6 +414,12 @@ export default class ServerEngine {
   }
 
   animate() {
+    if (this.now() - this.gameStartedAt >= 1000) {
+      console.log(this.frameCounter)
+      this.gameStartedAt = this.now()
+      this.frameCounter = 0;
+    }
+
     let start = this.now();
 
     if (this.now() < this.lastFrameTime + TIMESTEP) {
@@ -422,12 +427,13 @@ export default class ServerEngine {
       return;
     }
 
+
     // Schedule next animate
     this.gameLoop = setImmediate(this.animate.bind(this))
 
     while (this.now() > this.nextTimestep) {
-
       this.processChipsToBeDeleted();
+      this.frameCounter++
 
       // If input buffer is empty, update like normal
       // If there are inputs, reenact steps from first input in buffer
@@ -441,6 +447,8 @@ export default class ServerEngine {
   }
 
   startGame() {
+    this.gameStartedAt = this.now();
+    this.frameCounter = 0;
     this.gameIsRunning = true;
     this.nextTimestep = this.now(); // initialize nextTimestep which get
                                     // incremented in update()

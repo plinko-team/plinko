@@ -55,6 +55,7 @@ export default class ClientEngine {
   }
 
   init() {
+    this.awaitingFrame = true;
     this.frame = 0;
     this.deletedChips = {};
     this.chips = {};
@@ -126,6 +127,10 @@ export default class ClientEngine {
       let estimatedServerFrame = frame + Math.round(this.latency / TIMESTEP);
 
       this.nextWholeFrame = estimatedServerFrame
+
+      if (Math.abs(estimatedServerFrame - this.frame) > 3) {
+        this.awaitingFrame = true;
+      }
 
       if (this.isRunning) {
         // this.snapshotBuffer.push(new Snapshot({ frame, pegs, chips, score, winner, targetScore, timestamp: performance.now() }));
@@ -210,9 +215,11 @@ export default class ClientEngine {
     }
 
     // Set frame to estimatedServerFrame that we got from the latest snapshot
-    if (typeof this.nextWholeFrame !== 'undefined') {
+    if (typeof this.nextWholeFrame !== 'undefined' && this.awaitingFrame) {
+      console.log("Adjusted")
       this.frame = this.nextWholeFrame;
       this.nextWholeFrame = undefined;
+      this.awaitingFrame = false;
     }
 
     this.delta += timestamp - this.lastFrameTime;
