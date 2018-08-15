@@ -37,10 +37,11 @@ export default class Chip extends GameObject {
         this.y += deltaY / this.bendingCount
         this.angle += deltaAngle / this.bendingCount
 
-        this.bendingCount--
+        this.bendingCount--;
 
         if (this.bendingCount === 0) {
-          delete this.bendingCount
+          console.log("No longer bending")
+          delete this.bendingCount;
         }
       } else {
         this.x = this.body.position.x;
@@ -69,6 +70,7 @@ export default class Chip extends GameObject {
 
   draw(rough) {
     let color = this.bendingCount ? '#0000FF' : PLAYER_COLORS[this.ownerId];
+
     rough.circle(this.x, this.y, this.diameter, {
       fill: color,
       fillStyle: this.fillStyle,
