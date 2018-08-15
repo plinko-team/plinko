@@ -522,7 +522,7 @@ export default class ServerEngine {
   resetGame() {
     this.activeUsers = new UserCollection();
     this.engine = Engine.create();
-    this.engine.world.gravity.y = 0.5
+    this.engine.world.gravity.y = 1
     this.frame = 0;
     this.inputBuffer = new InputBuffer();
     this.gameLoop = undefined;
