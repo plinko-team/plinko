@@ -573,10 +573,11 @@ export default class ServerEngine {
 
   broadcastSnapshot({ chips, pegs, score, winner, targetScore }) {
     // let encodedSnapshot = Serializer.encode({ chips, pegs, score, winner, targetScore })
-
+    const start = this.now();
     this.activeUsers.forEach(user => {
       user.socket.emit(SNAPSHOT, { frame: this.frame, chips, pegs, score, winner, targetScore });
     })
+    console.log(`Broadcast step took : ${this.now() - start}`)
   }
 
   _createWalls() {
