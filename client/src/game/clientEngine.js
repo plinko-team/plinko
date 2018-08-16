@@ -90,12 +90,12 @@ export default class ClientEngine {
 
   registerCanvasEvents() {
     // On click, add a chip at the mouse's x and y relative to canvas
-    document.querySelector('canvas').addEventListener('click', this.onClick, false);
+    document.querySelector('#canvas').addEventListener('click', this.onClick, false);
     // We prevent the default mousedown event so that when you spam chips,
     // random parts of the DOM might get highlighted due to double click
-    document.body.addEventListener('mousedown', (e) => { e.preventDefault() });
+    document.querySelector('#canvas').addEventListener('mousedown', (e) => { e.preventDefault() });
     // When the client moves the mouse, display a chip overlay
-    document.querySelector('canvas').addEventListener('mouseenter', this.onMouseEnter);
+    document.querySelector('#canvas').addEventListener('mouseenter', this.onMouseEnter);
   }
 
   frameSync() {
@@ -154,42 +154,6 @@ export default class ClientEngine {
       const peg = this.pegs[pegInfo.id];
       peg.ownerId = pegInfo.ownerId;
     });
-  }
-
-  updateTargetScore(targetScore) {
-    document.body.querySelector('.peg-target').innerText = targetScore;
-  }
-
-  highlightWinner(scores) {
-    let winnerId;
-    let playerElement;
-    let highScore = 0;
-
-    let infoContainer = document.querySelector('.game-info');
-    let winnerBanner = document.createElement('div');
-
-    Object.values(scores)
-      .map(score => parseInt(score, 10))
-      .forEach((score, id) => {
-        if (score > highScore) {
-          highScore = score;
-          winnerId = id;
-        }
-    });
-
-    winnerBanner.setAttribute('id', 'winner-element');
-    winnerBanner.textContent = `Winner is player ${winnerId + 1}`;
-    infoContainer.appendChild(winnerBanner);
-
-    playerElement = '.player-' + winnerId;
-    document.body.querySelector(playerElement).style.color = 'yellow';
-  }
-
-  updateScoreboard(score) {
-    for (let i = 0; i <= 3; i++) {
-      let scoreElement = '.player-' + i;
-      document.body.querySelector(scoreElement).children[0].innerHTML = score[i];
-    }
   }
 
   update() {
