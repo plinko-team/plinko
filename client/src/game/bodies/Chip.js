@@ -27,8 +27,6 @@ export default class Chip extends GameObject {
 
   registerUpdateListener(engine) {
     Events.on(engine, 'afterUpdate', () => {
-      if (engine.reenactment) { return }
-
       if (!engine.reenactment && typeof this.bendingCount === 'number') {
         let bendingFactor = (4 - this.bendingCount) / 3
 
