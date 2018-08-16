@@ -48,7 +48,7 @@ export default class ServerEngine {
     this.snapshotHistory = new SnapshotHistory();
     this.io = io;
     this.engine = Engine.create();
-    this.engine.world.gravity.y = 0.35;
+    this.engine.world.gravity.y = 1;
     this.frame = 0;
     this.inputBuffer = new InputBuffer();
     this.inputHistory = new InputHistory();
