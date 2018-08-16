@@ -51,7 +51,6 @@ export default class ClientEngine {
     // this.synchronizer = new Synchronizer(this.socket, this.eventEmitter).init();
     this.snapshotBuffer = new SnapshotBuffer();
     this.latency = latency
-
   }
 
   init() {

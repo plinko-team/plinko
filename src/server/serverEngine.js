@@ -7,6 +7,8 @@ import Triangle from '../bodies/Triangle';
 import { VerticalWall, HorizontalWall, BucketWall } from '../bodies/Wall';
 import { DROP_BOUNDARY, TIMESTEP, TARGET_SCORE } from '../shared/constants/game';
 import { Input, InputBuffer } from './inputBuffer';
+import InputHistory from './inputHistory';
+
 // import Serializer from '../shared/serializer';
 import User from './user';
 import UserCollection from './userCollection';
@@ -49,6 +51,7 @@ export default class ServerEngine {
     this.engine.world.gravity.y = 0.35;
     this.frame = 0;
     this.inputBuffer = new InputBuffer();
+    this.inputHistory = new InputHistory();
     this.waitingQueue = new WaitingQueue();
     this.gameIsRunning = false;
     this.gameLoop = undefined;
@@ -59,7 +62,6 @@ export default class ServerEngine {
 
   init() {
     this.chipsToBeDeleted = {}
-    this.inputHistory = {};
     this.logged = false
     this.chips = {};
     this.pegs = [];
@@ -309,11 +311,13 @@ export default class ServerEngine {
 
     while (!this.inputBuffer.isEmpty()) {
       let input = this.inputBuffer.shift()
-      this.inputHistory[input.frame] = input;
+
+      this.inputHistory.insert(input)
     }
 
     let snapshot = this.snapshotHistory.at(frame)
     console.log(`Snapshot frame: ${frame}, Current frame: ${this.frame}`)
+
     this.restoreWorldFromSnapshot(snapshot);
     this.catchUpToCurrentFrameFrom(frame);
   }
@@ -339,14 +343,15 @@ export default class ServerEngine {
     while (frame < this.frame) {
       reenactmentCount++;
 
-      if (this.inputHistory[frame]) {
-        let chipInfo = this.inputHistory[frame];
+      const inputs = this.inputHistory.inputsAt(frame)
+
+      inputs.forEach(chipInfo => {
         let chip = new Chip({ id: chipInfo.id, ownerId: chipInfo.ownerId, x: chipInfo.x, y: chipInfo.y })
         chip.addToEngine(this.engine.world);
 
         let combinedId = String(chipInfo.ownerId) + String(chipInfo.id)
         this.chips[combinedId] = chip;
-      }
+      })
 
       let generatedSnapshot = this.generateSnapshot(this.chips, this.pegs, this.score,
                                            this.winner, this.targetScore);
@@ -364,18 +369,23 @@ export default class ServerEngine {
   }
 
   restoreWorldFromSnapshot(snapshot) {
-    let start = this.now();
+    // Note: `snapshot` parameter is supplied from processInputs()
 
-    let chips = snapshot.chips;
-    let pegs = snapshot.pegs;
-    let chipsThatExistAtSnapshot = [];
+    // Extract out chips and pegs from our snapshot
+    const chips = snapshot.chips;
+    const pegs = snapshot.pegs;
+    const chipsThatExistAtSnapshot = [];
 
+    // Iterate over all chips in snapshot
     chips.forEach(chipInfo => {
+      // Pull out all relevant properties from chip
       const { id, ownerId, x, y, angle, velocity, angularVelocity } = chipInfo;
 
       let combinedId = String(ownerId) + String(id);
       chipsThatExistAtSnapshot.push(combinedId);
 
+      // If chip exists in snapshot but not in our currently world
+      // We need to create and add it to the world
       if (typeof this.chips[combinedId] === 'undefined') {
         const chip = new Chip({ id, ownerId, x, y });
         chip.addToEngine(this.engine.world);
@@ -385,14 +395,17 @@ export default class ServerEngine {
       const chip = this.chips[combinedId];
       const body = chip.body;
 
+      // Update properties for chip in actual world
+
       Body.setPosition(body, { x, y });
       Body.setAngle(body, angle);
       Body.setVelocity(body, velocity);
       Body.setAngularVelocity(body, angularVelocity);
     });
 
-    // This code gets rid of chips that exist in the current frame, but
-    // did not exist in the frame from which we restored the world
+    // Because we are going "back in time", the world may currently contain chips
+    // which are not present in a past snapshot. We must do an operation to
+    // remove these from the world
     let chipsThatExist = {};
 
     chipsThatExistAtSnapshot.forEach(combinedId => {
@@ -400,7 +413,6 @@ export default class ServerEngine {
     });
 
     this.chips = chipsThatExist;
-    // console.log("restore world took: ", this.now() - start, " ms")
   }
 
   processChipsToBeDeleted() {
@@ -424,7 +436,6 @@ export default class ServerEngine {
       this.gameLoop = setImmediate(this.animate.bind(this));
       return;
     }
-
 
     // Schedule next animate
     this.gameLoop = setImmediate(this.animate.bind(this))

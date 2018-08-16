@@ -48,8 +48,9 @@
     if (!input instanceof Input) {
       throw new Error("Not an instance of input")
     }
+
     if (!input) {
-      throw new Error("You forgot to include an input, dummy")
+      throw new Error("You forgot to include an input")
     }
 
     if (this.isEmpty()) {
