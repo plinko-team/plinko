@@ -37,12 +37,8 @@ export default class Chip extends GameObject {
     this.shrinking = true;
 
     setTimeout(() => {
-      // 1 + Math.log(0.95) / N
-      // where N is number of chips before max shrinking
-      // Here, it is 0.995 for N = 10
-      // 0.95 is max shrinking factor
-
-      const SHRINK_FACTOR = 0.93;
+      // lower than server shrink factor to account for slower shrinking on client
+      const SHRINK_FACTOR = 0.80;
 
       const interval = setInterval(() => {
         this.diameter *= SHRINK_FACTOR;

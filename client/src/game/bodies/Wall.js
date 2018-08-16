@@ -6,11 +6,8 @@ import GameObject from './GameObject';
 // grid's x,y starts at 0,0 in top left corner of canvas
 
 class Wall extends GameObject {
-  static count = 0;
-
   constructor({ id, x, y, width, height }) {
     super({ x, y });
-    this.id = Wall.count++;
     this.width = width;
     this.height = height;
     this.type = 'wall';
@@ -24,19 +21,6 @@ class Wall extends GameObject {
       roughness: 0,
     });
   }
-
-  // createSprite() {
-  //   const texture = PIXI.Texture.WHITE;
-  //   const wall = new PIXI.Sprite(texture);
-  //   wall.position.x = this.x;
-  //   wall.position.y = this.y;
-  //   wall.height = this.height;
-  //   wall.width = this.width;
-  //   wall.tint = WALL_TINT;
-  //   wall.anchor.set(0.5, 0.5);
-  //
-  //   this.sprite = wall;
-  // }
 }
 
 export class VerticalWall extends Wall {
