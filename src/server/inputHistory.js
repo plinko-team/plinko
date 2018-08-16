@@ -23,8 +23,10 @@ export default class InputHistory {
 
     if (Array.isArray(this.history[frame])) {
       return this.history[frame];
-    } else {
+    } else if (this.history[frame]) {
       return [this.history[frame]]
+    } else {
+      return undefined
     }
   }
 

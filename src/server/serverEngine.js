@@ -344,15 +344,16 @@ export default class ServerEngine {
       reenactmentCount++;
 
       const inputs = this.inputHistory.inputsAt(frame)
-      console.log(inputs)
 
-      inputs.forEach(chipInfo => {
-        let chip = new Chip({ id: chipInfo.id, ownerId: chipInfo.ownerId, x: chipInfo.x, y: chipInfo.y })
-        chip.addToEngine(this.engine.world);
+      if (inputs) {
+        inputs.forEach(chipInfo => {
+          let chip = new Chip({ id: chipInfo.id, ownerId: chipInfo.ownerId, x: chipInfo.x, y: chipInfo.y })
+          chip.addToEngine(this.engine.world);
 
-        let combinedId = String(chipInfo.ownerId) + String(chipInfo.id)
-        this.chips[combinedId] = chip;
-      })
+          let combinedId = String(chipInfo.ownerId) + String(chipInfo.id)
+          this.chips[combinedId] = chip;
+        })
+      }
 
       let generatedSnapshot = this.generateSnapshot(this.chips, this.pegs, this.score,
                                            this.winner, this.targetScore);
