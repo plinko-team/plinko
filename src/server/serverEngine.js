@@ -344,9 +344,9 @@ export default class ServerEngine {
       reenactmentCount++;
 
       const inputs = this.inputHistory.inputsAt(frame)
+      console.log(inputs)
 
       inputs.forEach(chipInfo => {
-        console.log(chipInfo)
         let chip = new Chip({ id: chipInfo.id, ownerId: chipInfo.ownerId, x: chipInfo.x, y: chipInfo.y })
         chip.addToEngine(this.engine.world);
 
