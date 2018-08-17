@@ -317,3 +317,74 @@ canvas {
   padding-left: 1rem;
   border-left: 1px solid #c6c6c6;
 }
+
+/* Citations */
+
+.citation {
+  position: relative;
+  cursor: help;
+  margin: 0 .2rem;
+  font-style: normal;
+}
+
+.citation > a {
+  border-radius: 50%;
+  background-color:#9BC1BC;
+  color: white;
+  width: 2rem;
+  height: 2rem;
+  line-height: 1.3;
+  display: inline-block;
+  text-align: center;
+  vertical-align: baseline;
+}
+
+.citation > div {
+  color: black;
+  font-size: 80%;
+  display: block;
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  background-color: #E6EBE0;
+  border: solid 1px gray;
+  padding: 1rem;
+  border-radius: .5rem;
+  width: 35rem;
+}
+
+.citation p, 
+.citation div.p {
+  text-align: center;
+  color: black;
+  margin: 0 0 1rem 0;
+}
+
+.citation a {
+  word-break: break-word;
+}
+
+.citation table {
+  margin: 0;
+  width: 100%;
+}
+
+.citation th, 
+.citation td {
+  vertical-align: top;
+}
+
+.citation th {
+  padding: .2rem 1rem .2rem .2rem;
+}
+
+.citation td {
+  padding: .2rem .2rem .2rem 1rem;
+  min-width: 70%;
+}
+
+.citation tr:last-child,
+.citation th, 
+.citation td {
+  border-bottom: none;
+}
