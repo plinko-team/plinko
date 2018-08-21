@@ -545,6 +545,8 @@ export default class ServerEngine {
     this.engine.world.gravity.y = 1
     this.frame = 0;
     this.inputBuffer = new InputBuffer();
+    this.inputHistory = new InputHistory();
+    this.snapshotHistry = new SnapshotHistory();
     this.gameLoop = undefined;
     this.chips = {};
     this.pegs = [];
