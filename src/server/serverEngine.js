@@ -213,6 +213,7 @@ export default class ServerEngine {
         //   chipInfo.frame = this.frame
         // }
 
+        console.log(`Recieved input for frame ${chipInfo.frame} on frame ${this.frame}`)
         this.inputBuffer.insert(new Input(chipInfo));
       });
 
@@ -307,16 +308,19 @@ export default class ServerEngine {
   }
 
   processInputs() {
-    let frame = this.inputBuffer.first.frame;
+    // If the incoming frame is ahead due to low latency, make source
+    // at least one frame gets simulated
+    const frame = Math.min(this.inputBuffer.first.frame, this.frame - 1);
+
+    console.log(`Server frame: ${this.frame}, processing inputs: ${this.inputBuffer.toString()}`)
 
     while (!this.inputBuffer.isEmpty()) {
-      let input = this.inputBuffer.shift()
-
-      this.inputHistory.insert(input)
+      let input = this.inputBuffer.shift();
+      this.inputHistory.insert(input);
     }
 
-    let snapshot = this.snapshotHistory.at(frame)
-    console.log(`Snapshot frame: ${frame}, Current frame: ${this.frame}`)
+    // console.log(`processing frame: ${frame} on frame ${this.frame}`);
+    let snapshot = this.snapshotHistory.at(frame);
 
     this.restoreWorldFromSnapshot(snapshot);
     this.catchUpToCurrentFrameFrom(frame);
@@ -365,7 +369,7 @@ export default class ServerEngine {
       frame++;
     }
 
-    console.log("# Reenactment steps: ", reenactmentCount)
+    // console.log("# Reenactment steps: ", reenactmentCount)
 
     // console.log("Catch up took: ", this.now() - start, " ms")
   }
@@ -449,7 +453,8 @@ export default class ServerEngine {
       // If input buffer is empty, update like normal
       // If there are inputs, reenact steps from first input in buffer
 
-      this.inputBuffer.isEmpty() ? this.update() : this.processInputs();
+      !this.inputBuffer.isEmpty() && this.processInputs();
+      this.update()
     }
 
     // For benchmarking
@@ -489,10 +494,11 @@ export default class ServerEngine {
     this.takeSnapshot(snapshot);
 
     let fps = 30;
-    let broadcastRate = 10
+    let broadcastRate = 10;
 
     if (this.frame % (fps / broadcastRate) === 0) {
       this.broadcastSnapshot(snapshot);
+      // if (Object.keys(this.chips).length > 0) console.log(`Broadcasting ${Object.keys(this.chips).length} chips`)
     }
 
     this.nextTimestep += TIMESTEP;
@@ -574,10 +580,10 @@ export default class ServerEngine {
   broadcastSnapshot({ chips, pegs, score, winner, targetScore }) {
     // let encodedSnapshot = Serializer.encode({ chips, pegs, score, winner, targetScore })
     const start = this.now();
+    // console.log("Broadcasting ", this.frame, ' frame');
     this.activeUsers.forEach(user => {
       user.socket.emit(SNAPSHOT, { frame: this.frame, chips, pegs, score, winner, targetScore });
     })
-    console.log(`Broadcast step took : ${this.now() - start}`)
   }
 
   _createWalls() {

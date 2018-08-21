@@ -123,9 +123,10 @@ export default class ClientEngine {
 
     this.socket.on(SNAPSHOT, ({ frame, chips, pegs, score, winner, targetScore }) => {
       // let { chips, pegs, score, winner, targetScore } = Serializer.decode(encodedSnapshot);
-      let estimatedServerFrame = frame // + Math.ceil(this.latency / TIMESTEP);
+      const estimatedServerFrame = frame + Math.round(this.latency / TIMESTEP);
 
-      this.nextWholeFrame = estimatedServerFrame
+      // Substracting one to account for reenactment
+      this.nextWholeFrame = estimatedServerFrame - 1
 
       // if ((estimatedServerFrame - this.frame) > 3) {
         this.awaitingFrame = true;
@@ -152,6 +153,7 @@ export default class ClientEngine {
     let startTime = performance.now();
 
     const currentSnapshot = this.latestSnapshot;
+    console.log(currentSnapshot)
     delete this.latestSnapshot;
 
     currentSnapshot.chips.forEach(chipInfo => {
@@ -188,7 +190,7 @@ export default class ClientEngine {
 
     this.engine.reenactment = true;
     // Catch up to current frame from snapshot
-    while (frame <= this.frame) {
+    while (frame < this.frame) {
 
       frame++;
       Engine.update(this.engine, TIMESTEP);
@@ -214,8 +216,7 @@ export default class ClientEngine {
     }
 
     // Set frame to estimatedServerFrame that we got from the latest snapshot
-    if (typeof this.nextWholeFrame !== 'undefined' && this.awaitingFrame) {
-      console.log("Adjusted")
+    if (typeof this.nextWholeFrame !== 'undefined') {
       this.frame = this.nextWholeFrame;
       this.nextWholeFrame = undefined;
       this.awaitingFrame = false;
@@ -226,7 +227,9 @@ export default class ClientEngine {
 
     while (this.delta >= TIMESTEP) {
       // Step engine forward or process snapshot
-      !!this.latestSnapshot ? this.frameSync() : this.update();
+      this.latestSnapshot && this.frameSync();
+      this.update();
+
       this.frame++
       this.delta -= TIMESTEP;
     }
@@ -274,9 +277,9 @@ export default class ClientEngine {
     const ownerId = this.playerId;
     const id = this.lastChipId++ % 255;
 
-    let frame = this.frame;
+    const frame = this.frame;
 
-    let chip = new Chip({ id, ownerId, x, y });
+    const chip = new Chip({ id, ownerId, x, y });
     chip.recentlyDropped = true;
     this.renderer.addToStage(chip);
     chip.addToEngine(this.engine.world);

@@ -18,6 +18,13 @@
     }
   }
 
+  toString() {
+    let buffer = '';
+    this.traverse(input => buffer += String(input.frame) + ' ')
+
+    return buffer;
+  }
+
   isEmpty() {
     return !this.first || this.length === 0;
   }

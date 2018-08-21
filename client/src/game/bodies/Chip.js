@@ -34,6 +34,7 @@ export default class Chip extends GameObject {
         let deltaY = (this.body.position.y - this.y) * bendingFactor;
         let deltaAngle = (this.body.angle - this.angle) * bendingFactor;
 
+        // Bending Count?
         this.x += deltaX / this.bendingCount
         this.y += deltaY / this.bendingCount
         this.angle += deltaAngle / this.bendingCount
