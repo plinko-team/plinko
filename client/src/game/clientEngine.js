@@ -126,7 +126,7 @@ export default class ClientEngine {
       const estimatedServerFrame = frame + Math.ceil(this.latency / TIMESTEP);
 
       // Substracting one to account for reenactment
-      this.nextWholeFrame = estimatedServerFrame - 1
+      this.nextWholeFrame = estimatedServerFrame
 
       // if ((estimatedServerFrame - this.frame) > 3) {
         this.awaitingFrame = true;
@@ -152,7 +152,6 @@ export default class ClientEngine {
     let startTime = performance.now();
 
     const currentSnapshot = this.latestSnapshot;
-    console.log(currentSnapshot)
     delete this.latestSnapshot;
 
     currentSnapshot.chips.forEach(chipInfo => {
