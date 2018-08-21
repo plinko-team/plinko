@@ -126,7 +126,7 @@ export default class ClientEngine {
       const estimatedServerFrame = frame + Math.ceil(this.latency / TIMESTEP);
 
       // Substracting one to account for reenactment
-      this.nextWholeFrame = estimatedServerFrame
+      this.nextWholeFrame = estimatedServerFrame - 1
 
       // if ((estimatedServerFrame - this.frame) > 3) {
         this.awaitingFrame = true;
