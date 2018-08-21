@@ -48,7 +48,7 @@ export default class ServerEngine {
     this.snapshotHistory = new SnapshotHistory();
     this.io = io;
     this.engine = Engine.create();
-    this.engine.world.gravity.y = 0.2;
+    this.engine.world.gravity.y = 0.5;
     this.frame = 0;
     this.inputBuffer = new InputBuffer();
     this.inputHistory = new InputHistory();
@@ -458,7 +458,7 @@ export default class ServerEngine {
     }
 
     // For benchmarking
-    if (this.now() - start > 33) {
+    if (this.now() - start > TIMESTEP) {
       console.log("!! Entire game loop took: ", this.now() - start, " ms")
     }
   }
@@ -542,7 +542,7 @@ export default class ServerEngine {
   resetGame() {
     this.activeUsers = new UserCollection();
     this.engine = Engine.create();
-    this.engine.world.gravity.y = 0.2
+    this.engine.world.gravity.y = 0.5
     this.frame = 0;
     this.inputBuffer = new InputBuffer();
     this.inputHistory = new InputHistory();

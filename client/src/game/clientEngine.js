@@ -44,7 +44,7 @@ export default class ClientEngine {
     this.playerId = playerId;
     this.socket = socket;
     this.engine = Engine.create();
-    this.engine.world.gravity.y = 0.2;
+    this.engine.world.gravity.y = 0.5;
 
     this.renderer = new Renderer();
     this.eventEmitter = new EventEmitter();
@@ -242,7 +242,7 @@ export default class ClientEngine {
 
     this.frameID = requestAnimationFrame(this.animate.bind(this));
 
-    if (performance.now() - start > 30) {
+    if (performance.now() - start > TIMESTEP) {
       console.log("Game loop took: ", performance.now() - start)
     }
   }
