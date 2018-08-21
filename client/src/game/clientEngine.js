@@ -123,7 +123,7 @@ export default class ClientEngine {
 
     this.socket.on(SNAPSHOT, ({ frame, chips, pegs, score, winner, targetScore }) => {
       // let { chips, pegs, score, winner, targetScore } = Serializer.decode(encodedSnapshot);
-      const estimatedServerFrame = frame + Math.round(this.latency / TIMESTEP);
+      const estimatedServerFrame = frame + Math.ceil(this.latency / TIMESTEP);
 
       // Substracting one to account for reenactment
       this.nextWholeFrame = estimatedServerFrame - 1
@@ -214,6 +214,13 @@ export default class ClientEngine {
       return;
     }
 
+    // Set frame to estimatedServerFrame that we got from the latest snapshot
+    if (typeof this.nextWholeFrame !== 'undefined') {
+      this.frame = this.nextWholeFrame;
+      this.nextWholeFrame = undefined;
+      this.awaitingFrame = false;
+    }
+
     this.delta += timestamp - this.lastFrameTime;
     this.lastFrameTime = timestamp;
 
@@ -224,13 +231,6 @@ export default class ClientEngine {
 
       this.frame++
       this.delta -= TIMESTEP;
-    }
-
-    // Set frame to estimatedServerFrame that we got from the latest snapshot
-    if (typeof this.nextWholeFrame !== 'undefined') {
-      this.frame = this.nextWholeFrame;
-      this.nextWholeFrame = undefined;
-      this.awaitingFrame = false;
     }
 
     // this.renderer.spriteUpdate(this.chips);
