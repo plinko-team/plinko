@@ -512,6 +512,7 @@ export default class ServerEngine {
 
   endRound() {
     this.activeUsers.broadcastAll('round over');
+    console.log("Final frame: ", this.frame);
 
     setTimeout(() => {
       this.stopGame();
