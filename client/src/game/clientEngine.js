@@ -123,10 +123,10 @@ export default class ClientEngine {
 
     this.socket.on(SNAPSHOT, ({ frame, chips, pegs, score, winner, targetScore }) => {
       // let { chips, pegs, score, winner, targetScore } = Serializer.decode(encodedSnapshot);
-      const estimatedServerFrame = frame + Math.ceil(this.latency / TIMESTEP);
+      const estimatedServerFrame = frame + Math.floor(this.latency / TIMESTEP);
 
       // Substracting one to account for reenactment
-      this.nextWholeFrame = estimatedServerFrame - 1
+      this.nextWholeFrame = estimatedServerFrame
 
       // if ((estimatedServerFrame - this.frame) > 3) {
         this.awaitingFrame = true;
@@ -188,9 +188,15 @@ export default class ClientEngine {
 
     this.engine.reenactment = true;
     // Catch up to current frame from snapshot
-    while (frame < this.frame) {
 
-      frame++;
+    let counter = 0
+
+    // while (frame < this.frame) {
+    // frame++;
+
+    while (counter < Math.ceil(this.latency / TIMESTEP)) {
+      counter++
+
       Engine.update(this.engine, TIMESTEP);
     }
 
