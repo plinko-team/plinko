@@ -1,17 +1,22 @@
 import React from 'react';
-
 import Citation from './Citation';
 import Header from '../Header';
+import Carousel from '../Carousel'
 
 const About = () => {
   return (
     <main>
       <Header />
 
+
+
       <div className="main-content">
+        <Carousel title={"Sample Carousel"}/>
+
+        <br></br>
         <p>About the project</p>
         <p>Citation will go somehere at the end of this sentence probably
-          <Citation 
+          <Citation
             creator={'Josh Nelson'}
             creationDate={"December xx, xxxx"}
             title={'A book by Josh'}
@@ -22,7 +27,7 @@ const About = () => {
         </p>
 
         <p>Another example except some citations info is missing
-          <Citation 
+          <Citation
             creator={'Josh Nelson'}
             title={'A book by Josh'}
             contributingOrganization={'Myself'}
