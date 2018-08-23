@@ -1,13 +1,17 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-
-import { WiredButton } from "wired-button";
+import { WiredButton } from 'wired-elements';
 
 export default class PlayerJoinForm extends Component {
   static propTypes = {
     userName: PropTypes.string,
     handleChange: PropTypes.func,
     handleSubmit: PropTypes.func,
+  }
+
+  buttonStyles = {
+    width: '100px',
+    height: '50px'
   }
 
   state = {
@@ -44,11 +48,10 @@ export default class PlayerJoinForm extends Component {
   }
 
   render() {
-    console.log('disabled?', this.state.isJoinDisabled)
     return (
       <div className="name-form">
         <input type="text" placeholder="Your Name" value={this.props.userName} onChange={this.updateName} onKeyUp={this.handleKeyUp} maxLength="15"/>
-        <wired-button disabled={this.state.isJoinDisabled} onClick={this.joinGame}>Join</wired-button>
+        <wired-button style={this.buttonStyles} disabled={this.state.isJoinDisabled} onClick={this.joinGame} elevation="3">Join</wired-button>
     </div>
     )
   }

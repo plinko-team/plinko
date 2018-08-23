@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { NavLink } from 'react-router-dom';
+import { WiredCard } from 'wired-elements';
 
 import Header from './Header';
 import PlayerJoinForm from './PlayerJoinForm';
@@ -22,6 +23,10 @@ export default class Lobby extends Component {
 
   state = {
     userName: '',
+  }
+
+  cardStyles = {
+    backgroundColor: '#e6ebe0',
   }
 
   isActiveUser = () => {
@@ -120,16 +125,16 @@ export default class Lobby extends Component {
 
           <div className="rules">
             <div className="rule">
-              <h2>Objective</h2>
+              <wired-card style={this.cardStyles}><h2>Objective</h2></wired-card>
               <p>Hit the pegs as fast as you can to change their color.</p>
             </div>
             <div className="rule">
-              <h2>Playing against friends?</h2>
+              <wired-card style={this.cardStyles}><h2>Playing with friends?</h2></wired-card>
               <p>Reach the target peg percentage before anyone else.</p>
               <p>Watch out! Other players can steal your pegs.</p>
             </div>
             <div className="rule">
-              <h2>Playing alone? </h2>
+              <wired-card style={this.cardStyles}><h2>Playing alone? </h2></wired-card>
               <p>Reach the target peg percentage as fast as you can.</p>
               <p>Can you hit 90% of pegs? How about 95%?</p>
             </div>

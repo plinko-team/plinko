@@ -7,7 +7,7 @@
 
 body {
   background: #c6c6c6;
-  color: white;
+  color: #fff;
   box-sizing: border-box;
   font-family: 'Lato', sans-serif;
 }
@@ -15,7 +15,7 @@ body {
 .nav-container,
 .header-container {
   width: 100%;
-  background: #96e6ff;
+  background: #7dd3ef;
 }
 
 .nav-container {
@@ -157,6 +157,10 @@ canvas {
   margin-right: 2rem;
 }
 
+input[type="text"]:focus {
+  border-color: #555;
+}
+
 .lobby button.start {
   margin-top: 3rem;
 }
@@ -167,19 +171,16 @@ canvas {
 
 .rules {
   width: 70%;
-  margin: 2rem auto;
+  margin: 4rem auto 2rem auto;
   text-align: center;
 }
 
 .rule h2 {
-  /* font-family: 'Lato'; */
-  /* font-weight: 700; */
+  font-family: 'Lato';
+  font-weight: 700;
   display: inline-block;
+  margin: 0 .5rem;
   font-size: 1.6rem;
-  background-color: #f7e8ff;
-  padding: .5rem 1rem;
-  border-radius: 2rem;
-  margin-bottom: 0;
   letter-spacing: normal;
 }
 
@@ -190,10 +191,6 @@ canvas {
 
 .rule {
   margin-bottom: 1.5rem;
-}
-
-.rule:first-child h2 {
-  background-color: #e3a3ff;
 }
 
 .reminder {
@@ -401,4 +398,9 @@ canvas {
   display: block;
   margin: 0 auto;
   border: 4px solid #9BC1BC;
+}
+
+wired-button {
+  background-color: #ffea8c;
+  outline: none;
 }
