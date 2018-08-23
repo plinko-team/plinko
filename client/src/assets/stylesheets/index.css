@@ -1,7 +1,7 @@
 @import './reset.css';
 @import './normalize.css';
 @import './skeleton.css';
-@import url('https://fonts.googleapis.com/css?family=Fredoka+One|Lato:400,700');
+@import url('https://fonts.googleapis.com/css?family=Fredoka+One|Lato:400,700,900');
 @import "~slick-carousel/slick/slick.css";
 @import "~slick-carousel/slick/slick-theme.css";
 
@@ -65,6 +65,10 @@ h3 {
 
 h2, h3, h4 {
   margin-bottom: .5rem;
+}
+
+.bold {
+  font-weight: 900;
 }
 
 main {

@@ -99,7 +99,7 @@ export default class Lobby extends Component {
       return (
         <li key={"player-" + id} className={active ? "player-" + user.playerId : ""}>
           <span className="dot"></span>
-          {user.name}
+          <span className={id === this.props.userId ? 'bold' : ''}>{user.name}</span>
         </li>
       )
     })
