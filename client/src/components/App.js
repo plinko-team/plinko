@@ -16,6 +16,29 @@ class App extends Component {
     socket: {},
   }
 
+  componentDidMount() {
+    // Wired elements do not automatically redraw. To achieve responsiveness
+    // we must listen for the resize event on window and call the element's
+    // requestRender method
+    window.addEventListener('resize', (e) => {
+      let wiredCards = document.getElementsByTagName('wired-card');
+      let wiredButtons = document.getElementsByTagName('wired-button');
+      let i;
+
+      for (i = 0; i < wiredCards.length; i++) {
+        wiredCards[i].requestRender();
+      }
+
+      for (i = 0; i < wiredButtons.length; i++) {
+        wiredButtons[i].requestRender();
+      }
+    })
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize');
+  }
+
   setUserId = (userId) => {
     this.setState({ userId });
   }

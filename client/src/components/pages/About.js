@@ -1,7 +1,9 @@
 import React from 'react';
+
 import Citation from './Citation';
+import Aside from './Aside';
 import Header from '../Header';
-import Carousel from '../Carousel'
+import Carousel from '../Carousel';
 
 const About = () => {
   return (
@@ -19,17 +21,20 @@ const About = () => {
         <p>Paragraph for reference</p>
         <h4>Sample H4 (e.g. 4.2.1 Network Jitter)</h4>
         <p>Paragraph for reference</p>
-        <h5>Sample H5 (e.g. 4.2.1.1 Solution: Snapshot Buffer)</h5>
+        <h5>Sample H5 (e.g. Solution: Snapshot Buffer)</h5>
         <p>Paragraph for reference</p>
-        <h6>Sample H6 (e.g. 4.2.1.1.1 Implementation)</h6>
+        <h6>Sample H6 (e.g. Implementation)</h6>
         <p>Paragraph for reference</p>
 
         <hr></hr>
 
+        <Aside>
+          <p>This is a sample Aside component, which may hold any child elements. </p>
+        </Aside>
+
         <Carousel title={"Sample Carousel"}/>
 
         <br></br>
-        <p>About the project</p>
         <p>Citation will go somehere at the end of this sentence probably
           <Citation
             creator={'Josh Nelson'}
