@@ -275,8 +275,10 @@ input[type="text"]:focus {
   font-weight: bold;
 }
 
-.button-container {
+.button-container,
+.card-container {
   margin: 0 auto;
+  text-align: center;
 }
 
 /* player colors -- should really come from elsewhere */

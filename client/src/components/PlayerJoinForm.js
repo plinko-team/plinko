@@ -10,6 +10,7 @@ export default class PlayerJoinForm extends Component {
   }
 
   buttonStyles = {
+    backgroundColor: '#ffea8c',
     width: '100px',
     height: '50px'
   }

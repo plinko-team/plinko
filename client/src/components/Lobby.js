@@ -25,8 +25,14 @@ export default class Lobby extends Component {
     userName: '',
   }
 
-  cardStyles = {
+  ruleCardStyles = {
     backgroundColor: '#e6ebe0',
+  }
+
+  alertCardStyles =  {
+    backgroundColor: '#e6ebe0',
+    width: '150px',
+
   }
 
   isActiveUser = () => {
@@ -56,7 +62,7 @@ export default class Lobby extends Component {
       return (
         <div className="active-players row">
           <div className="players-container four columns">
-            <h2>{"You're up next"}</h2>
+            <h2>Active Players</h2>
             <ul>
               {this.userItems(this.props.activeUsers, true)}
             </ul>
@@ -75,7 +81,7 @@ export default class Lobby extends Component {
       return (
         <div className="waiting-players">
           <div className="players-container">
-            <h2>Your turn is coming up</h2>
+            <h2>Waiting Players</h2>
             <ul>
               {this.userItems(this.props.waitingUsers)}
             </ul>
@@ -102,9 +108,11 @@ export default class Lobby extends Component {
   gameStartElement = () => {
     if (this.props.gameInProgress) {
       return (
-        <p className="alert five columns offset-by-two">
-          A game is currently in progress. When it's over, you and the other active players can start a new game.
-        </p>
+        <div className="card-container three columns offset-by-three">
+          <wired-card style={this.alertCardStyles}>
+            A game is currently in progress. When it's over, the next waiting players can join.
+          </wired-card>
+        </div>
       )
     } else if (this.isActiveUser()) {
       return (
@@ -125,16 +133,16 @@ export default class Lobby extends Component {
 
           <div className="rules">
             <div className="rule">
-              <wired-card style={this.cardStyles}><h2>Objective</h2></wired-card>
+              <wired-card style={this.ruleCardStyles}><h2>Objective</h2></wired-card>
               <p>Hit the pegs as fast as you can to change their color.</p>
             </div>
             <div className="rule">
-              <wired-card style={this.cardStyles}><h2>Playing with friends?</h2></wired-card>
+              <wired-card style={this.ruleCardStyles}><h2>Playing with friends?</h2></wired-card>
               <p>Reach the target peg percentage before anyone else.</p>
               <p>Watch out! Other players can steal your pegs.</p>
             </div>
             <div className="rule">
-              <wired-card style={this.cardStyles}><h2>Playing alone? </h2></wired-card>
+              <wired-card style={this.ruleCardStyles}><h2>Playing alone? </h2></wired-card>
               <p>Reach the target peg percentage as fast as you can.</p>
               <p>Can you hit 90% of pegs? How about 95%?</p>
             </div>
