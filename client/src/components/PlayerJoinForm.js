@@ -9,12 +9,6 @@ export default class PlayerJoinForm extends Component {
     handleSubmit: PropTypes.func,
   }
 
-  buttonStyles = {
-    backgroundColor: '#ffea8c',
-    width: '100px',
-    height: '50px'
-  }
-
   state = {
     isJoinDisabled: true,
   }
@@ -52,7 +46,7 @@ export default class PlayerJoinForm extends Component {
     return (
       <div className="name-form">
         <input type="text" placeholder="Your Name" value={this.props.userName} onChange={this.updateName} onKeyUp={this.handleKeyUp} maxLength="15"/>
-        <wired-button style={this.buttonStyles} disabled={this.state.isJoinDisabled} onClick={this.joinGame} elevation="3">Join</wired-button>
+        <wired-button disabled={this.state.isJoinDisabled} onClick={this.joinGame} elevation="3">Join</wired-button>
     </div>
     )
   }

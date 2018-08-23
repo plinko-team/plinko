@@ -25,16 +25,6 @@ export default class Lobby extends Component {
     userName: '',
   }
 
-  ruleCardStyles = {
-    backgroundColor: '#e6ebe0',
-  }
-
-  alertCardStyles =  {
-    backgroundColor: '#e6ebe0',
-    width: '150px',
-
-  }
-
   isActiveUser = () => {
     return Object.keys(this.props.activeUsers).includes(this.props.userId);
   }
@@ -109,8 +99,8 @@ export default class Lobby extends Component {
     if (this.props.gameInProgress) {
       return (
         <div className="card-container three columns offset-by-three">
-          <wired-card style={this.alertCardStyles}>
-            A game is currently in progress. When it's over, the next waiting players can join.
+          <wired-card>
+            <p>A game is currently in progress. When it's over, the next waiting players can join.</p>
           </wired-card>
         </div>
       )
@@ -133,16 +123,16 @@ export default class Lobby extends Component {
 
           <div className="rules">
             <div className="rule">
-              <wired-card style={this.ruleCardStyles}><h2>Objective</h2></wired-card>
+              <wired-card><h2>Objective</h2></wired-card>
               <p>Hit the pegs as fast as you can to change their color.</p>
             </div>
             <div className="rule">
-              <wired-card style={this.ruleCardStyles}><h2>Playing with friends?</h2></wired-card>
+              <wired-card><h2>Playing with friends?</h2></wired-card>
               <p>Reach the target peg percentage before anyone else.</p>
               <p>Watch out! Other players can steal your pegs.</p>
             </div>
             <div className="rule">
-              <wired-card style={this.ruleCardStyles}><h2>Playing alone? </h2></wired-card>
+              <wired-card><h2>Playing alone? </h2></wired-card>
               <p>Reach the target peg percentage as fast as you can.</p>
               <p>Can you hit 90% of pegs? How about 95%?</p>
             </div>

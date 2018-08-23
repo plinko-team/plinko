@@ -114,7 +114,6 @@ main {
   border-color: #c6c6c6;
 }
 
-
 wired-button {
   background-color: #ffea8c;
   outline: none;
@@ -139,6 +138,35 @@ nav wired-button:hover {
 nav a {
   width: 100%;
   display: inline-block;
+}
+
+.name-form wired-button {
+  width: 100px;
+  height: 50px;
+}
+
+.active-players wired-button {
+  width: 150px;
+  height: 50px;
+}
+
+wired-card {
+  background-color: inherit;
+}
+
+.lobby wired-card {
+  background-color: #e6ebe0;
+}
+
+.active-players wired-card {
+  width: 170px;
+  font-size: 1.5rem;
+  margin-bottom: 3rem;
+  padding: .5rem;
+}
+
+.active-players wired-card p {
+  margin: 1rem;
 }
 
 .banner {
@@ -249,7 +277,7 @@ input[type="text"]:focus {
   margin-top: 5rem;
 }
 
-.waiting-players {
+.waiting-players ul {
   opacity: .7;
 }
 
