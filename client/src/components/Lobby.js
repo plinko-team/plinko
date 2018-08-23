@@ -22,7 +22,6 @@ export default class Lobby extends Component {
 
   state = {
     userName: '',
-    isJoinDisabled: true,
   }
 
   isActiveUser = () => {
@@ -38,11 +37,8 @@ export default class Lobby extends Component {
   }
 
   handleNameChange = (input) => {
-    const isJoinDisabled = input.trim() !== '' ? false : true;
-
     this.setState({
       userName: input,
-      isJoinDisabled
     });
   }
 
@@ -120,7 +116,7 @@ export default class Lobby extends Component {
     if (this.isNameFormOpen()) {
       return (
         <div className="player-info">
-          {<PlayerJoinForm userName={this.state.userName} isJoinDisabled={this.state.isJoinDisabled} handleSubmit={this.handleUserJoin} handleChange={this.handleNameChange} />}
+          {<PlayerJoinForm userName={this.state.userName} handleSubmit={this.handleUserJoin} handleChange={this.handleNameChange} />}
 
           <div className="rules">
             <div className="rule">
