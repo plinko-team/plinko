@@ -22,12 +22,12 @@ export default class PlayerJoinForm extends Component {
   componentDidUpdate(prevProps) {
     if (this.props.userName !== prevProps.userName) {
       this.setState({isJoinDisabled: this.props.userName.trim() === ''}, () => {
-        // wired-button does not allow for removal of disabled class through
+        // Wired-button does not allow for removal of disabled class through
         // React and className
         if (!this.state.isJoinDisabled) {
-          document.querySelector('wired-button').classList.remove('disabled');
+          document.querySelector('.name-form wired-button').classList.remove('disabled');
         } else {
-          document.querySelector('wired-button').classList.add('disabled');
+          document.querySelector('.name-form wired-button').classList.add('disabled');
         }
       });
     }
