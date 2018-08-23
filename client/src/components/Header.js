@@ -6,6 +6,7 @@ import ScoreList from './ScoreList';
 
 export default class Header extends Component {
   static propTypes = {
+    userId: PropTypes.string,
     players: PropTypes.object,
     targetScore: PropTypes.number,
     winnerId: PropTypes.string,

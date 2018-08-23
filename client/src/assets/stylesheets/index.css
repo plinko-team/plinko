@@ -276,7 +276,7 @@ input[type="text"]:focus {
 }
 
 .winner {
-  font-weight: bold;
+  color: #7dd3ef;
 }
 
 .button-container,

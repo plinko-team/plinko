@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import ScoreBar from './ScoreBar';
 
-const ScoreList = ({ players, targetScore, winnerId, columnCount }) => {
+const ScoreList = ({ userId, players, targetScore, winnerId, columnCount }) => {
   const TOTAL_PEGS = 63;
 
   let userIds = Object.keys(players);
@@ -17,6 +17,7 @@ const ScoreList = ({ players, targetScore, winnerId, columnCount }) => {
         playerName={players[id].name}
         playerId={players[id].playerId}
         score={players[id].score}
+        isThisPlayer={id === userId}
         isWinner={players[id].playerId === winnerId}
         targetPercentage={targetPercentage}
       />

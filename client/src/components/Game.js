@@ -95,6 +95,7 @@ render() {
   return (
     <main>
       <Header
+        userId={this.props.userId}
         players={this.state.players}
         targetScore={this.state.targetScore}
         winnerId={winningPlayerId}

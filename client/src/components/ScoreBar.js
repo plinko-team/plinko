@@ -1,13 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const ScoreBar = ({ playerName, playerId, score, isWinner, targetPercentage }) => {
+const ScoreBar = ({ playerName, playerId, score, isThisPlayer, isWinner, targetPercentage }) => {
   const TOTAL_PEGS = 63;
   let widthPercentage = (Math.floor(score / TOTAL_PEGS * 100)) + '%';
   let leftPercentage = -(100 - targetPercentage);
 
   return (
-    <li className={`player-${playerId}` + (isWinner ? " winner" : "")}>
+    <li className={`player-${playerId}` + (isThisPlayer ? " bold" : "") + (isWinner ? " winner" : "")}>
       <span className="score-name">{playerName}</span>
       <span className="score-bar-container">
         <span className="score-bar" style={{width: widthPercentage}}></span>
