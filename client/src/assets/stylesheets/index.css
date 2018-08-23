@@ -1,7 +1,7 @@
 @import './reset.css';
 @import './normalize.css';
 @import './skeleton.css';
-@import url('https://fonts.googleapis.com/css?family=Fredoka+One|Lato:400,700,900');
+@import url('https://fonts.googleapis.com/css?family=Cabin+Sketch:400,700|Fredoka+One|Lato:400,400i,700,900');
 @import "~slick-carousel/slick/slick.css";
 @import "~slick-carousel/slick/slick-theme.css";
 
@@ -34,37 +34,54 @@ header {
   /* position: relative; */
 }
 
-h1, h2, h3, h4 {
+header h1 {
   font-family: 'Fredoka One', sans-serif;
   letter-spacing: .01rem;
 }
 
-h1 {
-  font-size: 3.5rem;
-}
-
-h1 a,
-h1 a:hover {
+header h1 a,
+header h1 a:hover {
   text-decoration: none;
   color: inherit;
+  cursor: pointer;
 }
 
 header h1 {
   font-size: 6rem;
   letter-spacing: .1rem;
-  margin-top: 2rem;
+  margin: 2rem 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Cabin Sketch', sans-serif;
+  letter-spacing: .01rem;
+  margin-bottom: .5rem;
+}
+
+h1 {
+  font-size: 4rem;
+  font-weight: bold;
 }
 
 h2 {
-  font-size: 2.6rem;
+  font-size: 3rem;
 }
 
 h3 {
+  font-size: 2.5rem;
+}
+
+h4 {
   font-size: 2rem;
 }
 
-h2, h3, h4 {
-  margin-bottom: .5rem;
+h5 {
+  font-size: 1.5rem;
+}
+
+h6 {
+  font-size: 1.5rem;
+  color: #a3a3a3;
 }
 
 .bold {

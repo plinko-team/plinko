@@ -8,7 +8,7 @@ const Team = () => {
       <Header />
 
         <div className="main-content">
-          <p>About the team</p>
+          <h1>The Team</h1>
         </div>
 
     </main>
