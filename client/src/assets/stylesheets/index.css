@@ -410,3 +410,23 @@ wired-button {
   background-color: #ffea8c;
   outline: none;
 }
+
+nav wired-button {
+  background-color: transparent;
+  color: #fff;
+  text-transform: uppercase;
+  font-size: 1.1rem;
+  letter-spacing: .1rem;
+  padding: .4rem;
+  width: 80px;
+}
+
+nav wired-button:hover {
+  background-color: #fff;
+  color: #555;
+}
+
+nav a {
+  width: 100%;
+  display: inline-block;
+}
