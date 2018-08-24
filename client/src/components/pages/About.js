@@ -1,17 +1,26 @@
 import React from 'react';
 import Citation from './Citation';
 import Header from '../Header';
-import Carousel from '../Carousel'
+
+import { Carousel } from 'react-responsive-carousel';
+import styles from 'react-responsive-carousel/lib/styles/carousel.min.css';
 
 const About = () => {
   return (
     <main>
       <Header />
 
-
-
       <div className="main-content">
-        <Carousel title={"Sample Carousel"}/>
+        <Carousel showArrows={true}>
+            <div>
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/54/Jard%C3%ADn_de_Fin%2C_Kashan%2C_Ir%C3%A1n%2C_2016-09-19%2C_DD_17.jpg/300px-Jard%C3%ADn_de_Fin%2C_Kashan%2C_Ir%C3%A1n%2C_2016-09-19%2C_DD_17.jpg" />
+                <p className="legend">Legend 1</p>
+            </div>
+            <div>
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/54/Jard%C3%ADn_de_Fin%2C_Kashan%2C_Ir%C3%A1n%2C_2016-09-19%2C_DD_17.jpg/300px-Jard%C3%ADn_de_Fin%2C_Kashan%2C_Ir%C3%A1n%2C_2016-09-19%2C_DD_17.jpg" />
+                <p className="legend">Legend 2</p>
+            </div>
+        </Carousel>
 
         <br></br>
         <p>About the project</p>
