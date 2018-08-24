@@ -6,6 +6,7 @@ import Header from './Header';
 import PlayerJoinForm from './PlayerJoinForm';
 import StartGameButton from './StartGameButton';
 import StartBanner from './StartBanner';
+import RoughCircle from './RoughCircle';
 
 export default class Lobby extends Component {
   static propTypes = {
@@ -82,12 +83,25 @@ export default class Lobby extends Component {
     }
   }
 
+//   export const Circle = ({ width, height, points, ...data }) => {
+// 	return (
+// 		<ReactRough
+// 			width={width}
+// 			height={height}
+// 			render={rc => {
+// 				rc.circle(...points, data)
+// 			}}
+// 		/>
+// 	)
+// }
+
   userItems = (usersObj, active=false) => {
     return Object.keys(usersObj).map(id => {
       let user = usersObj[id];
       return (
         <li key={"player-" + id} className={active ? "player-" + user.playerId : ""}>
           <span className="dot"></span>
+          <RoughCircle canvasId={id} playerId={user.playerId}></RoughCircle>
           <span className={id === this.props.userId ? 'bold' : ''}>{user.name}</span>
         </li>
       )
