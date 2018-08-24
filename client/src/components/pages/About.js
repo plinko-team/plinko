@@ -11,14 +11,15 @@ const About = () => {
       <Header />
 
       <div className="main-content">
-        <Carousel showArrows={true}>
+
+        <Carousel swipeable={true} emulateTouch={true} transitionTime={0} showThumbs={false} infiniteLoop={true} showStatus={false}>
             <div>
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/54/Jard%C3%ADn_de_Fin%2C_Kashan%2C_Ir%C3%A1n%2C_2016-09-19%2C_DD_17.jpg/300px-Jard%C3%ADn_de_Fin%2C_Kashan%2C_Ir%C3%A1n%2C_2016-09-19%2C_DD_17.jpg" />
+                <img src="https://i.imgur.com/is6kNv7.png" />
                 <p className="legend">Legend 1</p>
             </div>
             <div>
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/54/Jard%C3%ADn_de_Fin%2C_Kashan%2C_Ir%C3%A1n%2C_2016-09-19%2C_DD_17.jpg/300px-Jard%C3%ADn_de_Fin%2C_Kashan%2C_Ir%C3%A1n%2C_2016-09-19%2C_DD_17.jpg" />
-                <p className="legend">Legend 2</p>
+                <img src="https://i.imgur.com/is6kNv7.png" />
+                <p className="legend">Legend 1</p>
             </div>
         </Carousel>
 
