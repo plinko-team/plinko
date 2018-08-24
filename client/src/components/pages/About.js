@@ -1,7 +1,6 @@
 import React from 'react';
 import Citation from './Citation';
 import Header from '../Header';
-import Carousel from '../Carousel'
 
 const About = () => {
   return (
@@ -11,8 +10,6 @@ const About = () => {
 
 
       <div className="main-content">
-        <Carousel title={"Sample Carousel"}/>
-
         <br></br>
         <p>About the project</p>
         <p>Citation will go somehere at the end of this sentence probably

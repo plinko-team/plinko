@@ -79,9 +79,10 @@ export default class ClientEngine {
     });
 
     this.socket.on(SNAPSHOT, (encodedSnapshot) => {
-      // let { chips, pegs, score, winner, targetScore } = Serializer.decode(encodedSnapshot);
+      let { chips, pegs, score, winner, targetScore } = Serializer.decode(encodedSnapshot);
 
-      let { chips, pegs, score, winner, targetScore } = encodedSnapshot; // not actually encoded right now
+
+      // let { chips, pegs, score, winner, targetScore } = encodedSnapshot; // not actually encoded right now
       if (this.isRunning) {
         this.snapshotBuffer.push(new Snapshot({ pegs, chips, score, winner, targetScore, timestamp: performance.now() }));
       }
