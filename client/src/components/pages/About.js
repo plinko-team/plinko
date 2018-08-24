@@ -1,8 +1,9 @@
 import React from 'react';
+import { Carousel } from 'react-responsive-carousel';
+import styles from 'react-responsive-carousel/lib/styles/carousel.min.css';
 
 import Citation from './Citation';
 import Aside from './Aside';
-import Carousel from '../Carousel';
 
 const About = () => {
   return (
@@ -33,8 +34,18 @@ const About = () => {
           <p>Style the aside itself using <code>.emphasized aside</code>, or the wired-card using <code>.emphasized wired-card</code>. Note that background colors must be set directly on the wired-card.</p>
         </Aside>
 
-        <Carousel title={"Sample Carousel"}/>
-
+      <div className="main-content">
+        <Carousel swipeable={true} emulateTouch={true} transitionTime={0} showThumbs={false} infiniteLoop={true} showStatus={false}>
+            <div>
+                <img src="https://i.imgur.com/is6kNv7.png" />
+                <p className="legend">Legend 1</p>
+            </div>
+            <div>
+                <img src="https://i.imgur.com/is6kNv7.png" />
+                <p className="legend">Legend 1</p>
+            </div>
+        </Carousel>
+    
         <br></br>
         <p>Citation will go somehere at the end of this sentence probably
           <Citation

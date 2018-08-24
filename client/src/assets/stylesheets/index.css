@@ -2,8 +2,6 @@
 @import './normalize.css';
 @import './skeleton.css';
 @import url('https://fonts.googleapis.com/css?family=Cabin+Sketch:400,700|Fredoka+One|Lato:400,400i,700,900');
-@import "~slick-carousel/slick/slick.css";
-@import "~slick-carousel/slick/slick-theme.css";
 
 body {
   background: #c6c6c6;
@@ -500,17 +498,12 @@ aside :last-child {
   border-bottom: none;
 }
 
-.carousel {
-  box-sizing: border-box;
-  width: 100%;
-  margin: 0 auto;
-  padding: 10px 40px;
+.control-arrow {
+  height: 100%;
 }
 
 .carousel img {
-  display: block;
-  margin: 0 auto;
-  border: 4px solid #9BC1BC;
+  padding-bottom: 300px;
 }
 
 /* Rough Cirles */

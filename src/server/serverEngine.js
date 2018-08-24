@@ -7,7 +7,7 @@ import Triangle from '../bodies/Triangle';
 import { VerticalWall, HorizontalWall, BucketWall } from '../bodies/Wall';
 import { DROP_BOUNDARY, TIMESTEP, TARGET_SCORE } from '../shared/constants/game';
 import { Input, InputBuffer } from './inputBuffer';
-// import Serializer from '../shared/serializer';
+import Serializer from '../shared/serializer';
 import User from './user';
 import UserCollection from './userCollection';
 import WaitingQueue from './waitingQueue';
@@ -320,6 +320,9 @@ export default class ServerEngine {
 
       let snapshot = this.generateSnapshot(this.chips, this.pegs, this.score,
                                            this.winner, this.targetScore);
+      if (this.chips.length > 5) {
+        console.log(snapshot);
+      }
 
       this.broadcastSnapshot(snapshot);
 
@@ -395,10 +398,11 @@ export default class ServerEngine {
   }
 
   broadcastSnapshot({ chips, pegs, score, winner, targetScore }) {
-    // let encodedSnapshot = Serializer.encode({ chips, pegs, score, winner, targetScore })
+    let encodedSnapshot = Serializer.encode({ chips, pegs, score, winner, targetScore })
 
     this.activeUsers.forEach(user => {
-      user.socket.emit(SNAPSHOT, { chips, pegs, score, winner, targetScore });
+      // user.socket.emit(SNAPSHOT, { chips, pegs, score, winner, targetScore });
+      user.socket.emit(SNAPSHOT, encodedSnapshot);
     })
   }
 

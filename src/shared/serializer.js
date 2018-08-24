@@ -111,7 +111,45 @@ export default class Serializer {
     return this.fromBinary(encodedTargetScore.substr(0, SCORE_BITS));
   }
 
+  static stringToBuffer(encoded) {
+    const BITS_IN_BYTE = 8;
+
+    // Plus 1 for offset marker
+    const byteLength = Math.ceil(encoded.length / 8) + 1
+    const arr = new Uint8Array(byteLength)
+    const offset = 8 - encoded.length % 8
+    arr[0] = offset % 8
+
+    while (encoded.length % 8 !== 0) {
+      encoded = '0' + encoded
+    }
+
+    let index = 1;
+
+    while (index < byteLength) {
+      const chunk = parseInt(encoded.substr((index - 1) * BITS_IN_BYTE, BITS_IN_BYTE), 2);
+      arr[index] = chunk
+      index++
+    }
+
+    return new Buffer(arr)
+  }
+
+  static bufferToString(buffer) {
+    const arr = new Uint8Array(buffer)
+    let str = '';
+    const offset = arr[0];
+
+    arr.forEach(chunk => {
+      let output = ('00000000' + chunk.toString(2))
+      str += output.slice(-8, output.length)
+    })
+
+    return str.slice(8 + offset)
+  }
+
   static encode({ chips, pegs, score, winner, targetScore }) {
+    // let start = Date.now();
     let encoded = '';
 
     // Prepend the number of chips that need to be decoded
@@ -134,10 +172,15 @@ export default class Serializer {
     encoded += this.encodeTargetScore(targetScore);
     encoded += this.encodeScore(score)
 
-    return encoded
+    // console.log("Encoding took: ", Date.now() - start)
+    // return encoded
+    return this.stringToBuffer(encoded)
   }
 
-  static decode(encodedSnapshot) {
+  static decode(buffer) {
+    const encodedSnapshot = this.bufferToString(buffer)
+    // const encodedSnapshot = buffer
+
     if (!encodedSnapshot) { throw new Error('Must supply encoded snapshot')}
     const chips = [];
     const pegs = [];
@@ -178,64 +221,66 @@ export default class Serializer {
   }
 }
 
-// Leaving this code here just for testing
+// For testing
+
+function rng(n) {
+  return Math.floor(Math.random() * n)
+}
+
+function generateChip(id) {
+  return {
+    id: id,
+    ownerId: rng(4),
+    x: rng(600),
+    y: rng(800),
+    angle: Math.random()
+  }
+}
+
+function generatePeg(id) {
+  let rand = rng(5);
+  let ownerId = rand === 0 ? null : rand - 1;
+  return { id, ownerId };
+}
+
+function generateSnapshot(numChips=10, numPegs=10) {
+  let chips = [];
+  let pegs = [];
+
+  for (let i = 0; i < numChips; i++) {
+    chips.push(generateChip(i))
+  }
+
+  for (let i = 0; i < numPegs; i++) {
+    pegs.push(generatePeg(i))
+  }
+
+  let score = {
+    0: 33,
+    1: 12,
+    2: 0,
+    3: 10,
+  }
+
+  let targetScore = Math.floor(Math.random() * 60);
+  let winner = Math.round(Math.random());
+
+  return { chips, pegs, score, winner, targetScore }
+}
+
+// let numChips = 0;
+// let passed = true
+// while (passed) {
+//   let snapshot = generateSnapshot(numChips, 63);
+//   let enc = Serializer.encode(snapshot);
+//   let dec = Serializer.decode(enc);
 //
-// function rng(n) {
-//   return Math.floor(Math.random() * n)
+//   if (snapshot.chips.length !== dec.chips.length) { console.log(snapshot.chips.length, dec.chips.length) }
+//   numChips++
 // }
+
 //
-// function generateChip() {
-//   return {
-//     id: rng(255),
-//     ownerId: rng(4),
-//     x: rng(600),
-//     y: rng(800),
-//     angle: Math.random()
-//   }
-// }
 //
-// function generatePeg(id) {
-//   let rand = rng(5);
-//   let ownerId = rand === 0 ? null : rand - 1;
-//   return { id, ownerId };
-// }
-//
-// function generateSnapshot(numChips=10, numPegs=10) {
-//   let chips = [];
-//   let pegs = [];
-//
-//   for (let i = 0; i < numChips; i++) {
-//     chips.push(generateChip())
-//   }
-//
-//   for (let i = 0; i < numPegs; i++) {
-//     pegs.push(generatePeg(i))
-//   }
-//
-//   let score = {
-//     0: 33,
-//     1: 12,
-//     2: 0,
-//     3: 10,
-//   }
-//
-//   let targetScore = 50;
-//   let winner = 0;
-//
-//   return { chips, pegs, score, winner, targetScore }
-// }
-//
-// let snapshot = generateSnapshot(5, 63)
-//
-// let peg = snapshot.pegs[2]
-//
-// let encoded = Serializer.encode(snapshot)
-// let decodedPeg = Serializer.decode(encoded).pegs[2]
-//
-// console.log(peg.ownerId === decodedPeg.ownerId)
-// console.log(peg.id === decodedPeg.id)
-//
-// let chip = { id: 0, ownerId: 2, x: 403, y: 31.27777777777778, angle: 0 }
-// console.log(chip)
-// let encoded = Serializer.encodeChip(chip)
-// console.log(Serializer.decodeChip(encoded))
+// let snapshot = generateSnapshot(4, 63);
+// let enc = Serializer.encode(snapshot);
+// let dec = Serializer.decode(enc)
