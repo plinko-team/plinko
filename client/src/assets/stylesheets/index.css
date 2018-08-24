@@ -300,9 +300,9 @@ input[type="text"]:focus {
   color: #555;
   font-size: 1.2rem;
   letter-spacing: .05rem;
-  padding: .5rem;
-  margin-top: .7rem;
-  box-sizing: border-box;
+  padding: .5rem 1.5rem .2rem 0;
+  margin-top: 1.8rem;
+  /* box-sizing: border-box; */
 }
 
 #scores ul {
@@ -320,6 +320,7 @@ input[type="text"]:focus {
   width: 29%;
   text-align: right;
   margin-right: .5rem;
+  padding-right: 3%;
   display: inline-block;
 }
 
@@ -339,10 +340,13 @@ input[type="text"]:focus {
 .score-target {
   display: inline-block;
   min-width: 1px;
+  font-family: 'Cabin Sketch', sans-serif;
+  font-weight: bold;
+  font-size: 1.5rem;
 }
 
 .target-border {
-  border-left: 1px dashed #555;
+  border-left: 2px dashed #555;
   position: relative;
   float: right;
   min-width: 1px;
@@ -368,23 +372,29 @@ input[type="text"]:focus {
   display: inline-block;
   background-color: #555;
 }
+
+.score-bar-container wired-card {
+  /* accounts for unchangeable minimum width of wired-cards, which pushes bar too far to right */
+  margin-left: -3%;
+}
+
 .player-0 .dot,
-.player-0 .score-bar,
+.player-0 wired-card,
 .player-0.banner {
   background-color: #ffaaaa;
 }
 .player-1 .dot,
-.player-1 .score-bar,
+.player-1 wired-card,
 .player-1.banner  {
   background-color: #aaffb1;
 }
 .player-2 .dot,
-.player-2 .score-bar,
+.player-2 wired-card,
 .player-2.banner  {
   background-color: #ffc519;
 }
 .player-3 .dot,
-.player-3 .score-bar,
+.player-3 wired-card,
 .player-3.banner  {
   background-color: #ecb5ff;
 }

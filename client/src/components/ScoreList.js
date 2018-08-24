@@ -8,7 +8,6 @@ const ScoreList = ({ userId, players, targetScore, winnerId, columnCount }) => {
 
   let userIds = Object.keys(players);
   let targetPercentage = (Math.floor(targetScore / TOTAL_PEGS * 100));
-  // let targetPercentage = '100';
 
   const scores = userIds.map((id) => {
     return (
@@ -30,7 +29,8 @@ const ScoreList = ({ userId, players, targetScore, winnerId, columnCount }) => {
         <li>
           <span className="score-name"></span>
           <span className="score-bar-container">
-            <span className="score-target" style={{marginLeft: targetPercentage - 3 + '%'}}>
+            {/* subtract 5 to center text above the target line */}
+            <span className="score-target" style={{marginLeft: targetPercentage - 5 + '%'}}>
               {targetPercentage + "%"}
             </span>
           </span>

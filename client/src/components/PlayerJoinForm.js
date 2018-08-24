@@ -45,7 +45,7 @@ export default class PlayerJoinForm extends Component {
   render() {
     return (
       <div className="name-form">
-        <input type="text" placeholder="Your Name" value={this.props.userName} onChange={this.updateName} onKeyUp={this.handleKeyUp} maxLength="15"/>
+        <input type="text" placeholder="Your Name" value={this.props.userName} onChange={this.updateName} onKeyUp={this.handleKeyUp} maxLength="12" autoFocus/>
         <wired-button disabled={this.state.isJoinDisabled} onClick={this.joinGame} elevation="3">Join</wired-button>
     </div>
     )

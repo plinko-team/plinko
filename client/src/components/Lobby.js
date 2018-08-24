@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { NavLink } from 'react-router-dom';
-import { WiredCard } from 'wired-elements';
 
 import Header from './Header';
 import PlayerJoinForm from './PlayerJoinForm';
