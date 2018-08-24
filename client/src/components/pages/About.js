@@ -23,8 +23,7 @@ const About = () => {
                 <p className="legend">Legend 1</p>
             </div>
         </Carousel>
-
-
+    
         <br></br>
         <p>About the project</p>
         <p>Citation will go somehere at the end of this sentence probably

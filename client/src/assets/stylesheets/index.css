@@ -2,8 +2,6 @@
 @import './normalize.css';
 @import './skeleton.css';
 @import url('https://fonts.googleapis.com/css?family=Fredoka+One|Lato:400,700');
-@import "~slick-carousel/slick/slick.css";
-@import "~slick-carousel/slick/slick-theme.css";
 
 body {
   background: #c6c6c6;
@@ -401,5 +399,4 @@ canvas {
 
 .carousel img {
   padding-bottom: 300px;
-
 }
