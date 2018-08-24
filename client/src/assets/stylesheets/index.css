@@ -391,14 +391,15 @@ canvas {
   border-bottom: none;
 }
 
-.carousel {
-  box-sizing: border-box;
-  width: 100%;
-  margin: 0 auto;
-  padding: 10px 40px;
+.control-arrow {
+  height: 100%;
 }
+
+.carousel .slide {
+  background: #fff !important;
+}
+
 .carousel img {
-  display: block;
-  margin: 0 auto;
-  border: 4px solid #9BC1BC;
+  padding-bottom: 300px;
+
 }
