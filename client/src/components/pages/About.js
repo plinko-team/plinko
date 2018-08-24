@@ -29,7 +29,13 @@ const About = () => {
         <hr></hr>
 
         <Aside>
-          <p>This is a sample Aside component, which may hold any child elements. </p>
+          <p>This is a sample Aside component, which may hold any child elements.</p>
+          <p>Set its styles by selecting <code>aside</code>, or the wired-card's styles by selecting <code>.aside-container wired-card</code> in index.css.</p>
+        </Aside>
+        <p>Sample paragraph between two Asides</p>
+        <Aside emphasized={true}>
+          <p>This is an emphasized Aside component. Pass <code>true</code> to the prop <code>emphasized</code>.</p>
+          <p>Style the aside itself using <code>.emphasized aside</code>, or the wired-card using <code>.emphasized wired-card</code>. Note that background colors must be set directly on the wired-card.</p>
         </Aside>
 
         <Carousel title={"Sample Carousel"}/>

@@ -1,18 +1,24 @@
-import React, { Component } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import { WiredCard } from 'wired-elements';
 
-export default class Aside extends Component {
-  cardStyles = {
-    width: '100%',
-  }
+const Aside = ({ emphasized, children }) => {
+  const elevation = emphasized ? "4" : "2";
+  const klass = emphasized ? ' emphasized' : '';
 
-  render() {
-    return (
-      <wired-card style={this.cardStyles} elevation='3'>
+  return (
+    <div className={'aside-container' + klass}>
+      <wired-card elevation={elevation}>
         <aside>
-          {this.props.children}
+          {children}
         </aside>
       </wired-card>
-    )
-  }
+    </div>
+  )
 }
+
+Aside.propTypes = {
+  emphasized: PropTypes.bool,
+}
+
+export default Aside;

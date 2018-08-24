@@ -209,8 +209,8 @@ canvas {
 
 .lobby {
   padding-top: 0;
-  padding-left: 8rem;
-  padding-right: 8rem;
+  padding-left: 7rem;
+  padding-right: 7rem;
   font-size: 2rem;
 }
 
@@ -409,6 +409,25 @@ input[type="text"]:focus {
 
 aside {
   width: 100%;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+aside :last-child {
+  margin-bottom: 0;
+}
+
+.aside-container {
+  margin-bottom: 2rem;
+}
+
+.aside-container wired-card {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.emphasized wired-card {
+  background-color: #e6ebe0;
 }
 
 /* Citations */

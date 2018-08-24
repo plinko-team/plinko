@@ -50,7 +50,7 @@ export default class Lobby extends Component {
     if (!!Object.keys(this.props.activeUsers).length) {
       return (
         <div className="active-players row">
-          <div className="players-container four columns">
+          <div className="players-container five columns">
             <h2>Active Players</h2>
             <ul>
               {this.userItems(this.props.activeUsers, true)}
@@ -97,7 +97,7 @@ export default class Lobby extends Component {
   gameStartElement = () => {
     if (this.props.gameInProgress) {
       return (
-        <div className="card-container three columns offset-by-three">
+        <div className="card-container three columns offset-by-two">
           <wired-card>
             <p>A game is currently in progress. When it's over, the next waiting players can join.</p>
           </wired-card>
@@ -105,7 +105,7 @@ export default class Lobby extends Component {
       )
     } else if (this.isActiveUser()) {
       return (
-        <div className="button-container three columns offset-by-three">
+        <div className="button-container three columns offset-by-two">
           <StartGameButton
             handleClick={this.props.handleStartGameClick}
           />
