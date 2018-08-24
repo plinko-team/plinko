@@ -388,3 +388,15 @@ canvas {
 .citation td {
   border-bottom: none;
 }
+
+.control-arrow {
+  height: 100%;
+}
+
+.carousel .slide {
+  background: #fff !important;
+}
+
+.carousel img {
+  padding-bottom: 300px;
+}
