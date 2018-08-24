@@ -1,7 +1,6 @@
 import React from 'react';
 import Citation from './Citation';
 import Header from '../Header';
-import Carousel from '../Carousel'
 
 import { Carousel } from 'react-responsive-carousel';
 import styles from 'react-responsive-carousel/lib/styles/carousel.min.css';
