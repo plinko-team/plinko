@@ -2,6 +2,8 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { WiredButton } from 'wired-elements';
 
+import LogoCircle from './LogoCircle';
+
 const TopNav = () => {
   return (
     <div className="nav-container">
@@ -32,6 +34,15 @@ const TopNav = () => {
           </a>
         </div>
       </nav>
+
+      <header>
+        <h1 className="">
+          <NavLink to="/">
+            Plinko
+            <LogoCircle />
+          </NavLink>
+        </h1>
+      </header>
     </div>
   )
 }

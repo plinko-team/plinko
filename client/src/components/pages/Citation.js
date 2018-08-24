@@ -1,6 +1,8 @@
 import React from 'react';
 import propTypes from 'prop-types';
 
+import CitationCircle from './CitationCircle';
+
 export default class Citation extends React.Component {
   state = {
     show: false,
@@ -91,7 +93,7 @@ export default class Citation extends React.Component {
         onMouseOver={this.showDisplay}
         onMouseLeave={this.hideDisplay}
       >
-        <a>&#9733;</a>
+        <CitationCircle />
         {this.state.show ? display : ''}
       </span>
     );

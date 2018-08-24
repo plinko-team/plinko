@@ -12,8 +12,7 @@ body {
   font-family: 'Lato', sans-serif;
 }
 
-.nav-container,
-.header-container {
+.nav-container {
   width: 100%;
   background: #7dd3ef;
 }
@@ -186,20 +185,29 @@ wired-card {
 }
 
 .main-content,
-.canvas-container {
+.game-container {
   max-width: 800px;
   min-height: 50vh;
   margin: 2rem auto;
-  padding: 2.5rem;
   box-sizing: border-box;
   background-color: #fff;
   color: #555;
+}
+
+.main-content {
+  padding: 2.5rem;
+}
+
+.game-container {
+  margin-top: 0;
+  background-color: #c6c6c6;
 }
 
 .canvas-container {
   width: 800px;
   height: 600px;
   padding: 0;
+  background-color: #fff;
 }
 
 .canvas-container canvas {
@@ -296,12 +304,12 @@ input[type="text"]:focus {
 
 #scores {
   background-color: #fff;
-  border-radius: 5px;
   color: #555;
   font-size: 1.2rem;
   letter-spacing: .05rem;
   padding: .5rem 1.5rem .2rem 0;
-  margin-top: 1.8rem;
+  margin: 1rem auto;
+  width: 97.5%;
   /* box-sizing: border-box; */
 }
 
@@ -506,12 +514,24 @@ aside :last-child {
 }
 
 /* Rough Cirles */
-.rough-circle {
+.lobby .rough-circle {
   position: relative;
   margin-right: .5rem;
 }
 
 .rough-circle canvas {
   position: relative;
+}
+
+.lobby .rough-circle canvas {
+  top: .5rem;
+}
+
+.citation .rough-circle canvas {
+  top: .4rem;
+}
+
+header .rough-circle canvas {
+  left: -4rem;
   top: .5rem;
 }

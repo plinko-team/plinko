@@ -2,16 +2,11 @@ import React from 'react';
 
 import Citation from './Citation';
 import Aside from './Aside';
-import Header from '../Header';
 import Carousel from '../Carousel';
 
 const About = () => {
   return (
     <main>
-      <Header />
-
-
-
       <div className="main-content">
         <h1>Sample H1 (e.g. Case Study)</h1>
         <p>Paragraph for reference</p>
@@ -52,17 +47,16 @@ const About = () => {
           />
         </p>
 
-        <p>Another example except some citations info is missing
+        <p>Another example except some citations info is missing.
           <Citation
             creator={'Josh Nelson'}
             title={'A book by Josh'}
             contributingOrganization={'Myself'}
             url={"www.theotherjosh.com"}
           />
+          Here is another sentence that happens to come after a citation.
         </p>
-
       </div>
-
     </main>
   )
 }

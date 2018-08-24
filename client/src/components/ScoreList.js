@@ -24,7 +24,7 @@ const ScoreList = ({ userId, players, targetScore, winnerId, columnCount }) => {
   })
 
   return (
-    <div id="scores" className={`${columnCount} columns`}>
+    <div id="scores" className={``}>
       <ul>
         <li>
           <span className="score-name"></span>
