@@ -33,8 +33,7 @@ const About = () => {
           <p>This is an emphasized Aside component. Pass <code>true</code> to the prop <code>emphasized</code>.</p>
           <p>Style the aside itself using <code>.emphasized aside</code>, or the wired-card using <code>.emphasized wired-card</code>. Note that background colors must be set directly on the wired-card.</p>
         </Aside>
-
-      <div className="main-content">
+  
         <Carousel swipeable={true} emulateTouch={true} transitionTime={0} showThumbs={false} infiniteLoop={true} showStatus={false}>
             <div>
                 <img src="https://i.imgur.com/is6kNv7.png" />
