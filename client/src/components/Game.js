@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import Header from './Header';
 import WinnerBanner from './WinnerBanner';
+import ScoreList from './ScoreList';
 
 import ClientEngine from '../game/clientEngine';
 import { SNAPSHOT } from '../shared/constants/events';
@@ -94,16 +94,19 @@ render() {
 
   return (
     <main>
-      <Header
-        players={this.state.players}
-        targetScore={this.state.targetScore}
-        winnerId={winningPlayerId}
-      />
+      {this.state.gameEnded && this.generateWinnerBanner(winningUserId)}
 
-    {this.state.gameEnded && this.generateWinnerBanner(winningUserId)}
+        <div className="game-container">
+          <ScoreList {...this.props}
+            userId={this.props.userId}
+            players={this.state.players}
+            targetScore={this.state.targetScore}
+            winnerId={winningPlayerId}
+          />
 
-        <div className="canvas-container">
-          <canvas id="canvas"></canvas>
+          <div className="canvas-container">
+            <canvas id="canvas"></canvas>
+          </div>
         </div>
       </main>
     )

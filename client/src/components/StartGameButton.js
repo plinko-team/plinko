@@ -1,11 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { WiredButton } from 'wired-elements';
 
 const StartGameButton = ({ handleClick }) => {
   return (
-    <button className={"button-primary start"} onClick={handleClick}>
+    <wired-button onClick={handleClick} elevation="3">
       Start Game
-    </button>
+    </wired-button>
   );
 }
 

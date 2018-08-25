@@ -3,12 +3,11 @@ import PropTypes from 'prop-types';
 
 import ScoreBar from './ScoreBar';
 
-const ScoreList = ({ players, targetScore, winnerId, columnCount }) => {
+const ScoreList = ({ userId, players, targetScore, winnerId, columnCount }) => {
   const TOTAL_PEGS = 63;
 
   let userIds = Object.keys(players);
   let targetPercentage = (Math.floor(targetScore / TOTAL_PEGS * 100));
-  // let targetPercentage = '100';
 
   const scores = userIds.map((id) => {
     return (
@@ -17,6 +16,7 @@ const ScoreList = ({ players, targetScore, winnerId, columnCount }) => {
         playerName={players[id].name}
         playerId={players[id].playerId}
         score={players[id].score}
+        isThisPlayer={id === userId}
         isWinner={players[id].playerId === winnerId}
         targetPercentage={targetPercentage}
       />
@@ -24,12 +24,13 @@ const ScoreList = ({ players, targetScore, winnerId, columnCount }) => {
   })
 
   return (
-    <div id="scores" className={`${columnCount} columns`}>
+    <div id="scores" className={``}>
       <ul>
         <li>
           <span className="score-name"></span>
           <span className="score-bar-container">
-            <span className="score-target" style={{marginLeft: targetPercentage - 3 + '%'}}>
+            {/* subtract 5 to center text above the target line */}
+            <span className="score-target" style={{marginLeft: targetPercentage - 5 + '%'}}>
               {targetPercentage + "%"}
             </span>
           </span>

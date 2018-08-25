@@ -2,10 +2,10 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { NavLink } from 'react-router-dom';
 
-import Header from './Header';
 import PlayerJoinForm from './PlayerJoinForm';
 import StartGameButton from './StartGameButton';
 import StartBanner from './StartBanner';
+import PlayerCircle from './PlayerCircle';
 
 export default class Lobby extends Component {
   static propTypes = {
@@ -22,7 +22,6 @@ export default class Lobby extends Component {
 
   state = {
     userName: '',
-    isJoinDisabled: true,
   }
 
   isActiveUser = () => {
@@ -38,11 +37,8 @@ export default class Lobby extends Component {
   }
 
   handleNameChange = (input) => {
-    const isJoinDisabled = input.trim() !== '' ? false : true;
-
     this.setState({
       userName: input,
-      isJoinDisabled
     });
   }
 
@@ -54,8 +50,8 @@ export default class Lobby extends Component {
     if (!!Object.keys(this.props.activeUsers).length) {
       return (
         <div className="active-players row">
-          <div className="players-container four columns">
-            <h2>{"You're up next"}</h2>
+          <div className="players-container five columns">
+            <h2>Active Players</h2>
             <ul>
               {this.userItems(this.props.activeUsers, true)}
             </ul>
@@ -74,7 +70,7 @@ export default class Lobby extends Component {
       return (
         <div className="waiting-players">
           <div className="players-container">
-            <h2>Your turn is coming up</h2>
+            <h2>Waiting Players</h2>
             <ul>
               {this.userItems(this.props.waitingUsers)}
             </ul>
@@ -92,7 +88,8 @@ export default class Lobby extends Component {
       return (
         <li key={"player-" + id} className={active ? "player-" + user.playerId : ""}>
           <span className="dot"></span>
-          {user.name}
+          <PlayerCircle playerId={user.playerId} />
+          <span className={id === this.props.userId ? 'bold' : ''}>{user.name}</span>
         </li>
       )
     })
@@ -101,13 +98,15 @@ export default class Lobby extends Component {
   gameStartElement = () => {
     if (this.props.gameInProgress) {
       return (
-        <p className="alert five columns offset-by-two">
-          A game is currently in progress. When it's over, you and the other active players can start a new game.
-        </p>
+        <div className="card-container three columns offset-by-two">
+          <wired-card>
+            <p>A game is currently in progress. When it's over, the next waiting players can join.</p>
+          </wired-card>
+        </div>
       )
     } else if (this.isActiveUser()) {
       return (
-        <div className="button-container three columns offset-by-three">
+        <div className="button-container three columns offset-by-two">
           <StartGameButton
             handleClick={this.props.handleStartGameClick}
           />
@@ -120,20 +119,20 @@ export default class Lobby extends Component {
     if (this.isNameFormOpen()) {
       return (
         <div className="player-info">
-          {<PlayerJoinForm userName={this.state.userName} isJoinDisabled={this.state.isJoinDisabled} handleSubmit={this.handleUserJoin} handleChange={this.handleNameChange} />}
+          {<PlayerJoinForm userName={this.state.userName} handleSubmit={this.handleUserJoin} handleChange={this.handleNameChange} />}
 
           <div className="rules">
             <div className="rule">
-              <h2>Objective</h2>
+              <wired-card><h2>Objective</h2></wired-card>
               <p>Hit the pegs as fast as you can to change their color.</p>
             </div>
             <div className="rule">
-              <h2>Playing against friends?</h2>
+              <wired-card><h2>Playing with friends?</h2></wired-card>
               <p>Reach the target peg percentage before anyone else.</p>
               <p>Watch out! Other players can steal your pegs.</p>
             </div>
             <div className="rule">
-              <h2>Playing alone? </h2>
+              <wired-card><h2>Playing alone? </h2></wired-card>
               <p>Reach the target peg percentage as fast as you can.</p>
               <p>Can you hit 90% of pegs? How about 95%?</p>
             </div>
@@ -157,7 +156,6 @@ export default class Lobby extends Component {
   render() {
     return (
       <main>
-        <Header />
         <div className="main-content lobby">
           {this.props.startBannerVisible && <StartBanner count={this.props.startCount} />}
           {this.playerInfo()}

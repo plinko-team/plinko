@@ -1,19 +1,18 @@
 @import './reset.css';
 @import './normalize.css';
 @import './skeleton.css';
-@import url('https://fonts.googleapis.com/css?family=Fredoka+One|Lato:400,700');
+@import url('https://fonts.googleapis.com/css?family=Cabin+Sketch:400,700|Fredoka+One|Lato:400,400i,700,900');
 
 body {
   background: #c6c6c6;
-  color: white;
+  color: #fff;
   box-sizing: border-box;
   font-family: 'Lato', sans-serif;
 }
 
-.nav-container,
-.header-container {
+.nav-container {
   width: 100%;
-  background: #96e6ff;
+  background: #7dd3ef;
 }
 
 .nav-container {
@@ -28,41 +27,64 @@ header {
   box-sizing: border-box;
 }
 
-header {
-  /* position: relative; */
-}
-
-h1, h2, h3, h4 {
+header h1 {
   font-family: 'Fredoka One', sans-serif;
   letter-spacing: .01rem;
 }
 
-h1 {
-  font-size: 3.5rem;
-}
-
-h1 a,
-h1 a:hover {
+header h1 a,
+header h1 a:hover {
   text-decoration: none;
   color: inherit;
+  cursor: pointer;
 }
 
 header h1 {
   font-size: 6rem;
   letter-spacing: .1rem;
-  margin-top: 2rem;
+  margin: 2rem 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Cabin Sketch', sans-serif;
+  letter-spacing: .01rem;
+  margin-bottom: .5rem;
+}
+
+h1 {
+  font-size: 4rem;
+  font-weight: bold;
 }
 
 h2 {
-  font-size: 2.6rem;
+  font-size: 3rem;
 }
 
-h3 {
+.carousel h2,
+.lobby h2 {
+  font-family: 'Lato', sans-serif;
   font-size: 2rem;
 }
 
-h2, h3, h4 {
-  margin-bottom: .5rem;
+h3 {
+  font-size: 2.5rem;
+}
+
+h4 {
+  font-size: 2rem;
+}
+
+h5 {
+  font-size: 1.5rem;
+}
+
+h6 {
+  font-size: 1.5rem;
+  color: #a3a3a3;
+}
+
+.bold {
+  font-weight: 900;
 }
 
 main {
@@ -89,6 +111,61 @@ main {
   border-color: #c6c6c6;
 }
 
+wired-button {
+  background-color: #ffea8c;
+  outline: none;
+  width: 100%;
+}
+
+nav wired-button {
+  background-color: transparent;
+  color: #fff;
+  text-transform: uppercase;
+  font-size: 1.1rem;
+  letter-spacing: .1rem;
+  padding: .4rem;
+  width: 100%;
+}
+
+nav wired-button:hover {
+  background-color: #fff;
+  color: #555;
+}
+
+nav a {
+  width: 100%;
+  display: inline-block;
+}
+
+.name-form wired-button {
+  width: 100px;
+  height: 50px;
+}
+
+.active-players wired-button {
+  width: 150px;
+  height: 50px;
+}
+
+wired-card {
+  background-color: inherit;
+}
+
+.lobby wired-card {
+  background-color: #e6ebe0;
+}
+
+.active-players wired-card {
+  width: 170px;
+  font-size: 1.5rem;
+  margin-bottom: 3rem;
+  padding: .5rem;
+}
+
+.active-players wired-card p {
+  margin: 1rem;
+}
+
 .banner {
   position: absolute;
   margin: 0 auto;
@@ -106,31 +183,40 @@ main {
 }
 
 .main-content,
-.canvas-container {
+.game-container {
   max-width: 800px;
   min-height: 50vh;
   margin: 2rem auto;
-  padding: 2.5rem;
   box-sizing: border-box;
   background-color: #fff;
   color: #555;
+}
+
+.main-content {
+  padding: 2.5rem;
+}
+
+.game-container {
+  margin-top: 0;
+  background-color: #c6c6c6;
 }
 
 .canvas-container {
   width: 800px;
   height: 600px;
   padding: 0;
+  background-color: #fff;
 }
 
-canvas {
+.canvas-container canvas {
   width: 100%;
   height: 100%;
 }
 
 .lobby {
   padding-top: 0;
-  padding-left: 8rem;
-  padding-right: 8rem;
+  padding-left: 7rem;
+  padding-right: 7rem;
   font-size: 2rem;
 }
 
@@ -155,6 +241,10 @@ canvas {
   margin-right: 2rem;
 }
 
+input[type="text"]:focus {
+  border-color: #555;
+}
+
 .lobby button.start {
   margin-top: 3rem;
 }
@@ -165,19 +255,16 @@ canvas {
 
 .rules {
   width: 70%;
-  margin: 2rem auto;
+  margin: 4rem auto 2rem auto;
   text-align: center;
 }
 
 .rule h2 {
-  /* font-family: 'Lato'; */
-  /* font-weight: 700; */
+  font-family: 'Lato';
+  font-weight: 700;
   display: inline-block;
+  margin: 0 .5rem;
   font-size: 1.6rem;
-  background-color: #f7e8ff;
-  padding: .5rem 1rem;
-  border-radius: 2rem;
-  margin-bottom: 0;
   letter-spacing: normal;
 }
 
@@ -190,17 +277,13 @@ canvas {
   margin-bottom: 1.5rem;
 }
 
-.rule:first-child h2 {
-  background-color: #e3a3ff;
-}
-
 .reminder {
   text-align: center;
   font-size: 1.4rem;
   margin-top: 5rem;
 }
 
-.waiting-players {
+.waiting-players ul {
   opacity: .7;
 }
 
@@ -219,13 +302,13 @@ canvas {
 
 #scores {
   background-color: #fff;
-  border-radius: 5px;
   color: #555;
   font-size: 1.2rem;
   letter-spacing: .05rem;
-  padding: .5rem;
-  margin-top: .7rem;
-  box-sizing: border-box;
+  padding: .5rem 1.5rem .2rem 0;
+  margin: 1rem auto;
+  width: 97.5%;
+  /* box-sizing: border-box; */
 }
 
 #scores ul {
@@ -243,6 +326,7 @@ canvas {
   width: 29%;
   text-align: right;
   margin-right: .5rem;
+  padding-right: 3%;
   display: inline-block;
 }
 
@@ -262,10 +346,18 @@ canvas {
 .score-target {
   display: inline-block;
   min-width: 1px;
+  font-family: 'Cabin Sketch', sans-serif;
+  font-weight: bold;
+  font-size: 1.5rem;
+}
+
+.score-bar-container wired-card {
+  /* accounts for unchangeable minimum width of wired-cards, which pushes bar too far to right */
+  margin-left: -3%;
 }
 
 .target-border {
-  border-left: 1px dashed #555;
+  border-left: 2px dashed #555;
   position: relative;
   float: right;
   min-width: 1px;
@@ -273,39 +365,33 @@ canvas {
 }
 
 .winner {
-  font-weight: bold;
+  color: #7dd3ef;
 }
 
-.button-container {
+.button-container,
+.card-container {
   margin: 0 auto;
+  text-align: center;
 }
 
 /* player colors -- should really come from elsewhere */
-.dot {
-  height: 10px;
-  width: 10px;
-  border-radius: 50%;
-  margin-right: 1rem;
-  display: inline-block;
-  background-color: #555;
-}
 .player-0 .dot,
-.player-0 .score-bar,
+.player-0 wired-card,
 .player-0.banner {
   background-color: #ffaaaa;
 }
 .player-1 .dot,
-.player-1 .score-bar,
+.player-1 wired-card,
 .player-1.banner  {
   background-color: #aaffb1;
 }
 .player-2 .dot,
-.player-2 .score-bar,
+.player-2 wired-card,
 .player-2.banner  {
   background-color: #ffc519;
 }
 .player-3 .dot,
-.player-3 .score-bar,
+.player-3 wired-card,
 .player-3.banner  {
   background-color: #ecb5ff;
 }
@@ -316,6 +402,29 @@ canvas {
   margin-left: 1rem;
   padding-left: 1rem;
   border-left: 1px solid #c6c6c6;
+}
+
+aside {
+  width: 100%;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+aside :last-child {
+  margin-bottom: 0;
+}
+
+.aside-container {
+  margin-bottom: 2rem;
+}
+
+.aside-container wired-card {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.emphasized wired-card {
+  background-color: #e6ebe0;
 }
 
 /* Citations */
@@ -393,10 +502,29 @@ canvas {
   height: 100%;
 }
 
-.carousel .slide {
-  background: #fff !important;
-}
-
 .carousel img {
   padding-bottom: 300px;
+}
+
+/* Rough Cirles */
+.lobby .rough-circle {
+  position: relative;
+  margin-right: .5rem;
+}
+
+.rough-circle canvas {
+  position: relative;
+}
+
+.lobby .rough-circle canvas {
+  top: .5rem;
+}
+
+.citation .rough-circle canvas {
+  top: .4rem;
+}
+
+header .rough-circle canvas {
+  left: -4rem;
+  top: .5rem;
 }
