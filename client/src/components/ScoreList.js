@@ -29,8 +29,8 @@ const ScoreList = ({ userId, players, targetScore, winnerId, columnCount }) => {
         <li>
           <span className="score-name"></span>
           <span className="score-bar-container">
-            {/* subtract 5 to center text above the target line */}
-            <span className="score-target" style={{marginLeft: targetPercentage - 5 + '%'}}>
+            {/* subtract 3 to center text above the target line */}
+            <span className="score-target" style={{marginLeft: targetPercentage - 3 + '%'}}>
               {targetPercentage + "%"}
             </span>
           </span>

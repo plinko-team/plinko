@@ -14,7 +14,7 @@ export default class HoverChip extends GameObject {
   }
 
   registerListener() {
-    document.querySelector('canvas').addEventListener('mousemove', (e) => {
+    document.querySelector('#canvas').addEventListener('mousemove', (e) => {
       this.x = e.offsetX;
       this.y = e.offsetY;
 
