@@ -220,7 +220,7 @@ export default class ClientEngine {
     if (!this.isRunning) { return }
 
     // Short circuit handler if outside of drop boundary
-    // if (e.offsetY > DROP_BOUNDARY) { return }
+    if (e.offsetY > DROP_BOUNDARY) { return }
 
     const x = e.offsetX;
     const y = e.offsetY;

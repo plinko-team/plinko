@@ -28,7 +28,7 @@ export default class HoverChip extends GameObject {
       fill: this.fill,
       fillStyle: 'solid',
       fillWeight: 1,
-      roughness: 0.5,
+      roughness: .8,
     });
   }
 }

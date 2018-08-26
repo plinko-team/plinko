@@ -27,7 +27,7 @@ export default class Chip extends GameObject {
       fill: PLAYER_COLORS[this.ownerId],
       fillStyle: this.fillStyle,
       fillWeight: 1,
-      roughness: 1,
+      roughness: .8,
       hachureAngle: toDegrees(this.angle * -1), // convert to degrees for Rough and switch sign
     });
   }
