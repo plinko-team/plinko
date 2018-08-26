@@ -16,7 +16,7 @@ const PlayerCircle = ({ playerId }) => {
     fill,
     fillStyle: 'solid',
     roughness: 0.5,
-    strokeWidth: 0.5,
+    strokeWidth: 0.6,
   }
 
   return (

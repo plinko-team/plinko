@@ -155,14 +155,14 @@ wired-card {
   background-color: #e6ebe0;
 }
 
-.active-players wired-card {
+.waiting-players wired-card {
   width: 170px;
   font-size: 1.5rem;
   margin-bottom: 3rem;
   padding: .5rem;
 }
 
-.active-players wired-card p {
+.waiting-players wired-card p {
   margin: 1rem;
 }
 
@@ -265,6 +265,7 @@ input[type="text"]:focus {
 
 .player-info {
   padding-top: 6rem;
+  overflow: auto;
 }
 
 .rules {
@@ -292,6 +293,7 @@ input[type="text"]:focus {
 }
 
 .reminder {
+  display: block;
   text-align: center;
   font-size: 1.4rem;
   margin-top: 5rem;
@@ -388,23 +390,18 @@ input[type="text"]:focus {
   text-align: center;
 }
 
-/* player colors -- should really come from elsewhere */
-.player-0 .dot,
 .player-0 wired-card,
 .player-0.banner {
   background-color: #ffaaaa;
 }
-.player-1 .dot,
 .player-1 wired-card,
 .player-1.banner  {
   background-color: #94dad1;
 }
-.player-2 .dot,
 .player-2 wired-card,
 .player-2.banner  {
   background-color: #ffea8c;
 }
-.player-3 .dot,
 .player-3 wired-card,
 .player-3.banner  {
   background-color: #c7b4f2;
