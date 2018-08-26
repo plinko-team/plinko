@@ -157,11 +157,6 @@ export default class ClientEngine {
     });
   }
 
-  update() {
-    this.frame++;
-    this.frameSync()
-  }
-
   animate(timestamp) {
     if (timestamp < this.lastFrameTime + TIMESTEP) {
       this.frameID = requestAnimationFrame(this.animate.bind(this));
