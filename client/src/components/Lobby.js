@@ -57,7 +57,7 @@ export default class Lobby extends Component {
             </ul>
           </div>
 
-          {!this.props.startBannerVisible && this.gameStartElement()}
+          {!this.props.startBannerVisible && this.isActiveUser() && this.startGameButton()}
         </div>
       )
     } else {
@@ -69,12 +69,14 @@ export default class Lobby extends Component {
     if (!!Object.keys(this.props.waitingUsers).length) {
       return (
         <div className="waiting-players">
-          <div className="players-container">
+          <div className="players-container five columns">
             <h2>Waiting Players</h2>
             <ul>
               {this.userItems(this.props.waitingUsers)}
             </ul>
-        </div>
+          </div>
+
+          {this.props.gameInProgress && this.gameInProgressAlert()}
         </div>
       )
     } else {
@@ -87,7 +89,6 @@ export default class Lobby extends Component {
       let user = usersObj[id];
       return (
         <li key={"player-" + id} className={active ? "player-" + user.playerId : ""}>
-          <span className="dot"></span>
           <PlayerCircle playerId={user.playerId} />
           <span className={id === this.props.userId ? 'bold' : ''}>{user.name}</span>
         </li>
@@ -95,24 +96,24 @@ export default class Lobby extends Component {
     })
   }
 
-  gameStartElement = () => {
-    if (this.props.gameInProgress) {
-      return (
-        <div className="card-container three columns offset-by-two">
-          <wired-card>
-            <p>A game is currently in progress. When it's over, the next waiting players can join.</p>
-          </wired-card>
-        </div>
-      )
-    } else if (this.isActiveUser()) {
-      return (
-        <div className="button-container three columns offset-by-two">
-          <StartGameButton
-            handleClick={this.props.handleStartGameClick}
-          />
-        </div>
-      )
-    }
+  startGameButton = () => {
+    return (
+      <div className="button-container three columns offset-by-two">
+        <StartGameButton
+          handleClick={this.props.handleStartGameClick}
+        />
+      </div>
+    )
+  }
+
+  gameInProgressAlert = () => {
+    return (
+      <div className="card-container three columns offset-by-two">
+        <wired-card>
+          <p>A game is currently in progress. When it's over, the next waiting players can join.</p>
+        </wired-card>
+      </div>
+    )
   }
 
   playerInfo = () => {
@@ -141,9 +142,11 @@ export default class Lobby extends Component {
       )
     } else {
       return (
-        <div className="player-info">
-          {this.activeUserList()}
-          {this.waitingUserList()}
+        <div>
+          <div className="player-info">
+            {this.activeUserList()}
+            {this.waitingUserList()}
+          </div>
 
           <div className="reminder">
             <p>Forget the rules and don't want to wing it? Get <NavLink to="help">help</NavLink>.</p>

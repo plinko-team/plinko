@@ -157,11 +157,6 @@ export default class ClientEngine {
     });
   }
 
-  update() {
-    this.frame++;
-    this.frameSync()
-  }
-
   animate(timestamp) {
     if (timestamp < this.lastFrameTime + TIMESTEP) {
       this.frameID = requestAnimationFrame(this.animate.bind(this));
@@ -220,7 +215,7 @@ export default class ClientEngine {
     if (!this.isRunning) { return }
 
     // Short circuit handler if outside of drop boundary
-    // if (e.offsetY > DROP_BOUNDARY) { return }
+    if (e.offsetY > DROP_BOUNDARY) { return }
 
     const x = e.offsetX;
     const y = e.offsetY;

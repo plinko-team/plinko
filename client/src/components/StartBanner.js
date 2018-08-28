@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 const StartBanner = ({ count }) => {
   return (
     <div className={"banner"}>
-      Starting game in {count}...
+      Get ready! Game starts in {count}...
     </div>
   );
 }
