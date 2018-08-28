@@ -2,19 +2,6 @@
 # yarn lockfile v1
 
 
-"@material/mwc-base@^0.1.2":
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/@material/mwc-base/-/mwc-base-0.1.2.tgz#a17988248c7fe4252305cee4f2fb604f5b0d047a"
-  dependencies:
-    "@polymer/lit-element" "^0.5.2"
-
-"@material/mwc-icon@^0.1.1":
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/@material/mwc-icon/-/mwc-icon-0.1.2.tgz#32ec2f5a48a30014ed97451de0862b1bf51f14e3"
-  dependencies:
-    "@material/mwc-base" "^0.1.2"
-    "@polymer/lit-element" "^0.5.2"
-
 "@polymer/lit-element@^0.5.2":
   version "0.5.2"
   resolved "https://registry.yarnpkg.com/@polymer/lit-element/-/lit-element-0.5.2.tgz#8d4e2d1ada27cf0f1a38b7b0eb9fadae92eb63df"
@@ -31,6 +18,10 @@
 "@webcomponents/shadycss@^1.2.0":
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/@webcomponents/shadycss/-/shadycss-1.5.0.tgz#109e596027eed04bc5032414c9f094e1aeb9260e"
+
+"@webcomponents/webcomponentsjs@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@webcomponents/webcomponentsjs/-/webcomponentsjs-2.1.0.tgz#0300177ce212fbed4c981a61e3a569e6aa1f0c95"
 
 abab@^1.0.3:
   version "1.0.4"
@@ -2278,10 +2269,6 @@ enhanced-resolve@^3.4.0:
     object-assign "^4.0.1"
     tapable "^0.2.7"
 
-enquire.js@^2.1.6:
-  version "2.1.6"
-  resolved "https://registry.yarnpkg.com/enquire.js/-/enquire.js-2.1.6.tgz#3e8780c9b8b835084c3f60e166dbc3c2a3c89814"
-
 entities@~1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/entities/-/entities-1.1.1.tgz#6e5c2d0a5621b5dadaecef80b90edfb5cd7772f0"
@@ -4204,12 +4191,6 @@ json-stringify-safe@~5.0.1:
   version "5.0.1"
   resolved "https://registry.yarnpkg.com/json-stringify-safe/-/json-stringify-safe-5.0.1.tgz#1296a2d58fd45f19a0f6ce01d65701e2c735b6eb"
 
-json2mq@^0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/json2mq/-/json2mq-0.2.0.tgz#b637bd3ba9eabe122c83e9720483aeb10d2c904a"
-  dependencies:
-    string-convert "^0.2.0"
-
 json3@^3.3.2:
   version "3.3.2"
   resolved "https://registry.yarnpkg.com/json3/-/json3-3.3.2.tgz#3c0434743df93e2f5c42aee7b19bcb483575f4e1"
@@ -5783,16 +5764,6 @@ react-router@^4.3.1:
     prop-types "^15.6.1"
     warning "^4.0.1"
 
-react-slick@^0.23.1:
-  version "0.23.1"
-  resolved "https://registry.yarnpkg.com/react-slick/-/react-slick-0.23.1.tgz#15791c4107f0ba3a5688d5bd97b7b7ceaa0dd181"
-  dependencies:
-    classnames "^2.2.5"
-    enquire.js "^2.1.6"
-    json2mq "^0.2.0"
-    lodash.debounce "^4.0.8"
-    resize-observer-polyfill "^1.5.0"
-
 react@^16.4.1:
   version "16.4.1"
   resolved "https://registry.yarnpkg.com/react/-/react-16.4.1.tgz#de51ba5764b5dbcd1f9079037b862bd26b82fe32"
@@ -6036,10 +6007,6 @@ require-uncached@^1.0.3:
 requires-port@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/requires-port/-/requires-port-1.0.0.tgz#925d2601d39ac485e091cf0da5c6e694dc3dcaff"
-
-resize-observer-polyfill@^1.5.0:
-  version "1.5.0"
-  resolved "https://registry.yarnpkg.com/resize-observer-polyfill/-/resize-observer-polyfill-1.5.0.tgz#660ff1d9712a2382baa2cad450a4716209f9ca69"
 
 resolve-cwd@^2.0.0:
   version "2.0.0"
@@ -6321,10 +6288,6 @@ slice-ansi@1.0.0:
   dependencies:
     is-fullwidth-code-point "^2.0.0"
 
-slick-carousel@^1.8.1:
-  version "1.8.1"
-  resolved "https://registry.yarnpkg.com/slick-carousel/-/slick-carousel-1.8.1.tgz#a4bfb29014887bb66ce528b90bd0cda262cc8f8d"
-
 snapdragon-node@^2.0.1:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/snapdragon-node/-/snapdragon-node-2.1.1.tgz#6c175f86ff14bdb0724563e8f3c1b021a286853b"
@@ -6546,10 +6509,6 @@ stream-http@^2.7.2:
 strict-uri-encode@^1.0.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/strict-uri-encode/-/strict-uri-encode-1.1.0.tgz#279b225df1d582b1f54e65addd4352e18faa0713"
-
-string-convert@^0.2.0:
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/string-convert/-/string-convert-0.2.1.tgz#6982cc3049fbb4cd85f8b24568b9d9bf39eeff97"
 
 string-length@^1.0.1:
   version "1.0.1"
@@ -7293,125 +7252,9 @@ wired-card@^0.6.5:
     "@polymer/lit-element" "^0.5.2"
     wired-lib "^0.6.0"
 
-wired-checkbox@^0.7.0:
-  version "0.7.0"
-  resolved "https://registry.yarnpkg.com/wired-checkbox/-/wired-checkbox-0.7.0.tgz#9cf89e02eecb90d3394d24686e76505c5fb1dae0"
-  dependencies:
-    "@polymer/lit-element" "^0.5.2"
-    wired-lib "^0.6.0"
-
-wired-combo@^0.7.1:
-  version "0.7.1"
-  resolved "https://registry.yarnpkg.com/wired-combo/-/wired-combo-0.7.1.tgz#ce0e786366deab34b19680931c114c59ab2cdec6"
-  dependencies:
-    "@polymer/lit-element" "^0.5.2"
-    wired-card "^0.6.5"
-    wired-item "^0.6.5"
-    wired-lib "^0.6.0"
-
-wired-elements@^0.7.2:
-  version "0.7.2"
-  resolved "https://registry.yarnpkg.com/wired-elements/-/wired-elements-0.7.2.tgz#9cc4b0396727bfbaafc7e64bb9585fa815d3de95"
-  dependencies:
-    wired-button "^0.7.0"
-    wired-card "^0.6.5"
-    wired-checkbox "^0.7.0"
-    wired-combo "^0.7.1"
-    wired-icon-button "^0.7.0"
-    wired-input "^0.6.6"
-    wired-item "^0.6.5"
-    wired-lib "^0.6.0"
-    wired-listbox "^0.7.2"
-    wired-progress "^0.6.5"
-    wired-radio "^0.7.0"
-    wired-radio-group "^0.7.1"
-    wired-slider "^0.7.0"
-    wired-textarea "^0.6.5"
-    wired-toggle "^0.7.0"
-    wired-tooltip "^0.6.5"
-
-wired-icon-button@^0.7.0:
-  version "0.7.0"
-  resolved "https://registry.yarnpkg.com/wired-icon-button/-/wired-icon-button-0.7.0.tgz#60cbefe07434e8b279faa89b81096322d39af842"
-  dependencies:
-    "@material/mwc-icon" "^0.1.1"
-    "@polymer/lit-element" "^0.5.2"
-    wired-lib "^0.6.0"
-
-wired-input@^0.6.6:
-  version "0.6.6"
-  resolved "https://registry.yarnpkg.com/wired-input/-/wired-input-0.6.6.tgz#526a135542f45cc0b0394374f1865b33321a20fa"
-  dependencies:
-    "@polymer/lit-element" "^0.5.2"
-    wired-lib "^0.6.0"
-
-wired-item@^0.6.5:
-  version "0.6.5"
-  resolved "https://registry.yarnpkg.com/wired-item/-/wired-item-0.6.5.tgz#5c0d3898a1fc3737f24e42787309cf2c0b43a015"
-  dependencies:
-    "@polymer/lit-element" "^0.5.2"
-
 wired-lib@^0.6.0:
   version "0.6.0"
   resolved "https://registry.yarnpkg.com/wired-lib/-/wired-lib-0.6.0.tgz#89b18cfa3353133e9e33d0cb2ce384668334fc76"
-
-wired-listbox@^0.7.2:
-  version "0.7.2"
-  resolved "https://registry.yarnpkg.com/wired-listbox/-/wired-listbox-0.7.2.tgz#075b1097ab34d851fa9611277e0f3afa9fad9c8e"
-  dependencies:
-    "@polymer/lit-element" "^0.5.2"
-    wired-item "^0.6.5"
-    wired-lib "^0.6.0"
-
-wired-progress@^0.6.5:
-  version "0.6.5"
-  resolved "https://registry.yarnpkg.com/wired-progress/-/wired-progress-0.6.5.tgz#9575fb25a73fccda38eb60c802596456d6cfcfb4"
-  dependencies:
-    "@polymer/lit-element" "^0.5.2"
-    wired-lib "^0.6.0"
-
-wired-radio-group@^0.7.1:
-  version "0.7.1"
-  resolved "https://registry.yarnpkg.com/wired-radio-group/-/wired-radio-group-0.7.1.tgz#fe70ce889e7e3157f2d51f225fc2e8f5c9e4af7f"
-  dependencies:
-    "@polymer/lit-element" "^0.5.2"
-    wired-lib "^0.6.0"
-
-wired-radio@^0.7.0:
-  version "0.7.0"
-  resolved "https://registry.yarnpkg.com/wired-radio/-/wired-radio-0.7.0.tgz#bf7fc5ce985d6b4cb848196f7f93520b7d491675"
-  dependencies:
-    "@polymer/lit-element" "^0.5.2"
-    wired-lib "^0.6.0"
-
-wired-slider@^0.7.0:
-  version "0.7.0"
-  resolved "https://registry.yarnpkg.com/wired-slider/-/wired-slider-0.7.0.tgz#0a5689e28294a73fd5905cf89f359ed2dd425d3a"
-  dependencies:
-    "@polymer/lit-element" "^0.5.2"
-    "@polymer/polymer" "^3.0.2"
-    wired-lib "^0.6.0"
-
-wired-textarea@^0.6.5:
-  version "0.6.5"
-  resolved "https://registry.yarnpkg.com/wired-textarea/-/wired-textarea-0.6.5.tgz#9bdc214df95faa034466a84f9b073a82395264ed"
-  dependencies:
-    "@polymer/lit-element" "^0.5.2"
-    wired-lib "^0.6.0"
-
-wired-toggle@^0.7.0:
-  version "0.7.0"
-  resolved "https://registry.yarnpkg.com/wired-toggle/-/wired-toggle-0.7.0.tgz#4b55854a0ae5abcb450b794d2f3a576103f7150e"
-  dependencies:
-    "@polymer/lit-element" "^0.5.2"
-    wired-lib "^0.6.0"
-
-wired-tooltip@^0.6.5:
-  version "0.6.5"
-  resolved "https://registry.yarnpkg.com/wired-tooltip/-/wired-tooltip-0.6.5.tgz#5a121e3ba30ae099e57130dcf96f58d57f2d03ed"
-  dependencies:
-    "@polymer/lit-element" "^0.5.2"
-    wired-lib "^0.6.0"
 
 wordwrap@0.0.2:
   version "0.0.2"
