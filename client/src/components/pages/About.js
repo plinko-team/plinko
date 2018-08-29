@@ -6,8 +6,6 @@ import Citation from './Citation';
 import Aside from './Aside';
 
 const About = () => {
-  console.log(tocbot)
-
 
   return (
     <main>
@@ -182,16 +180,17 @@ const About = () => {
         <p>
           <img src="https://s1.gifyu.com/images/ezgif-4-25e4c4895b.gif" alt="requestAnimationFrame" />
         </p>
-        <blockquote>6
-          <p><code>r>questAnimationFrame</code> renders at a smooth 60fps</p>
-      </blockquote>
+        <blockquote>
+          <p><code>requestAnimationFrame</code> renders at a smooth 60fps</p>
+        </blockquote>
         <p>
-                    <img src="https://s1.gifyu.com/images/ezgif-4-364b79fa2d.gif" alt="setTimeout" />
-</p>
+          <img src="https://s1.gifyu.com/images/ezgif-4-364b79fa2d.gif" alt="setTimeout" />
+        </p>
         <blockquote>
           <p><code>setTimeout</code> creates an unpredictable frame rate</p>
         </blockquote>
         <p><code>requestAnimationFrame</code> also provides other optimizations, like pausing animation when a tab is out of focus to conserve player CPU resources and battery life.</p>
+
         <h4 id="214-Putting-It-All-Together">2.1.4 Putting It All Together</h4>
         <p>By now, we know our game loop must make use of a few key strategies:</p>
         <ul>
@@ -199,36 +198,11 @@ const About = () => {
           <li><code>requestAnimationFrame</code></li>
           <li>Frame rate independence</li>
         </ul>
-        <p>We’ll also introduce one final idea: now that we’ve decoupled our physics simulation from our renderer, it’s possible that we’ll be ready to render a new frame when the physics engine is still somewhere in between two steps. If this is the case, we need to <strong>interpolate</strong> between these steps – in other words, ask the physics engine to calculate the game world <em>in between</em> the two steps, at the moment in time we’d like to render.</p><p>You can see how this works in the pseudocode for our final game loop implementation:</p><pre><code className="javascript hljs"><span className="token keyword">function</span> <span className="token function">gameLoop</span><span className="token punctuation">(</span><span className="token punctuation">)</span> <span className="token punctuation">{</span>
-        <span className="token function">requestAnimationFrame</span><span className="token punctuation">(</span>gameLoop<span className="token punctuation">)</span><span className="token punctuation">;</span>
-        <span className="token comment">// `elapsedTime` describes how much time the last game loop took</span>
-        elapsedTime <span className="token operator"></span> <span className="token function">currentTime</span><span className="token punctuation">(</span><span className="token punctuation">)</span> <span className="token operator">-</span> lastFrameTime<span className="token punctuation">;</span>
+        <p>We’ll also introduce one final idea: now that we’ve decoupled our physics simulation from our renderer, it’s possible that we’ll be ready to render a new frame when the physics engine is still somewhere in between two steps. If this is the case, we need to <strong>interpolate</strong> between these steps – in other words, ask the physics engine to calculate the game world <em>in between</em> the two steps, at the moment in time we’d like to render.</p>
+        <p>You can see how this works in the pseudocode for our final game loop implementation:</p>
 
-        <span className="token comment">// `MAX_ELAPSED_TIME` ensures the renderer doesn't fall too far</span>
-        <span className="token comment">// behind the simulation in the event of a processing spike</span>
-        <span className="token keyword">if</span> <span className="token punctuation">(</span>elapsedTime <span className="token operator">&gt;</span> <span className="token constant">MAX_ELAPSED_TIME</span><span className="token punctuation">)</span> <span className="token punctuation">{</span>
-          elapsedTime <span className="token operator">=</span> <span className="token constant">MAX_ELAPSED_TIME</span><span className="token punctuation">;</span>
-        <span className="token punctuation">}</span>
+        {/* GameLoop snippet 2.1.4 goes here */}
 
-        accumulatedTime <span className="token operator">+=</span> elapsedTime<span className="token punctuation">;</span>
-
-        <span className="token keyword">while</span> <span className="token punctuation">(</span>accumulatedTime <span className="token operator">&gt;=</span> <span className="token constant">TIMESTEP</span><span className="token punctuation">)</span> <span className="token punctuation">{</span>
-          <span className="token comment">// Advance the simulation by our fixed `TIMESTEP`, 16.67ms</span>
-          <span className="token function">updateWorld</span><span className="token punctuation">(</span><span className="token constant">TIMESTEP</span><span className="token punctuation">)</span><span className="token punctuation">;</span>
-          accumulatedTime <span className="token operator">-=</span> <span className="token constant">TIMESTEP</span><span className="token punctuation">;</span>
-        <span className="token punctuation">}</span>
-
-        <span className="token comment">// `alpha` is a value between 0 and 1 that represents</span>
-        <span className="token comment">// how far along the game loop is between the previous</span>
-        <span className="token comment">// and current simulation steps</span>
-
-        alpha <span className="token operator">=</span> accumulatedTime <span className="token operator">/</span> <span className="token constant">TIMESTEP</span><span className="token punctuation">;</span>
-        <span className="token function">interpolate</span><span className="token punctuation">(</span>alpha<span className="token punctuation">)</span><span className="token punctuation">;</span>
-        <span className="token function">renderWorld</span><span className="token punctuation">(</span><span className="token punctuation">)</span><span className="token punctuation">;</span>
-
-        lastFrameTime <span className="token operator">=</span> <span className="token function">currentTime</span><span className="token punctuation">(</span><span className="token punctuation">)</span><span className="token punctuation">;</span>
-        <span className="token punctuation">}</span>
-        </code></pre>
         <ul>
           <li>We track <code>elapsedTime</code> to capture how long the previous loop took</li>
           <li>If <code>elapsedTime</code> is too big (a processing spike occurred), we cap it with <code>MAX_ELAPSED_TIME</code> so that we don’t simulate too much time</li>
@@ -237,14 +211,140 @@ const About = () => {
           <li>Knowing our <code>alpha</code>, how far we are between simulations, allows us to  interpolate between simulation points</li>
         </ul>
 
-
-
-
-
         {/* Network Architecture */}
+
+        <h2 id="3-Network-Architecture">3 Network Architecture</h2>
+        <p>We’ve built a fully-functioning local physics game for a single player, but that’s only the first step. We want to let multiple users play together in the same game world, which means we need to network our game.</p>
+
+        <h3 id="31-Client-Server-Architecture">3.1 Client-Server Architecture</h3>
+        <p>We’ll use a client-server networking model where all players connect to a central server that acts as the authority on the game state (in contrast to peer-to-peer networking, where players connect to one another and there is no central authority).</p>
+        <p>
+          <img src="https://i.imgur.com/is6kNv7.png" alt="Client-Server architecture" />
+        </p>
+        <blockquote>
+          <p>Figure 3.1.1: Client-Server Architecture</p>
+        </blockquote>
+        <p>Connected players, the clients, transmit inputs to the server. The server, in turn, sends the necessary game state information to all connected clients so that they can recreate the game state locally.</p>
+        <p>Client-server architecture is the gold standard (<a href="http://ithare.com/" target="_blank">Hare</a> (let’s cite the book in our final) | <a href="http://www.gabrielgambetta.com/client-server-game-architecture.html" target="_blank">Gambetta</a>) in multiplayer gaming thanks to a few chief benefits:</p>
+        <ul>
+          <li>Server provides a single source of authority
+          <ul>
+            <li>Easier to reconcile conflicts</li>
+            <li>Easier to manage game state</li>
+          </ul>
+          </li>
+          <li>Reduced avenues for cheating</li>
+          <li>Connections are more reliable</li>
+        </ul>
+        <p>There are some tradeoffs to this approach. For one, we have to provide and maintain the servers, and scale them if we want our game to grow. Network communication can also be slower than for peer-to-peer connections: instead of communicating directly with one another, data from one client to another must route through the server first.</p>
+        <p>Still, the advantages mentioned above are significant, and the pros typically outweigh the cons when it comes to gaming.</p>
+
+        <h3 id="32-WebSockets">3.2 WebSockets</h3>
+        <p>Now that we have our network in place, how will we facilitate communication between our server and clients? We want to run our game at 60 frames per second, which requires transmitting large amounts of data between client and server very quickly.</p>
+        <p>HTTP is an obvious protocol choice for most apps, but it isn’t well suited to our needs. It operates on a request-response cycle, and it must open and close a new connection for each new cycle. When we’re sending messages 60 times a second, this constant opening and closing will slow us down.</p>
+        <p>WebSockets is built on TCP just like HTTP, but it provides stateful, bidirectional, full-duplex communication between client and server. Either the client or server may initiate communication, and both may send messages to one another simultaneously – all over a single connection that remains open for the lifetime of the communication session. After an initial HTTP handshake to open the connection, the client and server may exchange only the relevant application data with no headers, which decreases message overhead.</p>
+        <p>These optimizations make it faster, and therefore a better choice for our game (<a href="https://blog.feathersjs.com/http-vs-websockets-a-performance-comparison-da2533f13a77" target="_blank">Luecke</a> / <a href="http://blog.arungupta.me/rest-vs-websocket-comparison-benchmarks/" target="_blank">Gupta</a>).</p>
+
+        <h4 id="321-socketio">3.2.1 <a href="http://socket.io" target="_blank">socket.io</a></h4>
+        <p>In order to leverage existing solutions for WebSockets, we utilize <a href="http://socket.io" target="_blank">socket.io</a>, a robust Javascript library that serves as a WebSockets wrapper. In addition to a general WebSockets interface, <a href="http://socket.io" target="_blank">socket.io</a> also provides capabilities for broadcasting to compartmentalized sockets, a critical feature for player matchmaking, and support for asynchronous I/O.</p>
+
         {/* Synchronizing Networked Game State */}
+
+        <h2 id="4-Synchronizing-Networked-Game-State">4 Synchronizing Networked Game State</h2>
+        <p>Game state synchronization is the single biggest challenge in networked gaming. Once we have multiple users playing together in their browsers, how do we ensure they all see the same game world at the same time?</p>
+        <p>We’ll start small and build our way up to a robust solution.</p>
+
+        <h3 id="41-Transmitting-Inputs">4.1 Transmitting Inputs</h3>
+        <p>No matter what, we know we need to share information about inputs between users. If we don’t, how will they know what other players are doing?</p>
+        <p>We’ll use our central server to relay input messages from one client to another. Just like in our local single-player game, each player will have their own physics engine to simulate the game world. The game lifecycle looks like this:</p>
+        <p><strong>&lt;clickable carousel&gt;</strong>
+          <img src="https://media.giphy.com/media/kspUpuXiE91yXHiYUn/giphy.gif" alt="Sending Inputs" />
+        </p>
+        <ol>
+          <li>User clicks to drop a chip</li>
+          <li>Client sends input notification to server, while client’s physics engine starts moving chip</li>
+          <li>Server relays input to other clients</li>
+          <li>Other clients add chip to their engine and display it</li>
+        </ol>
+        <p>We can think of this model as having “smart” clients and a “dumb” server:</p>
+        <p>
+          <img src="https://i.imgur.com/MicK8yI.png" alt="Smart Clients" />
+        </p>
+        <p>Unfortunately, we have a problem: the chip will start falling right away for player 1, but the other players won’t find out about it for anywhere from 20-300+ milliseconds due to the latency that’s inherent to communication over the internet. In the meantime, they’re dropping their own chips and their game engines are moving forward by several frames. If everyone finds out about each others’ chips at different times, each player’s game world is going to look a little different. What if two chips collide on one player’s screen, but not on another’s? The longer the game runs, the more the state will diverge. Pretty soon, two players’ games will look nothing alike.</p>
+
+        <h4 id="411-Lockstep">4.1.1 Lockstep</h4>
+        <p>One solution to this problem is to constrain the client game engines to update at the same time. We’ll send inputs to the server just like above, but the server doesn’t broadcast them right away. Instead, on each frame it waits to receive inputs (or a notification that no input occurred) from every single player. Once it’s heard from everyone, it will broadcast the set of inputs for that frame. Then, and only then, may the clients render the frame. To render the next frame, the server and clients have to start this process over again.</p>
+        <p>This model is called <em>lockstep</em> because that’s exactly how the client engines move forward: together, in lockstep. It was one of the earliest approaches to networked gaming, and it’s still alive today in turn-based and strategy games (<a href="https://gafferongames.com/post/what_every_programmer_needs_to_know_about_game_networking/" target="_blank">Gaffer</a>). A big advantage is the small amount of bandwidth it tends to consume – no matter how complex the game world, we only need to network new inputs. But for an action or physics-based game like ours, it has two significant limitations:</p>
+        <ol>
+          <li>Everyone’s game will run at the speed of the slowest player connection</li>
+          <li>Sending only inputs relies on <em>deterministic</em> behavior in the game engine</li>
+        </ol>
+        <p>Even if we were willing to sacrifice speed (a big if in real-time gaming) determinism is non-negotiable.</p>
+
+        <h5 id="412-Determinism">4.1.2 Determinism</h5>
+        <p>If our plan is to share new inputs among players and let their individual physics engines take care of the rest, we need be able to trust that each of those engines will produce exactly the same result. If we drop a chip in the same place at the same time under the same conditions, it should always behave in exactly the same way for every player.</p>
+        <p>However, the vast majority of physics engines, including ours, are <em>not</em> deterministic. Physics engines rely on floating point numbers to calculate physical properties and forces, and floating point numbers are handled differently by different machines and operating systems (<a href="https://gafferongames.com/post/deterministic_lockstep/" target="_blank">Gaffer</a>). If floating point calculations aren’t deterministic, our game won’t be either. A small disparity in rounding might cause a chip to bounce left for one user and right for another, and soon our players’ game states have diverged just like before.</p>
+        <p>At this point, it’s obvious that transmitting only inputs is not enough. How can we do better?</p>
+
+        <h3 id="42-Transmitting-the-Entire-Game-State">4.2 Transmitting the Entire Game State</h3>
+        <p>If we can’t rely on every client’s physics engine to give us deterministic behavior, we need to take control of the physics engine ourselves. We have an authoritative server, so let’s use it as an authority. So far, we’ve been running a physics engine on each client and using the server as a relay. Instead, we can run a single physics engine on the server and use the clients only as displays – a “smart” server with “dumb” clients.</p>
+        <p>
+          <img src="https://i.imgur.com/6GlOUGR.png" alt="Smart Server" />
+        </p>
+        <p>But if the clients are only responsible for rendering, how do they know <em>what</em> to render? For this to work, the server must continually broadcast snapshots of the entire game state for clients to display. Since clients no longer have their own physics engines, this is the only way they’ll know what’s happening in the game. It works like this:</p>
+        <p><strong>&lt;clickable carousel&gt;</strong>
+          <img src="https://media.giphy.com/media/2wW4ERAjpwizH5t7TF/giphy.gif" alt="Snapshots" />
+        </p>
+        <ol>
+          <li>User clicks to drop a chip</li>
+          <li>Client notifies server of input (chip is not rendered yet)</li>
+          <li>Server updates the game world</li>
+          <li>Server broadcasts a snapshot of entire game state to all users</li>
+          <li>All users, including the one who dropped chip, render the snapshot</li>
+        </ol>
+        <p>A snapshot is like a page in a flipbook. Alone, it’s a still picture. But when you view many together in a sequence, they appear to animate. To achieve our 60fps frame rate, clients must receive 60 pictures every second. In our game, a snapshot is a JavaScript object containing the current positions and owners of all chips and pegs, plus game data like current scores and a timestamp. Here’s how the client uses these snapshots in its <code>animate</code> function, which is called every 16.67 ms to animate the game:</p>
+
+        {/* animate snippet goes here */}
+
+        <p>With the snapshot approach, we’ve solved our state divergence problem. We can be confident all our players will see exactly the same game state, because there’s only one possible game state to see: the server’s. This is a huge improvement compared to our earlier attempt.</p>
+        <p>Unfortunately, a fully synchronized game state doesn’t come for free. The snapshot implementation introduces a few new problems of its own:</p>
+
+        <h4 id="421-Network-Jitter">4.2.1 Network Jitter</h4>
+        <p>Ever experience the frustration of a stuttering video stream or a game that seems to skip through time? With snapshots, our game is going to jitter like this too. The server is broadcasting new frames every 16.67ms to achieve our 60fps but there is no guarantee that our clients will receive them in the same regularly spaced intervals. In fact, the unpredictability of the internet all but guarantees that won’t happen.</p>
+        <p>If a client receives two snapshots right in a row, then none for a while, then another three all together, and so on, the game will appear jittery on screen. Luckily, we can mitigate this problem with a buffer.</p>
+
+
+
         {/* Finished Product */}
+
+        <h2 id="5-Finished-Product">5 Finished Product</h2>
+        <p>In the end, we’ve built a real-time, multiplayer, physics-based game using only JavaScript and the basic features of a browser. Our clients and authoritative server communicate over WebSockets, and we employ snapshots and extrapolation to synchronize game state across nodes. To optimize bandwidth, we compress network data using quantization and binary serialization. Our game lobby and player matchmaking system is built with React.</p>
+        <p><strong>(gameplay video)</strong></p>
+        <p>Find our finished implementation on <a href="https://github.com/plinko-team/plinko" target="_blank">Github</a>. Or play the game yourself <a href="/play" target="_blank">here</a>!</p>
         {/* Future Work */}
+
+        <h2 id="6-Future-Work">6 Future Work</h2>
+
+        <h3 id="61-Support-More-Players">6.1 Support More Players</h3>
+        <p>Our game currently supports up to four active players at a time. This forced us to create a complex lobby system to queue up waiting players and move them into the game when their turn comes, but this is not an ideal solution. In the future, we would like to scale the game to support multiple simultaneous groups of players in separate rooms.</p>
+
+        <h3 id="62-A-Pure-WebSocket-Implementation">6.2 A Pure WebSocket Implementation</h3>
+        <p>We use <a href="http://Socket.io" target="_blank">Socket.io</a> as a wrapper for the WebSocket protocol and the associated WebSockets API. <a href="http://Socket.io" target="_blank">Socket.io</a> serves us well, but it also provides extraneous functionality we don’t need, while adding some extra overhead to our messages. We can cut out this data overhead by forgoing a library and interfacing directly with WebSockets.</p>
+
+        <h2 id="About-Us">About Us</h2>
+        <p>Our team of three web developers built Plinko remotely, working together from across North America. We pair-programmed, bug-squashed, and drank 3,425,718 cups of coffee.</p>
+        <p><strong>&lt;pictures of our charming faces&gt;</strong></p>
+        <p>Please feel free to get in touch if you’d like to talk software engineering, games, or the web. We’re always open to learning about new opportunities.</p>
+
+        {/* Further Reading */}
+
+        <h2 id="Further-Reading">Further Reading</h2>
+        <p>If you’re interested in networked gaming, we recommend checking out the resources below, all of which were invaluable to our research.</p>
+        <ul>
+          <li><a href="https://gafferongames.com/" target="_blank">Gaffer On Games</a></li>
+          <li><a href="https://www.koonsolo.com/news/dewitters-gameloop/" target="_blank">deWITTER’s Game Loop</a></li>
+          <li><a href="http://ithare.com/contents-of-development-and-deployment-of-massively-multiplayer-games-from-social-games-to-mmofps-with-stock-exchanges-in-between/" target="_blank">Development and Deployment of Multiplayer Online Games</a></li>
+        </ul>
       </div>
     </main>
   )
@@ -254,8 +354,6 @@ export default About;
 
 {/*
 <div id="doc" className="markdown-body container-fluid" style="position: relative;">
-
-
 
 
   While Loop Snippet
@@ -278,117 +376,63 @@ export default About;
       <span className="token function">renderWorld</span><span className="token punctuation">(</span><span className="token punctuation">)</span>
       <span className="token punctuation">}</span>
     </code>
+  </pre>
 
+  gameLoop Snippet 2.1.4
+  <pre>
+    <code className="javascript hljs">
+      <span className="token keyword">function</span> <span className="token function">gameLoop</span><span className="token punctuation">(</span><span className="token punctuation">)</span> <span className="token punctuation">{</span>
+      <span className="token function">requestAnimationFrame</span><span className="token punctuation">(</span>gameLoop<span className="token punctuation">)</span><span className="token punctuation">;</span>
+      <span className="token comment">// `elapsedTime` describes how much time the last game loop took</span>
+      elapsedTime
+      <span className="token operator"></span> <span className="token function">currentTime</span><span className="token punctuation">(</span><span className="token punctuation">)</span> <span className="token operator">-</span> lastFrameTime<span className="token punctuation">;</span>
+      <span className="token comment">// `MAX_ELAPSED_TIME` ensures the renderer doesn't fall too far</span>
+      <span className="token comment">// behind the simulation in the event of a processing spike</span>
+      <span className="token keyword">if</span> <span className="token punctuation">(</span>elapsedTime <span className="token operator">&gt;</span> <span className="token constant">MAX_ELAPSED_TIME</span><span className="token punctuation">)</span> <span className="token punctuation">{</span>
+      elapsedTime <span className="token operator">=</span> <span className="token constant">MAX_ELAPSED_TIME</span><span className="token punctuation">;</span>
+      <span className="token punctuation">}</span>
+      accumulatedTime <span className="token operator">+=</span> elapsedTime<span className="token punctuation">;</span>
+      <span className="token keyword">while</span> <span className="token punctuation">(</span>accumulatedTime <span className="token operator">&gt;=</span> <span className="token constant">TIMESTEP</span><span className="token punctuation">)</span> <span className="token punctuation">{</span>
+      <span className="token comment">// Advance the simulation by our fixed `TIMESTEP`, 16.67ms</span>
+      <span className="token function">updateWorld</span><span className="token punctuation">(</span><span className="token constant">TIMESTEP</span><span className="token punctuation">)</span><span className="token punctuation">;</span>
+      accumulatedTime <span className="token operator">-=</span> <span className="token constant">TIMESTEP</span><span className="token punctuation">;</span>
+      <span className="token punctuation">}</span>
+      <span className="token comment">// `alpha` is a value between 0 and 1 that represents</span>
+      <span className="token comment">// how far along the game loop is between the previous</span>
+      <span className="token comment">// and current simulation steps</span>
+      alpha <span className="token operator">=</span> accumulatedTime <span className="token operator">/</span> <span className="token constant">TIMESTEP</span><span className="token punctuation">;</span>
+      <span className="token function">interpolate</span><span className="token punctuation">(</span>alpha<span className="token punctuation">)</span><span className="token punctuation">;</span>
+      <span className="token function">renderWorld</span><span className="token punctuation">(</span><span className="token punctuation">)</span><span className="token punctuation">;</span>
+      lastFrameTime <span className="token operator">=</span> <span className="token function">currentTime</span><span className="token punctuation">(</span><span className="token punctuation">)</span><span className="token punctuation">;</span>
+      <span className="token punctuation">}</span>
+    </code>
+  </pre>
 
+  Animate snippet
+  <pre>
+    <code className="javascript hljs"><span className="token keyword">function</span> <span className="token function">animate</span><span className="token punctuation">(</span><span className="token punctuation">)</span> <span className="token punctuation">{</span>
+      <span className="token comment">// ...</span>
+      <span className="token comment">// Get the latest snapshot received from the server</span>
+      currentSnapshot <span className="token operator">=</span> <span className="token function">getSnapshot</span><span className="token punctuation">(</span><span className="token punctuation">)</span>
+      <span className="token comment">// Iterate over all chips that exist in the snapshot</span>
+      currentSnapshot<span className="token punctuation">.</span>chips<span className="token punctuation">.</span><span className="token function">forEach</span><span className="token punctuation">(</span>chipInfo <span className="token operator">=&gt;</span> <span className="token punctuation">{</span>
+      <span className="token keyword">if</span> <span className="token punctuation">(</span><span className="token function">chipAlreadyExists</span><span className="token punctuation">(</span><span className="token punctuation">)</span><span className="token punctuation">)</span> <span className="token punctuation">{</span>
+      <span className="token comment">// If this is an existing chip, update its properties with the</span>
+      <span className="token comment">// data from the snapshot</span>
+      <span className="token function">updateExistingChip</span><span className="token punctuation">(</span>chipInfo<span className="token punctuation">)</span>
+      <span className="token punctuation">}</span> <span className="token keyword">else</span> <span className="token punctuation">{</span>
+      <span className="token comment">// If this is a new chip the client hasn't seen yet, create a new</span>
+      <span className="token comment">// chip object and add it to the renderer</span>
+      <span className="token function">createNewChip</span><span className="token punctuation">(</span>chipInfo<span className="token punctuation">)</span>
+      <span className="token function">addChipToRenderer</span><span className="token punctuation">(</span><span className="token punctuation">)</span>
+      <span className="token punctuation">}</span>
+      <span className="token punctuation">}</span><span className="token punctuation">)</span>
+      <span className="token function">renderGame</span><span className="token punctuation">(</span><span className="token punctuation">)</span>
+      <span className="token comment">// ...</span>
+      <span className="token punctuation">}</span>
+    </code>
+  </pre>
 
-
-  <h4 id="214-Putting-It-All-Together">2.1.4 Putting It All Together</h4>
-  <p>By now, we know our game loop must make use of a few key strategies:</p>
-  <ul>
-    <li>A fixed timestep</li>
-    <li><code>requestAnimationFrame</code></li>
-    <li>Frame rate independence</li>
-  </ul>
-  <p>We’ll also introduce one final idea: now that we’ve decoupled our physics simulation from our renderer, it’s possible that we’ll be ready to render a new frame when the physics engine is still somewhere in between two steps. If this is the case, we need to <strong>interpolate</strong> between these steps – in other words, ask the physics engine to calculate the game world <em>in between</em> the two steps, at the moment in time we’d like to render.</p><p>You can see how this works in the pseudocode for our final game loop implementation:</p><pre><code className="javascript hljs"><span className="token keyword">function</span> <span className="token function">gameLoop</span><span className="token punctuation">(</span><span className="token punctuation">)</span> <span className="token punctuation">{</span>
-  <span className="token function">requestAnimationFrame</span><span className="token punctuation">(</span>gameLoop<span className="token punctuation">)</span><span className="token punctuation">;</span>
-  <span className="token comment">// `elapsedTime` describes how much time the last game loop took</span>
-  elapsedTime <span className="token operator"></span> <span className="token function">currentTime</span><span className="token punctuation">(</span><span className="token punctuation">)</span> <span className="token operator">-</span> lastFrameTime<span className="token punctuation">;</span>
-
-  <span className="token comment">// `MAX_ELAPSED_TIME` ensures the renderer doesn't fall too far</span>
-  <span className="token comment">// behind the simulation in the event of a processing spike</span>
-  <span className="token keyword">if</span> <span className="token punctuation">(</span>elapsedTime <span className="token operator">&gt;</span> <span className="token constant">MAX_ELAPSED_TIME</span><span className="token punctuation">)</span> <span className="token punctuation">{</span>
-    elapsedTime <span className="token operator">=</span> <span className="token constant">MAX_ELAPSED_TIME</span><span className="token punctuation">;</span>
-  <span className="token punctuation">}</span>
-
-  accumulatedTime <span className="token operator">+=</span> elapsedTime<span className="token punctuation">;</span>
-
-  <span className="token keyword">while</span> <span className="token punctuation">(</span>accumulatedTime <span className="token operator">&gt;=</span> <span className="token constant">TIMESTEP</span><span className="token punctuation">)</span> <span className="token punctuation">{</span>
-    <span className="token comment">// Advance the simulation by our fixed `TIMESTEP`, 16.67ms</span>
-    <span className="token function">updateWorld</span><span className="token punctuation">(</span><span className="token constant">TIMESTEP</span><span className="token punctuation">)</span><span className="token punctuation">;</span>
-    accumulatedTime <span className="token operator">-=</span> <span className="token constant">TIMESTEP</span><span className="token punctuation">;</span>
-  <span className="token punctuation">}</span>
-
-  <span className="token comment">// `alpha` is a value between 0 and 1 that represents</span>
-  <span className="token comment">// how far along the game loop is between the previous</span>
-  <span className="token comment">// and current simulation steps</span>
-
-  alpha <span className="token operator">=</span> accumulatedTime <span className="token operator">/</span> <span className="token constant">TIMESTEP</span><span className="token punctuation">;</span>
-  <span className="token function">interpolate</span><span className="token punctuation">(</span>alpha<span className="token punctuation">)</span><span className="token punctuation">;</span>
-  <span className="token function">renderWorld</span><span className="token punctuation">(</span><span className="token punctuation">)</span><span className="token punctuation">;</span>
-
-  lastFrameTime <span className="token operator">=</span> <span className="token function">currentTime</span><span className="token punctuation">(</span><span className="token punctuation">)</span><span className="token punctuation">;</span>
-  <span className="token punctuation">}</span>
-  </code></pre>
-  <ul>
-    <li>We track <code>elapsedTime</code> to capture how long the previous loop took</li>
-    <li>If <code>elapsedTime</code> is too big (a processing spike occurred), we cap it with <code>MAX_ELAPSED_TIME</code> so that we don’t simulate too much time</li>
-    <li><code>accumulatedTime</code> is how we track how much time has passed since the last physics simulation.</li>
-    <li>If <code>accumulatedTime</code> is greater than <code>TIMESTEP</code> we know that enough time has passed to advance the simulation forward</li>
-    <li>Knowing our <code>alpha</code>, how far we are between simulations, allows us to  interpolate between simulation points</li>
-
-
-
-
-  </ul>
-
-  <h2 id="3-Network-Architecture">3 Network Architecture</h2>
-  <p>We’ve built a fully-functioning local physics game for a single player, but that’s only the first step. We want to let multiple users play together in the same game world, which means we need to network our game.</p><h3 id="31-Client-Server-Architecture">3.1 Client-Server Architecture</h3><p>We’ll use a client-server networking model where all players connect to a central server that acts as the authority on the game state (in contrast to peer-to-peer networking, where players connect to one another and there is no central authority).</p><p><img src="https://i.imgur.com/is6kNv7.png" alt="Client-Server architecture"></p><blockquote>
-  <p>Figure 3.1.1: Client-Server Architecture</p>
-  </blockquote><p>Connected players, the clients, transmit inputs to the server. The server, in turn, sends the necessary game state information to all connected clients so that they can recreate the game state locally.</p><p>Client-server architecture is the gold standard (<a href="http://ithare.com/" target="_blank">Hare</a> (let’s cite the book in our final) | <a href="http://www.gabrielgambetta.com/client-server-game-architecture.html" target="_blank">Gambetta</a>) in multiplayer gaming thanks to a few chief benefits:</p>
-  <ul>
-    <li>Server provides a single source of authority
-    <ul>
-      <li>Easier to reconcile conflicts</li>
-      <li>Easier to manage game state</>
-    </ul>
-    </li>
-    <li>Reduced avenues for cheating</li>
-    <li>Connections are more reliable</li>
-  </ul>
-  <p>There are some tradeoffs to this approach. For one, we have to provide and maintain the servers, and scale them if we want our game to grow. Network communication can also be slower than for peer-to-peer connections: instead of communicating directly with one another, data from one client to another must route through the server first.</p>
-  <p>Still, the advantages mentioned above are significant, and the pros typically outweigh the cons when it comes to gaming.</p>
-  <h3 id="32-WebSockets">3.2 WebSockets</h3>
-  <p>Now that we have our network in place, how will we facilitate communication between our server and clients? We want to run our game at 60 frames per second, which requires transmitting large amounts of data between client and server very quickly.</p>
-  <p>HTTP is an obvious protocol choice for most apps, but it isn’t well suited to our needs. It operates on a request-response cycle, and it must open and close a new connection for each new cycle. When we’re sending messages 60 times a second, this constant opening and closing will slow us down.</p>
-  <p>WebSockets is built on TCP just like HTTP, but it provides stateful, bidirectional, full-duplex communication between client and server. Either the client or server may initiate communication, and both may send messages to one another simultaneously – all over a single connection that remains open for the lifetime of the communication session. After an initial HTTP handshake to open the connection, the client and server may exchange only the relevant application data with no headers, which decreases message overhead.</p>
-  <p>These optimizations make it faster, and therefore a better choice for our game (<a href="https://blog.feathersjs.com/http-vs-websockets-a-performance-comparison-da2533f13a77" target="_blank">Luecke</a> / <a href="http://blog.arungupta.me/rest-vs-websocket-comparison-benchmarks/" target="_blank">Gupta</a>).</p>
-
-  <h4 id="321-socketio">3.2.1 <a href="http://socket.io" target="_blank">socket.io</a></h4>
-  <p>In order to leverage existing solutions for WebSockets, we utilize <a href="http://socket.io" target="_blank">socket.io</a>, a robust Javascript library that serves as a WebSockets wrapper. In addition to a general WebSockets interface, <a href="http://socket.io" target="_blank">socket.io</a> also provides capabilities for broadcasting to compartmentalized sockets, a critical feature for player matchmaking, and support for asynchronous I/O.</p>
-
-  <h2 id="4-Synchronizing-Networked-Game-State">4 Synchronizing Networked Game State</h2>
-  <p>Game state synchronization is the single biggest challenge in networked gaming. Once we have multiple users playing together in their browsers, how do we ensure they all see the same game world at the same time?</p>
-  <p>We’ll start small and build our way up to a robust solution.</p>
-
-  <h3 id="41-Transmitting-Inputs">4.1 Transmitting Inputs</h3>
-  <p>No matter what, we know we need to share information about inputs between users. If we don’t, how will they know what other players are doing?</p>
-  <p>We’ll use our central server to relay input messages from one client to another. Just like in our local single-player game, each player will have their own physics engine to simulate the game world. The game lifecycle looks like this:</p>
-  <p><strong>&lt;clickable carousel&gt;</strong>
-    <img src="https://media.giphy.com/media/kspUpuXiE91yXHiYUn/giphy.gif" alt="Sending Inputs" />
-  </p>
-  <ol>
-    <li>User clicks to drop a chip</li>
-    <li>Client sends input notification to server, while client’s physics engine starts moving chip</li>
-    <li>Server relays input to other clients</li>
-    <li>Other clients add chip to their engine and display it</li>
-  </ol>
-  <p>We can think of this model as having “smart” clients and a “dumb” server:</p>
-  <p><img src="https://i.imgur.com/MicK8yI.png" alt="Smart Clients" /></p>
-  <p>Unfortunately, we have a problem: the chip will start falling right away for player 1, but the other players won’t find out about it for anywhere from 20-300+ milliseconds due to the latency that’s inherent to communication over the internet. In the meantime, they’re dropping their own chips and their game engines are moving forward by several frames. If everyone finds out about each others’ chips at different times, each player’s game world is going to look a little different. What if two chips collide on one player’s screen, but not on another’s? The longer the game runs, the more the state will diverge. Pretty soon, two players’ games will look nothing alike.</p>
-
-  <h4 id="411-Lockstep">4.1.1 Lockstep</h4>
-  <p>One solution to this problem is to constrain the client game engines to update at the same time. We’ll send inputs to the server just like above, but the server doesn’t broadcast them right away. Instead, on each frame it waits to receive inputs (or a notification that no input occurred) from every single player. Once it’s heard from everyone, it will broadcast the set of inputs for that frame. Then, and only then, may the clients render the frame. To render the next frame, the server and clients have to start this process over again.</p>
-  <p>This model is called <em>lockstep</em> because that’s exactly how the client engines move forward: together, in lockstep. It was one of the earliest approaches to networked gaming, and it’s still alive today in turn-based and strategy games (<a href="https://gafferongames.com/post/what_every_programmer_needs_to_know_about_game_networking/" target="_blank">Gaffer</a>). A big advantage is the small amount of bandwidth it tends to consume – no matter how complex the game world, we only need to network new inputs. But for an action or physics-based game like ours, it has two significant limitations:</p>
-  <ol>
-    <li>Everyone’s game will run at the speed of the slowest player connection</li>
-    <li>Sending only inputs relies on <em>deterministic</em> behavior in the game engine</li>
-  </ol>
-  <p>Even if we were willing to sacrifice speed (a big if in real-time gaming) determinism is non-negotiable.</p>
-
-  <h5 id="412-Determinism">4.1.2 Determinism</h5>
-  <p>If our plan is to share new inputs among players and let their individual physics engines take care of the rest, we need be able to trust that each of those engines will produce exactly the same result. If we drop a chip in the same place at the same time under the same conditions, it should always behave in exactly the same way for every player.</p>
-  <p>However, the vast majority of physics engines, including ours, are <em>not</em> deterministic. Physics engines rely on floating point numbers to calculate physical properties and forces, and floating point numbers are handled differently by different machines and operating systems (<a href="https://gafferongames.com/post/deterministic_lockstep/" target="_blank">Gaffer</a>). If floating point calculations aren’t deterministic, our game won’t be either. A small disparity in rounding might cause a chip to bounce left for one user and right for another, and soon our players’ game states have diverged just like before.</p>
-  <p>At this point, it’s obvious that transmitting only inputs is not enough. How can we do better?</p>
 
   <h3 id="42-Transmitting-the-Entire-Game-State">4.2 Transmitting the Entire Game State</h3>
   <p>If we can’t rely on every client’s physics engine to give us deterministic behavior, we need to take control of the physics engine ourselves. We have an authoritative server, so let’s use it as an authority. So far, we’ve been running a physics engine on each client and using the server as a relay. Instead, we can run a single physics engine on the server and use the clients only as displays – a “smart” server with “dumb” clients.</p>
@@ -431,9 +475,10 @@ export default About;
   <p>With the snapshot approach, we’ve solved our state divergence problem. We can be confident all our players will see exactly the same game state, because there’s only one possible game state to see: the server’s. This is a huge improvement compared to our earlier attempt.</p>
   <p>Unfortunately, a fully synchronized game state doesn’t come for free. The snapshot implementation introduces a few new problems of its own:</p>
 
-  <h4 id="421-Network-Jitter">4.2.1 Network Jitter</h4>
-  <p>Ever experience the frustration of a stuttering video stream or a game that seems to skip through time? With snapshots, our game is going to jitter like this too. The server is broadcasting new frames every 16.67ms to achieve our 60fps but there is no guarantee that our clients will receive them in the same regularly spaced intervals. In fact, the unpredictability of the internet all but guarantees that won’t happen.</p>
-  <p>If a client receives two snapshots right in a row, then none for a while, then another three all together, and so on, the game will appear jittery on screen. Luckily, we can mitigate this problem with a buffer.</p>
+
+
+
+
 
   <h5 id="4211-Solution-Snapshot-Buffer">4.2.1.1 Solution: Snapshot Buffer</h5>
   <p>Right now, clients are rendering new snapshots as soon as they receive them. If they don’t get another one for a while, they’re stuck. Instead, we should have clients collect a few snapshots up front before they begin rendering. That way, they’ll have a reserve of snapshots to use in the event of a spike in network latency.</p>
@@ -912,30 +957,8 @@ export default About;
   <h4 id="437-Conclusion">4.3.7 Conclusion</h4>
   <p>While prediction adds a lot of complexity to our implementation, it allows us to reduce our bandwidth needs considerably and creates a better experience for the user.</p>
 
-  <h2 id="5-Finished-Product">5 Finished Product</h2>
-  <p>In the end, we’ve built a real-time, multiplayer, physics-based game using only JavaScript and the basic features of a browser. Our clients and authoritative server communicate over WebSockets, and we employ snapshots and extrapolation to synchronize game state across nodes. To optimize bandwidth, we compress network data using quantization and binary serialization. Our game lobby and player matchmaking system is built with React.</p>
-  <p><strong>(gameplay video)</strong></p>
-  <p>Find our finished implementation on <a href="https://github.com/plinko-team/plinko" target="_blank">Github</a>. Or play the game yourself <a href="/play" target="_blank">here</a>!</p>
 
-  <h2 id="6-Future-Work">6 Future Work</h2>
 
-  <h3 id="61-Support-More-Players">6.1 Support More Players</h3>
-  <p>Our game currently supports up to four active players at a time. This forced us to create a complex lobby system to queue up waiting players and move them into the game when their turn comes, but this is not an ideal solution. In the future, we would like to scale the game to support multiple simultaneous groups of players in separate rooms.</p>
-
-  <h3 id="62-A-Pure-WebSocket-Implementation">6.2 A Pure WebSocket Implementation</h3>
-  <p>We use <a href="http://Socket.io" target="_blank">Socket.io</a> as a wrapper for the WebSocket protocol and the associated WebSockets API. <a href="http://Socket.io" target="_blank">Socket.io</a> serves us well, but it also provides extraneous functionality we don’t need, while adding some extra overhead to our messages. We can cut out this data overhead by forgoing a library and interfacing directly with WebSockets.</p>
-  <h2 id="About-Us">About Us</h2>
-  <p>Our team of three web developers built Plinko remotely, working together from across North America. We pair-programmed, bug-squashed, and drank 3,425,718 cups of coffee.</p>
-  <p><strong>&lt;pictures of our charming faces&gt;</strong></p>
-  <p>Please feel free to get in touch if you’d like to talk software engineering, games, or the web. We’re always open to learning about new opportunities.</p>
-
-  <h2 id="Further-Reading">Further Reading</h2>
-  <p>If you’re interested in networked gaming, we recommend checking out the resources below, all of which were invaluable to our research.</p>
-  <ul>
-    <li><a href="https://gafferongames.com/" target="_blank">Gaffer On Games</a></li>
-    <li><a href="https://www.koonsolo.com/news/dewitters-gameloop/" target="_blank">deWITTER’s Game Loop</a></li>
-    <li><a href="http://ithare.com/contents-of-development-and-deployment-of-massively-multiplayer-games-from-social-games-to-mmofps-with-stock-exchanges-in-between/" target="_blank">Development and Deployment of Multiplayer Online Games</a></li>
-  </ul>
   <div dir="ltr" className="resize-sensor" style="position: absolute; left: -10px; top: -10px; right: 0px; bottom: 0px; overflow: hidden; z-index: -1; visibility: hidden;"><div className="resize-sensor-expand" style="position: absolute; left: -10px; top: -10px; right: 0; bottom: 0; overflow: hidden; z-index: -1; visibility: hidden;"><div style="position: absolute; left: 0px; top: 0px; transition: all 0s ease 0s; width: 100000px; height: 100000px;"></div></div><div className="resize-sensor-shrink" style="position: absolute; left: -10px; top: -10px; right: 0; bottom: 0; overflow: hidden; z-index: -1; visibility: hidden;"><div style="position: absolute; left: 0; top: 0; transition: 0s; width: 200%; height: 200%"></div></div></div></div>
 
 
