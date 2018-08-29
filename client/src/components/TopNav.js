@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { WiredButton } from 'wired-elements';
+import { WiredButton } from 'wired-button';
 
 import LogoCircle from './LogoCircle';
 

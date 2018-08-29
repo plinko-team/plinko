@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { WiredButton } from 'wired-elements';
+import { WiredButton } from 'wired-button';
 
 export default class PlayerJoinForm extends Component {
   static propTypes = {
