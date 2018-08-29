@@ -283,7 +283,7 @@ while (bendingFrame !== totalBendingFrames) {
         <h1>Case Study</h1>
 
         <div className="toc">
-          <Aside>
+          <Aside emphasized={true}>
             <ol>
               <li>
                 <a href="#introduction">Introduction</a>
@@ -313,7 +313,7 @@ while (bendingFrame !== totalBendingFrames) {
                 </ol>
               </li>
               <li>
-                <a href="#finished-product">The Finished Product</a>
+                <a href="#finished-product">Finished Product</a>
               </li>
               <li>
                 <a href="#future-work">Future Work</a>
@@ -325,7 +325,7 @@ while (bendingFrame !== totalBendingFrames) {
                 <a href="#further-reading">Further Reading</a>
               </li>
             </ol>
-            <div className="p">Hover over <Citation /> for citations</div>
+            <div className="p">Hover over <Citation creator="Sample Creator" title="Sample Title" /> for citations</div>
           </Aside>
         </div>
 
@@ -1354,7 +1354,7 @@ while (bendingFrame !== totalBendingFrames) {
 
         {/* Finished Product */}
 
-        <h2 id="finished-product">5 The Finished Product</h2>
+        <h2 id="finished-product">5 Finished Product</h2>
         <div className="p">In the end, we’ve built a real-time, multiplayer, physics-based game using only JavaScript and the basic features of a browser. Our clients and authoritative server communicate over WebSockets, and we employ snapshots and extrapolation to synchronize game state across nodes. To optimize bandwidth, we compress network data using quantization and binary serialization. Our game lobby and player matchmaking system is built with React.</div>
         <div className="p"><strong>(gameplay video)</strong></div>
         <div className="p">Find our finished implementation on <a href="https://github.com/plinko-team/plinko" target="_blank" rel="noopener noreferrer">Github</a>. Or play the game yourself <a href="/play">here</a>!</div>
