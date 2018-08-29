@@ -6,10 +6,15 @@ import Citation from './Citation';
 import Aside from './Aside';
 
 const About = () => {
+  console.log(tocbot)
+
+
   return (
     <main>
-      <div className="main-content">
-        <h1>Sample H1 (e.g. Case Study)</h1>
+      <nav className='js-toc' />
+
+      <div className="main-content js-toc-content">
+        <h1 id="test">Sample H1 (e.g. Case Study)</h1>
         <p>Paragraph for reference</p>
         <h2>Sample H2 (e.g. 4 Synchronizing Networked Game State)</h2>
         <p>Paragraph for reference</p>
@@ -133,20 +138,113 @@ const About = () => {
         <p>Finally, it’s not enough for our app to know what’s happening to a chip. We have to actually show it to the player! Existing rendering libraries have limitations for our game and/or excess functionality that would slow us down, so we decided to write our own renderer using HTML5 Canvas and Rough.js, a graphics library with a hand-sketched feel. The Canvas API lets us connect the calculations of our physics engine directly to the browser’s drawable canvas element. That’s step three, and we’re in business… almost.</p>
 
 
+        <h3 id="21-Game-Loops">2.1 Game Loops</h3>
+        <p>Our game can’t just take the three game steps once and call it a day. If we want it to run in real time, it must take those steps continuously.</p>
+
+        <h4 id="211-Looping-Physics">2.1.1 Looping Physics</h4>
+        <p>In real life, physics is continuous by nature. Imagine dropping a real plastic chip into a real frame full of wooden pegs. How many positions in space will that chip occupy on its way down? The answer isn’t quantifiable – the chip will exist at an incalculable number of points between the top of the frame and the bottom.</p>
+        <p>A physics simulation needs to model this behavior, but we can’t ask it to calculate incalculable data. Instead, it needs to calculate the position of the chip at a discrete moment in time, then at a moment a little while after, then one a little after that. When we see these positions all in row, we get the illusion of continuous movement.</p>
+
+        <figure>
+          <img src="https://i.imgur.com/QnL9rtT.png" alt="Simulated Chip Positions" />
+          <figcaption>Figure 2.1.1: A single chip’s positions at discrete points in time</figcaption>
+        </figure>
+
+        <p>Here’s one simple idea:</p>
+
+        {/* While loop snippet goes here */}
+
+        <p><code>while</code> loops run repeatedly, as fast as the computer’s processor can manage. This means we have a problem right away: the game will run more slowly on a slow computer than on a fast one. Instead, we need some way to get consistent performance for any machine. That means moving the simulation forward at the same speed for any user, regardless of processing power. We can achieve this with a <strong>fixed timestep</strong>.</p>
+
+        <h4 id="212-Timesteps">2.1.2 Timesteps</h4>
+        <p>A timestep provides specific instructions for the physics engine. It’s the amount of time that the engine should move the world forward in each step. It’s essential that the timestep be fixed, which means the exact same length of time is simulated in every loop. Unlike the <code>while</code> loop, a fixed timestep:</p>
+        <ul>
+          <li>Is deterministic for the same user in the same browser</li>
+          <li>Allows us to decouple rendering graphics from simulating the game</li>
+        </ul>
+
+        <p>We want to display our game at 60 frames per second to provide a smooth, realistic visual experience for players (<a href="https://www.polygon.com/2014/6/5/5761780/frame-rate-resolution-graphics-primer-ps4-xbox-one" target="_blank">Sarkar</a>). To achieve this, we’ll advance the physics simulation at a fixed rate of 16.67 milliseconds in each frame (1000 milliseconds / 60 fps).</p>
+
+        <h4 id="213-Frame-Rate-Independence">2.1.3 Frame Rate Independence</h4>
+        <p>Currently, our physics engine steps forward and the game is rendered on every single frame. A loop that renders and updates the simulation at the same time can work well as long as conditions are ideal, but a user with a particularly fast processor will experience a faster moving physics simulation. Likewise, a slower computer will result in a sluggish physical environment.</p>
+        <p>Let’s consider an example where, due to heavy computational load, it takes 100ms of real time to run a single step of our game loop. Essentially, 100ms have passed in the real world, but the physics simulation has only moved forward 16ms. In 100ms, we would expect six frames to be simulated and rendered, but instead our game only generates one. If this happens multiple times in a row, the frame rate will drop and the game world will actually appear to <em>slow down</em>.</p>
+        <p>Even if our display frame rate is lowered, we still need the physics engine to simulate 100ms when 100ms have elapsed. Otherwise, the motion on the screen will be  and jittery; the speed of a chip should only depend on its physical properties, not the speed of the computer running it (<a href="https://www.koonsolo.com/news/dewitters-gameloop/" target="_blank">dewitters</a>).</p>
+        <p>The solution is to decouple the renderer from the physics engine. This entails keeping track of how much time has elapsed since the previous game loop, and, if necessary, stepping the simulation forward multiple times before rendering the next frame.</p>
+
+        <h4 id="213-requestAnimationFrame">2.1.3 <code>requestAnimationFrame</code></h4>
+        <p>Now that we have our game loop goals in mind, your first instinct might be to implement the loop using <code>setInterval</code> or <code>setTimeout</code>. But remember that we need to run our game on a fixed timestep, and neither of these methods are guaranteed to execute the callback at the exact delay time we pass in. Instead, this delay will be the <em>minimum</em> amount of time it takes for the callback to be executed. Actual execution time will depend on how many other tasks are also waiting in the queue (<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/EventLoop#Zero_delays" target="_blank">MDN</a>).</p>
+        <p>Inexact callback timing isn’t only detrimental to our fixed timestep – it will also cause rendering problems in the browser. Browsers typically repaint pages every 16.67ms, and if our almost-but-not-exactly-16.67ms game loop gets out of sync with the repaint schedule, players may experience skipped frames and other unpleasant visual artifacts. If we run our loop more often than every 16.67ms to account for this, we end up trying to render more frequently than the browser is able to repaint, creating unnecessary computation.</p>
+        <p>Luckily, there’s a better option. <code>requestAnimationFrame</code> is a JavaScript browser method on <code>window</code> that’s optimized for looping animation. It lets us pass in a callback, which will be executed before the browser’s next repaint. We’ll pass in the function we use to increment our game engine, and we’ll create a loop by calling <code>requestAnimationFrame</code> recursively inside the callback. Here’s a simplified look at our new looping architecture:</p>
+
+        {/* GameLoop snippet goes here */}
+
+        <p>Now we’re controlling <em>what</em> to animate – our updated world – but letting the browser handle <em>when</em> to animate, which will occur at its natural 60fps repaint rate. The result is a smoother visual experience for players. You can see the difference in the animations below, which contrast <code>requestAnimationFrame</code> with a loop created using <code>setTimeout</code>:</p>
+        <p>
+          <img src="https://s1.gifyu.com/images/ezgif-4-25e4c4895b.gif" alt="requestAnimationFrame" />
+        </p>
+        <blockquote>6
+          <p><code>r>questAnimationFrame</code> renders at a smooth 60fps</p>
+      </blockquote>
+        <p>
+                    <img src="https://s1.gifyu.com/images/ezgif-4-364b79fa2d.gif" alt="setTimeout" />
+</p>
+        <blockquote>
+          <p><code>setTimeout</code> creates an unpredictable frame rate</p>
+        </blockquote>
+        <p><code>requestAnimationFrame</code> also provides other optimizations, like pausing animation when a tab is out of focus to conserve player CPU resources and battery life.</p>
+        <h4 id="214-Putting-It-All-Together">2.1.4 Putting It All Together</h4>
+        <p>By now, we know our game loop must make use of a few key strategies:</p>
+        <ul>
+          <li>A fixed timestep</li>
+          <li><code>requestAnimationFrame</code></li>
+          <li>Frame rate independence</li>
+        </ul>
+        <p>We’ll also introduce one final idea: now that we’ve decoupled our physics simulation from our renderer, it’s possible that we’ll be ready to render a new frame when the physics engine is still somewhere in between two steps. If this is the case, we need to <strong>interpolate</strong> between these steps – in other words, ask the physics engine to calculate the game world <em>in between</em> the two steps, at the moment in time we’d like to render.</p><p>You can see how this works in the pseudocode for our final game loop implementation:</p><pre><code className="javascript hljs"><span className="token keyword">function</span> <span className="token function">gameLoop</span><span className="token punctuation">(</span><span className="token punctuation">)</span> <span className="token punctuation">{</span>
+        <span className="token function">requestAnimationFrame</span><span className="token punctuation">(</span>gameLoop<span className="token punctuation">)</span><span className="token punctuation">;</span>
+        <span className="token comment">// `elapsedTime` describes how much time the last game loop took</span>
+        elapsedTime <span className="token operator"></span> <span className="token function">currentTime</span><span className="token punctuation">(</span><span className="token punctuation">)</span> <span className="token operator">-</span> lastFrameTime<span className="token punctuation">;</span>
+
+        <span className="token comment">// `MAX_ELAPSED_TIME` ensures the renderer doesn't fall too far</span>
+        <span className="token comment">// behind the simulation in the event of a processing spike</span>
+        <span className="token keyword">if</span> <span className="token punctuation">(</span>elapsedTime <span className="token operator">&gt;</span> <span className="token constant">MAX_ELAPSED_TIME</span><span className="token punctuation">)</span> <span className="token punctuation">{</span>
+          elapsedTime <span className="token operator">=</span> <span className="token constant">MAX_ELAPSED_TIME</span><span className="token punctuation">;</span>
+        <span className="token punctuation">}</span>
+
+        accumulatedTime <span className="token operator">+=</span> elapsedTime<span className="token punctuation">;</span>
+
+        <span className="token keyword">while</span> <span className="token punctuation">(</span>accumulatedTime <span className="token operator">&gt;=</span> <span className="token constant">TIMESTEP</span><span className="token punctuation">)</span> <span className="token punctuation">{</span>
+          <span className="token comment">// Advance the simulation by our fixed `TIMESTEP`, 16.67ms</span>
+          <span className="token function">updateWorld</span><span className="token punctuation">(</span><span className="token constant">TIMESTEP</span><span className="token punctuation">)</span><span className="token punctuation">;</span>
+          accumulatedTime <span className="token operator">-=</span> <span className="token constant">TIMESTEP</span><span className="token punctuation">;</span>
+        <span className="token punctuation">}</span>
+
+        <span className="token comment">// `alpha` is a value between 0 and 1 that represents</span>
+        <span className="token comment">// how far along the game loop is between the previous</span>
+        <span className="token comment">// and current simulation steps</span>
+
+        alpha <span className="token operator">=</span> accumulatedTime <span className="token operator">/</span> <span className="token constant">TIMESTEP</span><span className="token punctuation">;</span>
+        <span className="token function">interpolate</span><span className="token punctuation">(</span>alpha<span className="token punctuation">)</span><span className="token punctuation">;</span>
+        <span className="token function">renderWorld</span><span className="token punctuation">(</span><span className="token punctuation">)</span><span className="token punctuation">;</span>
+
+        lastFrameTime <span className="token operator">=</span> <span className="token function">currentTime</span><span className="token punctuation">(</span><span className="token punctuation">)</span><span className="token punctuation">;</span>
+        <span className="token punctuation">}</span>
+        </code></pre>
+        <ul>
+          <li>We track <code>elapsedTime</code> to capture how long the previous loop took</li>
+          <li>If <code>elapsedTime</code> is too big (a processing spike occurred), we cap it with <code>MAX_ELAPSED_TIME</code> so that we don’t simulate too much time</li>
+          <li><code>accumulatedTime</code> is how we track how much time has passed since the last physics simulation.</li>
+          <li>If <code>accumulatedTime</code> is greater than <code>TIMESTEP</code> we know that enough time has passed to advance the simulation forward</li>
+          <li>Knowing our <code>alpha</code>, how far we are between simulations, allows us to  interpolate between simulation points</li>
+        </ul>
 
 
 
 
 
-
-
-
-
-
-
-
-
-
+        {/* Network Architecture */}
+        {/* Synchronizing Networked Game State */}
+        {/* Finished Product */}
+        {/* Future Work */}
       </div>
     </main>
   )
@@ -156,83 +254,11 @@ export default About;
 
 {/*
 <div id="doc" className="markdown-body container-fluid" style="position: relative;">
-  <h1 id="Rough-Draft">Rough Draft</h1>
-  <h2 id="1-Introduction">1 Introduction</h2>
-  <p>Plinko.js is a real-time, multiplayer, networked physics game that can be
-     played in the browser with no special plugins. We built the game and game
-     management with JavaScript, using Node and React, with our clients and
-     server communicating over WebSockets.
-  </p>
-  <p>The major challenges we faced were synchronizing game state over the
-     internet between multiple clients in real time, while facilitating
-     live-action gameplay – all while relying only on the basic features
-     of a browser. We crafted the game state synchronization architecture
-     and algorithms from scratch, using no client-side plugins.
-  </p>
-  <p>This article will explore how we built a browser-based game,
-     strategies to synchronize game state in real time, and our final
-     networked implementation. We’ll also discuss optimizations we leveraged,
-     including protocol strategies, binary serialization, and latency
-     estimation.
-  </p>
-  <p>
-    <img src="https://media.giphy.com/media/piFH1TwJYvfB4vEX6q/giphy.gif" alt="Gameplay" />
-  </p>
-  <blockquote>
-    <p>Actual recorded gameplay</p>
-  </blockquote>
-
-  <h3 id="12-Design-Goals">1.2 Design Goals</h3>
-  <p>Gameplay is similar to real-life Plinko, but with a twist.</p>
-  <p>Up to four players may click to drop chips into the top of the game frame
-     at the same time, and the goal is to hit as many pegs as you can to change
-     them to your own color. The first player to activate enough pegs to hit
-     the target score wins. The target score is a percentage of the total
-     number of pegs – it starts at 100%, and it drops as the game progresses.
-     If you’re playing alone, the game becomes a race against the clock.
-  </p>
-  <p>Since gameplay requires multiple players to drop as many chips as possible
-     as quickly as they can, we know we need to handle a lot of traffic and a
-      fast-moving game state. We must:
-  </p>
-  <ul>
-    <li>Maintain real-time gameplay between multiple players and the illusion
-        of a lag-free environment with latencies as high as 100-200ms
-    </li>
-    <li>Optimize bandwidth and throughput to support a wide variety of possible
-        connection speeds
-    </li>
-    <li>Manage a constantly changing divergent game-state</li>
-  </ul>
 
 
-  Building a Browser Game
 
 
-  <h2 id="2-Building-a-Browser-Game">2 Building a Browser Game</h2>
-  <p>Our first task is to create a single-player version of our real-time game that runs in a user’s local browser, using no special plugins or game networking frameworks.</p>
-  <p>To start, any game must take three basic steps:</p>
-  <ol>
-    <li>Accept player inputs</li>
-    <li>Use those inputs to simulate a game world</li>
-    <li>Show the updated game world to the player</li>
-  </ol>
-  <p>In our game, players make inputs by clicking inside the game frame. A click creates a new chip, which will make its way through the pegs toward the bottom of the frame. That’s step one.</p>
-  <p>But how exactly does the chip make its way? In a physics-based game like ours, a physics engine is responsible for simulating the game world. We use Matter.js, a 2D rigid body physics engine written in JavaScript. Matter provides simulated gravity, friction, and other forces for our new chip to interact with. It lets us calculate, given certain conditions, where any chip should be at any moment in time. That’s step two.</p>
-  <p>Finally, it’s not enough for our app to know what’s happening to a chip. We have to actually show it to the player! Existing rendering libraries have limitations for our game and/or excess functionality that would slow us down, so we decided to write our own renderer using HTML5 Canvas and Rough.js, a graphics library with a hand-sketched feel. The Canvas API lets us connect the calculations of our physics engine directly to the browser’s drawable canvas element. That’s step three, and we’re in business… almost.</p>
-
-  <h3 id="21-Game-Loops">2.1 Game Loops</h3>
-  <p>Our game can’t just take the three game steps once and call it a day. If we want it to run in real time, it must take those steps continuously.</p>
-  <h4 id="211-Looping-Physics">2.1.1 Looping Physics</h4>
-  <p>In real life, physics is continuous by nature. Imagine dropping a real plastic chip into a real frame full of wooden pegs. How many positions in space will that chip occupy on its way down? The answer isn’t quantifiable – the chip will exist at an incalculable number of points between the top of the frame and the bottom.</p>
-  <p>A physics simulation needs to model this behavior, but we can’t ask it to calculate incalculable data. Instead, it needs to calculate the position of the chip at a discrete moment in time, then at a moment a little while after, then one a little after that. When we see these positions all in row, we get the illusion of continuous movement.</p>
-  <p>
-    <img src="https://i.imgur.com/QnL9rtT.png" alt="Simulated Chip Positions" />
-  </p>
-  <blockquote>
-    <p>Figure 2.1.1: A single chip’s positions at discrete points in time</p>
-  </blockquote>
-  <p>Here’s one simple idea:</p>
+  While Loop Snippet
   <pre>
     <code className="javascript hljs">
       <span className="token keyword">while</span> <span className="token punctuation">(</span>gameIsRunning<span className="token punctuation">)</span> <span className="token punctuation">{</span>
@@ -242,31 +268,20 @@ export default About;
       <span className="token punctuation">}</span>
     </code>
   </pre>
-  <p>
-    <code>while</code> loops run repeatedly, as fast as the computer’s processor can manage. This means we have a problem right away: the game will run more slowly on a slow computer than on a fast one. Instead, we need some way to get consistent performance for any machine. That means moving the simulation forward at the same speed for any user, regardless of processing power. We can achieve this with a <strong>fixed timestep</strong>.</p><h4 id="212-Timesteps">2.1.2 Timesteps</h4><p>A timestep provides specific instructions for the physics engine. It’s the amount of time that the engine should move the world forward in each step. It’s essential that the timestep be fixed, which means the exact same length of time is simulated in every loop. Unlike the <code>while</code> loop, a fixed timestep:</p>
-    <ul>
-      <li>Is deterministic for the same user in the same browser</li>
-      <li>Allows us to decouple rendering graphics from simulating the game</li>
-    </ul>
-  <p>We want to display our game at 60 frames per second to provide a smooth, realistic visual experience for players (<a href="https://www.polygon.com/2014/6/5/5761780/frame-rate-resolution-graphics-primer-ps4-xbox-one" target="_blank">Sarkar</a>). To achieve this, we’ll advance the physics simulation at a fixed rate of 16.67 milliseconds in each frame (1000 milliseconds / 60 fps).</p><h4 id="213-Frame-Rate-Independence">2.1.3 Frame Rate Independence</h4><p>Currently, our physics engine steps forward and the game is rendered on every single frame. A loop that renders and updates the simulation at the same time can work well as long as conditions are ideal, but a user with a particularly fast processor will experience a faster moving physics simulation. Likewise, a slower computer will result in a sluggish physical environment.</p><p>Let’s consider an example where, due to heavy computational load, it takes 100ms of real time to run a single step of our game loop. Essentially, 100ms have passed in the real world, but the physics simulation has only moved forward 16ms. In 100ms, we would expect six frames to be simulated and rendered, but instead our game only generates one. If this happens multiple times in a row, the frame rate will drop and the game world will actually appear to <em>slow down</em>.</p><p>Even if our display frame rate is lowered, we still need the physics engine to simulate 100ms when 100ms have elapsed. Otherwise, the motion on the screen will be  and jittery; the speed of a chip should only depend on its physical properties, not the speed of the computer running it (<a href="https://www.koonsolo.com/news/dewitters-gameloop/" target="_blank">dewitters</a>).</p><p>The solution is to decouple the renderer from the physics engine. This entails keeping track of how much time has elapsed since the previous game loop, and, if necessary, stepping the simulation forward multiple times before rendering the next frame.</p><h4 id="213-requestAnimationFrame">2.1.3 <code>requestAnimationFrame</code></h4><p>Now that we have our game loop goals in mind, your first instinct might be to implement the loop using <code>setInterval</code> or <code>setTimeout</code>. But remember that we need to run our game on a fixed timestep, and neither of these methods are guaranteed to execute the callback at the exact delay time we pass in. Instead, this delay will be the <em>minimum</em> amount of time it takes for the callback to be executed. Actual execution time will depend on how many other tasks are also waiting in the queue (<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/EventLoop#Zero_delays" target="_blank">MDN</a>).</p><p>Inexact callback timing isn’t only detrimental to our fixed timestep – it will also cause rendering problems in the browser. Browsers typically repaint pages every 16.67ms, and if our almost-but-not-exactly-16.67ms game loop gets out of sync with the repaint schedule, players may experience skipped frames and other unpleasant visual artifacts. If we run our loop more often than every 16.67ms to account for this, we end up trying to render more frequently than the browser is able to repaint, creating unnecessary computation.</p><p>Luckily, there’s a better option. <code>requestAnimationFrame</code> is a JavaScript browser method on <code>window</code> that’s optimized for looping animation. It lets us pass in a callback, which will be executed before the browser’s next repaint. We’ll pass in the function we use to increment our game engine, and we’ll create a loop by calling <code>requestAnimationFrame</code> recursively inside the callback. Here’s a simplified look at our new looping architecture:</p><pre><code className="javascript hljs"><span className="token keyword">function</span> <span className="token function">gameLoop</span><span className="token punctuation">(</span><span className="token punctuation">)</span> <span className="token punctuation">{</span>
-  <span className="token function">requestAnimationFrame</span><span className="token punctuation">(</span>gameLoop<span className="token punctuation">)</span>
 
-  <span className="token function">processInputs</span><span className="token punctuation">(</span><span className="token punctuation">)</span>
-  <span className="token function">updateWorld</span><span className="token punctuation">(</span><span className="token punctuation">)</span>
-  <span className="token function">renderWorld</span><span className="token punctuation">(</span><span className="token punctuation">)</span>
-  <span className="token punctuation">}</span>
-  </code></pre>
-  <p>Now we’re controlling <em>what</em> to animate – our updated world – but letting the browser handle <em>when</em> to animate, which will occur at its natural 60fps repaint rate. The result is a smoother visual experience for players. You can see the difference in the animations below, which contrast <code>requestAnimationFrame</code> with a loop created using <code>setTimeout</code>:</p>
-  <p>
-    <img src="https://s1.gifyu.com/images/ezgif-4-25e4c4895b.gif" alt="requestAnimationFrame" />
-  </p>
-  <blockquote>
-    <p><code>requestAnimationFrame</code> renders at a smooth 60fps</p>
-  </blockquote><p><img src="https://s1.gifyu.com/images/ezgif-4-364b79fa2d.gif" alt="setTimeout" /></p>
-  <blockquote>
-    <p><code>setTimeout</code> creates an unpredictable frame rate</p>
-  </blockquote>
-    <p><code>requestAnimationFrame</code> also provides other optimizations, like pausing animation when a tab is out of focus to conserve player CPU resources and battery life.</p>
+  Game Loop Snippet
+  <pre>
+    <code className="javascript hljs"><span className="token keyword">function</span> <span className="token function">gameLoop</span><span className="token punctuation">(</span><span className="token punctuation">)</span> <span className="token punctuation">{</span>
+      <span className="token function">requestAnimationFrame</span><span className="token punctuation">(</span>gameLoop<span className="token punctuation">)</span>
+      <span className="token function">processInputs</span><span className="token punctuation">(</span><span className="token punctuation">)</span>
+      <span className="token function">updateWorld</span><span className="token punctuation">(</span><span className="token punctuation">)</span>
+      <span className="token function">renderWorld</span><span className="token punctuation">(</span><span className="token punctuation">)</span>
+      <span className="token punctuation">}</span>
+    </code>
+
+
+
+
   <h4 id="214-Putting-It-All-Together">2.1.4 Putting It All Together</h4>
   <p>By now, we know our game loop must make use of a few key strategies:</p>
   <ul>
@@ -310,6 +325,10 @@ export default About;
     <li><code>accumulatedTime</code> is how we track how much time has passed since the last physics simulation.</li>
     <li>If <code>accumulatedTime</code> is greater than <code>TIMESTEP</code> we know that enough time has passed to advance the simulation forward</li>
     <li>Knowing our <code>alpha</code>, how far we are between simulations, allows us to  interpolate between simulation points</li>
+
+
+
+
   </ul>
 
   <h2 id="3-Network-Architecture">3 Network Architecture</h2>
