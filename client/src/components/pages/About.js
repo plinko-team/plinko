@@ -248,7 +248,9 @@ const About = () => {
             url={"http://www.gabrielgambetta.com/client-server-game-architecture.html"}
           /> | 
           <Citation
-            creator={'Hare Book'}
+            creator={'Sergey Ignatchenko'}
+            creationDate={"July 7, 2017"}
+            title={'Development and Deployment of Multiplayer Online Games, Vol 1'}
           />
           in multiplayer gaming thanks to a few chief benefits:
         </p>
@@ -270,7 +272,21 @@ const About = () => {
         <p>Now that we have our network in place, how will we facilitate communication between our server and clients? We want to run our game at 60 frames per second, which requires transmitting large amounts of data between client and server very quickly.</p>
         <p>HTTP is an obvious protocol choice for most apps, but it isn’t well suited to our needs. It operates on a request-response cycle, and it must open and close a new connection for each new cycle. When we’re sending messages 60 times a second, this constant opening and closing will slow us down.</p>
         <p>WebSockets is built on TCP just like HTTP, but it provides stateful, bidirectional, full-duplex communication between client and server. Either the client or server may initiate communication, and both may send messages to one another simultaneously – all over a single connection that remains open for the lifetime of the communication session. After an initial HTTP handshake to open the connection, the client and server may exchange only the relevant application data with no headers, which decreases message overhead.</p>
-        <p>These optimizations make it faster, and therefore a better choice for our game (<a href="https://blog.feathersjs.com/http-vs-websockets-a-performance-comparison-da2533f13a77" target="_blank">Luecke</a> / <a href="http://blog.arungupta.me/rest-vs-websocket-comparison-benchmarks/" target="_blank">Gupta</a>).</p>
+        <p>These optimizations make it faster, and therefore a better choice for our game 
+        <Citation
+          creator={'David Luecke'}
+          creationDate={"January 26, 2018"}
+          title={'HTTP vs Websockets: A performance comparison'}
+          url={"https://blog.feathersjs.com/http-vs-websockets-a-performance-comparison-da2533f13a77"}
+        /> / 
+        <Citation
+          creator={'Arun Gupta'}
+          creationDate={"February 24, 2014"}
+          title={'REST vs WebSocket Comparison and Benchmarks'}
+          url={"http://blog.arungupta.me/rest-vs-websocket-comparison-benchmarks/"}
+        />
+        .
+        </p>
 
         <h4 id="321-socketio">3.2.1 <a href="http://socket.io" target="_blank">socket.io</a></h4>
         <p>In order to leverage existing solutions for WebSockets, we utilize <a href="http://socket.io" target="_blank">socket.io</a>, a robust Javascript library that serves as a WebSockets wrapper. In addition to a general WebSockets interface, <a href="http://socket.io" target="_blank">socket.io</a> also provides capabilities for broadcasting to compartmentalized sockets, a critical feature for player matchmaking, and support for asynchronous I/O.</p>
@@ -493,7 +509,14 @@ const About = () => {
         {/* Latency by location table */}
 
         <p>(<a href="https://wondernetwork.com/pings" target="_blank">Wonder Network</a>)</p>
-        <p>Research shows that humans perceive response times of under 100-150ms as instantaneous, but that anything longer appears noticeably delayed (Hare). This means some players will have a much better gaming experience than others.</p>
+        <p>Research shows that humans perceive response times of under 100-150ms as instantaneous, but that anything longer appears noticeably delayed 
+          <Citation
+            creator={'Sergey Ignatchenko'}
+            creationDate={"July 7, 2017"}
+            title={'Development and Deployment of Multiplayer Online Games, Vol 1'}
+          />
+          . This means some players will have a much better gaming experience than others.
+        </p>
 
         <h5 id="4231-Solution-…Is-There-One">4.2.3.1 Solution: …Is There One?</h5>
         <p>If we rely entirely on snapshots, there is no real solution for input lag. No matter what, new inputs must travel to the server and back again before clients can see them, not unlike in the earlier lockstep model.</p>
