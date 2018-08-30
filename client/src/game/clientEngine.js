@@ -143,7 +143,7 @@ export default class ClientEngine {
     let chipsNotInSnapshot = []
 
     Object.keys(this.chips).forEach(chipId => {
-      const chip = this.chips(chipId);
+      const chip = this.chips[chipId];
       const { id, ownerId } = chip;
       const combinedId = String(ownerId) + String(id);
 
