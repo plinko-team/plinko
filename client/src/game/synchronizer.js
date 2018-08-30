@@ -26,6 +26,7 @@ export default class Synchronizer {
     this.history = [];
     this.handshakeComplete = false; // Will be set to true after 10 pings
     this.pingEmitTimes = [];
+    this.unregisterAllEvents();
     this.registerSocketEvents();
     this.registerEmitterEvents();
 
@@ -55,6 +56,12 @@ export default class Synchronizer {
     });
   }
 
+  unregisterAllEvents() {
+    this.socket.off(PONG_MESSAGE);
+    this.eventEmitter.off(INITIATE_SYNC);
+    this.eventEmitter.off(HANDSHAKE_COMPLETE);
+  }
+
   get localTime() {
     return Date.now();
   }
@@ -81,6 +88,7 @@ export default class Synchronizer {
 
     return new Promise((resolve) => {
       this.eventEmitter.on(HANDSHAKE_COMPLETE, () => {
+        this.unregisterAllEvents()
         resolve(this.latency);
       })
     })
@@ -105,6 +113,7 @@ export default class Synchronizer {
 
 
       this.serverOffset = performance.now() - (serverTime + this.latency);
+      this.history = []
     }
   }
 

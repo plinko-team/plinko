@@ -42,13 +42,14 @@ export default class ClientEngine {
   constructor({ playerId, socket }) {
     this.playerId = playerId;
     this.socket = socket;
-    this.renderer = new Renderer();
     this.eventEmitter = new EventEmitter();
     this.synchronizer = new Synchronizer(this.socket, this.eventEmitter).init();
     this.snapshotBuffer = new SnapshotBuffer();
   }
 
   init() {
+    this.renderer = new Renderer();
+
     this.logged = false
     this.chips = {};
     this.pegs = {};
