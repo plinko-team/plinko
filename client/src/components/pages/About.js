@@ -159,16 +159,40 @@ const About = () => {
           <li>Allows us to decouple rendering graphics from simulating the game</li>
         </ul>
 
-        <p>We want to display our game at 60 frames per second to provide a smooth, realistic visual experience for players (<a href="https://www.polygon.com/2014/6/5/5761780/frame-rate-resolution-graphics-primer-ps4-xbox-one" target="_blank">Sarkar</a>). To achieve this, we’ll advance the physics simulation at a fixed rate of 16.67 milliseconds in each frame (1000 milliseconds / 60 fps).</p>
+        <p>We want to display our game at 60 frames per second to provide a smooth, realistic visual experience for players
+          <Citation
+            creator={'Samit Sarkar'}
+            creationDate={"June 05, 2014"}
+            title={'Why frame rate and resolution matter: A graphic primer'}
+            contributingOrganization={'Polygon'}
+            url={"https://www.polygon.com/2014/6/5/5761780/frame-rate-resolution-graphics-primer-ps4-xbox-one"}
+          />
+          . To achieve this, we’ll advance the physics simulation at a fixed rate of 16.67 milliseconds in each frame (1000 milliseconds / 60 fps).
+        </p>
 
         <h4 id="213-Frame-Rate-Independence">2.1.3 Frame Rate Independence</h4>
         <p>Currently, our physics engine steps forward and the game is rendered on every single frame. A loop that renders and updates the simulation at the same time can work well as long as conditions are ideal, but a user with a particularly fast processor will experience a faster moving physics simulation. Likewise, a slower computer will result in a sluggish physical environment.</p>
         <p>Let’s consider an example where, due to heavy computational load, it takes 100ms of real time to run a single step of our game loop. Essentially, 100ms have passed in the real world, but the physics simulation has only moved forward 16ms. In 100ms, we would expect six frames to be simulated and rendered, but instead our game only generates one. If this happens multiple times in a row, the frame rate will drop and the game world will actually appear to <em>slow down</em>.</p>
-        <p>Even if our display frame rate is lowered, we still need the physics engine to simulate 100ms when 100ms have elapsed. Otherwise, the motion on the screen will be  and jittery; the speed of a chip should only depend on its physical properties, not the speed of the computer running it (<a href="https://www.koonsolo.com/news/dewitters-gameloop/" target="_blank">dewitters</a>).</p>
+        <p>Even if our display frame rate is lowered, we still need the physics engine to simulate 100ms when 100ms have elapsed. Otherwise, the motion on the screen will be  and jittery; the speed of a chip should only depend on its physical properties, not the speed of the computer running it.
+          <Citation
+            creator={'Koen Witters'}
+            creationDate={"July 13, 2009"}
+            title={'deWiTTERS Game Loop'}
+            url={"https://www.koonsolo.com/news/dewitters-gameloop/"}
+          />
+        </p>
         <p>The solution is to decouple the renderer from the physics engine. This entails keeping track of how much time has elapsed since the previous game loop, and, if necessary, stepping the simulation forward multiple times before rendering the next frame.</p>
 
         <h4 id="213-requestAnimationFrame">2.1.3 <code>requestAnimationFrame</code></h4>
-        <p>Now that we have our game loop goals in mind, your first instinct might be to implement the loop using <code>setInterval</code> or <code>setTimeout</code>. But remember that we need to run our game on a fixed timestep, and neither of these methods are guaranteed to execute the callback at the exact delay time we pass in. Instead, this delay will be the <em>minimum</em> amount of time it takes for the callback to be executed. Actual execution time will depend on how many other tasks are also waiting in the queue (<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/EventLoop#Zero_delays" target="_blank">MDN</a>).</p>
+        <p>Now that we have our game loop goals in mind, your first instinct might be to implement the loop using <code>setInterval</code> or <code>setTimeout</code>. But remember that we need to run our game on a fixed timestep, and neither of these methods are guaranteed to execute the callback at the exact delay time we pass in. Instead, this delay will be the <em>minimum</em> amount of time it takes for the callback to be executed. Actual execution time will depend on how many other tasks are also waiting in the queue 
+          <Citation
+            title={'Concurrency model and Event Loop'}
+            contributingOrganization={'Mozilla Developor Network'}
+            url={"https://developer.mozilla.org/en-US/docs/Web/JavaScript/EventLoop#Zero_delays"}
+            comment={'Do we want to include a comment here?'}
+          />
+          .
+        </p>
         <p>Inexact callback timing isn’t only detrimental to our fixed timestep – it will also cause rendering problems in the browser. Browsers typically repaint pages every 16.67ms, and if our almost-but-not-exactly-16.67ms game loop gets out of sync with the repaint schedule, players may experience skipped frames and other unpleasant visual artifacts. If we run our loop more often than every 16.67ms to account for this, we end up trying to render more frequently than the browser is able to repaint, creating unnecessary computation.</p>
         <p>Luckily, there’s a better option. <code>requestAnimationFrame</code> is a JavaScript browser method on <code>window</code> that’s optimized for looping animation. It lets us pass in a callback, which will be executed before the browser’s next repaint. We’ll pass in the function we use to increment our game engine, and we’ll create a loop by calling <code>requestAnimationFrame</code> recursively inside the callback. Here’s a simplified look at our new looping architecture:</p>
 
@@ -217,7 +241,18 @@ const About = () => {
           <figcaption>Figure 3.1.1: Client-Server Architecture</figcaption>
         </figure>
         <p>Connected players, the clients, transmit inputs to the server. The server, in turn, sends the necessary game state information to all connected clients so that they can recreate the game state locally.</p>
-        <p>Client-server architecture is the gold standard (<a href="http://ithare.com/" target="_blank">Hare</a> (let’s cite the book in our final) | <a href="http://www.gabrielgambetta.com/client-server-game-architecture.html" target="_blank">Gambetta</a>) in multiplayer gaming thanks to a few chief benefits:</p>
+        <p>Client-server architecture is the gold standard 
+          <Citation
+            creator={'Gabriel Gambetta'}
+            title={'Fast-Paced Multiplayer (Part I): Client-Server Game Architecture'}
+            url={"http://www.gabrielgambetta.com/client-server-game-architecture.html"}
+          /> | 
+          <Citation
+            creator={'Hare Book'}
+          />
+          in multiplayer gaming thanks to a few chief benefits:
+        </p>
+        
         <ul>
           <li>Server provides a single source of authority
           <ul>
@@ -268,7 +303,16 @@ const About = () => {
 
         <h4 id="411-Lockstep">4.1.1 Lockstep</h4>
         <p>One solution to this problem is to constrain the client game engines to update at the same time. We’ll send inputs to the server just like above, but the server doesn’t broadcast them right away. Instead, on each frame it waits to receive inputs (or a notification that no input occurred) from every single player. Once it’s heard from everyone, it will broadcast the set of inputs for that frame. Then, and only then, may the clients render the frame. To render the next frame, the server and clients have to start this process over again.</p>
-        <p>This model is called <em>lockstep</em> because that’s exactly how the client engines move forward: together, in lockstep. It was one of the earliest approaches to networked gaming, and it’s still alive today in turn-based and strategy games (<a href="https://gafferongames.com/post/what_every_programmer_needs_to_know_about_game_networking/" target="_blank">Gaffer</a>). A big advantage is the small amount of bandwidth it tends to consume – no matter how complex the game world, we only need to network new inputs. But for an action or physics-based game like ours, it has two significant limitations:</p>
+        <p>This model is called <em>lockstep</em> because that’s exactly how the client engines move forward: together, in lockstep. It was one of the earliest approaches to networked gaming, and it’s still alive today in turn-based and strategy games
+          <Citation
+            creator={'Glenn Fiedler'}
+            creationDate={"February 24, 2010"}
+            title={'What Every Programmer Needs To Know About Game Networking'}
+            contributingOrganization={'Gaffer On Games'}
+            url={"https://gafferongames.com/post/what_every_programmer_needs_to_know_about_game_networking"}
+          />
+          . A big advantage is the small amount of bandwidth it tends to consume – no matter how complex the game world, we only need to network new inputs. But for an action or physics-based game like ours, it has two significant limitations:
+        </p>
         <ol>
           <li>Everyone’s game will run at the speed of the slowest player connection</li>
           <li>Sending only inputs relies on <em>deterministic</em> behavior in the game engine</li>
@@ -277,7 +321,16 @@ const About = () => {
 
         <h5 id="412-Determinism">4.1.2 Determinism</h5>
         <p>If our plan is to share new inputs among players and let their individual physics engines take care of the rest, we need be able to trust that each of those engines will produce exactly the same result. If we drop a chip in the same place at the same time under the same conditions, it should always behave in exactly the same way for every player.</p>
-        <p>However, the vast majority of physics engines, including ours, are <em>not</em> deterministic. Physics engines rely on floating point numbers to calculate physical properties and forces, and floating point numbers are handled differently by different machines and operating systems (<a href="https://gafferongames.com/post/deterministic_lockstep/" target="_blank">Gaffer</a>). If floating point calculations aren’t deterministic, our game won’t be either. A small disparity in rounding might cause a chip to bounce left for one user and right for another, and soon our players’ game states have diverged just like before.</p>
+        <p>However, the vast majority of physics engines, including ours, are <em>not</em> deterministic. Physics engines rely on floating point numbers to calculate physical properties and forces, and floating point numbers are handled differently by different machines and operating systems 
+          <Citation
+            creator={'Glenn Fiedler'}
+            creationDate={"November 29, 2014"}
+            title={'Deterministic Lockstep: Keeping simulations in sync by sending only inputs'}
+            contributingOrganization={'Gaffer On Games'}
+            url={"https://gafferongames.com/post/deterministic_lockstep/"}
+          />        
+          . If floating point calculations aren’t deterministic, our game won’t be either. A small disparity in rounding might cause a chip to bounce left for one user and right for another, and soon our players’ game states have diverged just like before.
+        </p>
         <p>At this point, it’s obvious that transmitting only inputs is not enough. How can we do better?</p>
 
         <h3 id="42-Transmitting-the-Entire-Game-State">4.2 Transmitting the Entire Game State</h3>
@@ -619,7 +672,15 @@ const About = () => {
 
         <h4 id="436-Estimating-Latency">4.3.6 Estimating Latency</h4>
         <p>There’s one last thing we need to address. Our game implicitly expects that the clients and server are running on the same timeline. This means that if the server is on frame 100 we should expect any given client to be within at least a few frames of that when sending or receiving inputs. If this is not the case our game will break down because our game engine will be forced to reenact too far into the past. So how do we ensure that clients and server start the game in a synchronized manner and maintain a unified timeline? We estimate the average latency between a given client and the server.</p>
-        <p>We need to estimate because there is no sure-fire of knowing the exact latency between the client and server. Part of this issue stems from the fact that no two clocks will ever agree on what the current time is and no two transmissions are guaranteed to take the exact amount of time. With that being said, we don’t need to be exact and a good estimate of latency is the best we can hope for. Utilizing the algorithm (<a href="http://www.mine-control.com/zack/timesync/timesync.html" target="_blank">Simpson</a>) described below we are able to get an average latency estimate that’s sufficient for our purposes.</p>
+        <p>We need to estimate because there is no sure-fire of knowing the exact latency between the client and server. Part of this issue stems from the fact that no two clocks will ever agree on what the current time is and no two transmissions are guaranteed to take the exact amount of time. With that being said, we don’t need to be exact and a good estimate of latency is the best we can hope for. Utilizing the algorithm 
+          <Citation
+            creator={'Zachary Booth Simpson'}
+            creationDate={"March 01, 2000"}
+            title={'A Stream-based Time Synchronization Technique For Networked Computer Games'}
+            url={"http://www.mine-control.com/zack/timesync/timesync.html"}
+          />
+          described below we are able to get an average latency estimate that’s sufficient for our purposes.
+        </p>
         <p>
           <img src="https://media.giphy.com/media/1gXhpaKuQfwJoipAXq/giphy.gif" alt="Estimating Latency" />
         </p>
