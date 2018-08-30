@@ -1,3 +1,4 @@
+import { CANVAS } from '../../shared/constants/canvas'
 import { CHIP } from '../../shared/constants/bodies';
 import { DROP_BOUNDARY } from '../../shared/constants/game';
 import { PLAYER_COLORS } from '../../shared/constants/colors';
@@ -15,8 +16,14 @@ export default class HoverChip extends GameObject {
 
   registerListener() {
     document.querySelector('#canvas').addEventListener('mousemove', (e) => {
-      this.x = e.offsetX;
-      this.y = e.offsetY;
+
+      const parentWidth = e.target.offsetWidth;
+      const parentHeight = e.target.offsetHeight;
+
+      this.x = (e.offsetX / parentWidth) * CANVAS.WIDTH;
+      this.y = (e.offsetY / parentHeight) * CANVAS.HEIGHT;
+
+
 
       // Change color if cursor crosses boundary
       this.fill = this.y > DROP_BOUNDARY ? '#ffffff' : PLAYER_COLORS[this.ownerId];

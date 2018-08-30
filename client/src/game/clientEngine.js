@@ -225,11 +225,15 @@ export default class ClientEngine {
 
     if (!this.isRunning) { return }
 
-    // Short circuit handler if outside of drop boundary
-    if (e.offsetY > DROP_BOUNDARY) { return }
+    const computedCanvasWidth = e.target.offsetWidth;
+    const computedCanvasHeight = e.target.offsetHeight;
 
-    const x = e.offsetX;
-    const y = e.offsetY;
+    // Short circuit handler if outside of drop boundary
+    if ((e.offsetY / computedCanvasHeight) * CANVAS.HEIGHT > DROP_BOUNDARY) { return }
+
+    const x = (e.offsetX / computedCanvasWidth) * CANVAS.WIDTH;
+    const y = (e.offsetY / computedCanvasHeight) * CANVAS.HEIGHT;
+
     const ownerId = this.playerId;
     const id = this.lastChipId++ % 255;
 
