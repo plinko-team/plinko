@@ -106,6 +106,28 @@ const About = () => {
   // ...
 }`;
 
+  const beforeSerializationSnippet = `{
+  id: 255,
+  x: 752.34235235235,
+  y: 492.42452311111,
+  angle: 3.535450564755286
+}`;
+
+  const afterSerializationSnipper = `'{
+  "id":255,
+  "x":752.34235235235,
+  "y":492.42452311111,
+  "angle":3.535450564755286
+}'`;
+
+  const binarySnippet = `
+11111111
+1011110000
+0111101100
+0110111001111
+
+`;
+
   const animateClientReenactment = `function animate() {
   
   if (latestSnapshotExists()) {
@@ -665,7 +687,28 @@ while (bendingFrame !== totalBendingFrames) {
         <p>In order to transmit data between clients and the server, the data must be converted into one of two formats that can be sent over the internet: a string, or a binary stream. This conversion process is called serialization.</p>
         <p>So far, we’ve been relying on WebSockets to automatically serialize our JavaScript objects into transmittable JSON strings for us. For a single chip in a snapshot, it looks a little something like this:</p>
 
-        {/* object vs JSON table */}
+        <table>
+          <thead>
+            <tr>
+              <th>Before</th>
+              <th>After</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <SyntaxHighlighter {...syntaxHighlighterProps}>
+                  {beforeSerializationSnippet}
+                </SyntaxHighlighter>
+              </td>
+              <td>
+                <SyntaxHighlighter {...syntaxHighlighterProps}>
+                  {afterSerializationSnipper}
+                </SyntaxHighlighter>
+              </td>
+            </tr>
+          </tbody>
+        </table>
 
         <p><small><em>Note that JSON strings don’t actually include newlines or other whitespace. We show them here for readability.</em></small></p>
         <p>The JSON string above is 76 characters, which means it takes 76 bytes to send over the network (1 byte per character). But if we put in some extra work to serialize our snapshots into binary, we can do <em>much</em> better.</p>
@@ -677,7 +720,32 @@ while (bendingFrame !== totalBendingFrames) {
         </Aside>
         <p>Let’s take that old chip string and see what it looks like after the server quantizes the values and converts them to binary:</p>
 
-        {/* JSON vs binary table */}
+        <table>
+          <thead>
+            <tr>
+              <th>Before</th>
+              <th>After</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <SyntaxHighlighter {...syntaxHighlighterProps}>
+                  {afterSerializationSnipper}
+                </SyntaxHighlighter>
+              </td>
+              <td>
+                <SyntaxHighlighter {...syntaxHighlighterProps}>
+                  {binarySnippet}
+                </SyntaxHighlighter>
+              </td>
+            </tr>
+            <tr>
+              <td>76 bytes (608 bits)</td>
+              <td>8 bytes (41 bits)</td>
+            </tr>
+          </tbody>
+        </table>
 
         <p>Our chip has shrunk from 76 bytes to just 8 bytes. That’s a size reduction of almost 90%!</p>
 
@@ -999,6 +1067,8 @@ while (bendingFrame !== totalBendingFrames) {
             <li>All latencies above 1 standard-deviation from the median latency are discarded and the remaining samples are averaged.</li>
           </ol>
         <p>Now that we have a reliable means of estimating latency before the game starts each client can use this information to predict what frame of the simulation the server is on.</p>
+        
+        <h4 id="437-Conclusion">4.3.7 Conclusion</h4>
         <p>While prediction adds complexity to our implementation, it allows us to reduce our bandwidth needs considerably and creates a better experience for the user.</p>
 
         {/* Finished Product */}
@@ -1038,384 +1108,3 @@ while (bendingFrame !== totalBendingFrames) {
 }
 
 export default About;
-
-{/*
-<div id="doc" className="markdown-body container-fluid" style="position: relative;">
-
-
-  While Loop Snippet
-  <pre>
-    <code className="javascript hljs">
-      <span className="token keyword">while</span> <span className="token punctuation">(</span>gameIsRunning<span className="token punctuation">)</span> <span className="token punctuation">{</span>
-      <span className="token function">processInputs</span><span className="token punctuation">(</span><span className="token punctuation">)</span>
-      <span className="token function">updateWorld</span><span className="token punctuation">(</span><span className="token punctuation">)</span>
-      <span className="token function">renderWorld</span><span className="token punctuation">(</span><span className="token punctuation">)</span>
-      <span className="token punctuation">}</span>
-    </code>
-  </pre>
-
-  Game Loop Snippet
-  <pre>
-    <code className="javascript hljs"><span className="token keyword">function</span> <span className="token function">gameLoop</span><span className="token punctuation">(</span><span className="token punctuation">)</span> <span className="token punctuation">{</span>
-      <span className="token function">requestAnimationFrame</span><span className="token punctuation">(</span>gameLoop<span className="token punctuation">)</span>
-      <span className="token function">processInputs</span><span className="token punctuation">(</span><span className="token punctuation">)</span>
-      <span className="token function">updateWorld</span><span className="token punctuation">(</span><span className="token punctuation">)</span>
-      <span className="token function">renderWorld</span><span className="token punctuation">(</span><span className="token punctuation">)</span>
-      <span className="token punctuation">}</span>
-    </code>
-  </pre>
-
-  gameLoop Snippet 2.1.4
-  <pre>
-    <code className="javascript hljs">
-      <span className="token keyword">function</span> <span className="token function">gameLoop</span><span className="token punctuation">(</span><span className="token punctuation">)</span> <span className="token punctuation">{</span>
-      <span className="token function">requestAnimationFrame</span><span className="token punctuation">(</span>gameLoop<span className="token punctuation">)</span><span className="token punctuation">;</span>
-      <span className="token comment">// `elapsedTime` describes how much time the last game loop took</span>
-      elapsedTime
-      <span className="token operator"></span> <span className="token function">currentTime</span><span className="token punctuation">(</span><span className="token punctuation">)</span> <span className="token operator">-</span> lastFrameTime<span className="token punctuation">;</span>
-      <span className="token comment">// `MAX_ELAPSED_TIME` ensures the renderer doesn't fall too far</span>
-      <span className="token comment">// behind the simulation in the event of a processing spike</span>
-      <span className="token keyword">if</span> <span className="token punctuation">(</span>elapsedTime <span className="token operator">&gt;</span> <span className="token constant">MAX_ELAPSED_TIME</span><span className="token punctuation">)</span> <span className="token punctuation">{</span>
-      elapsedTime <span className="token operator">=</span> <span className="token constant">MAX_ELAPSED_TIME</span><span className="token punctuation">;</span>
-      <span className="token punctuation">}</span>
-      accumulatedTime <span className="token operator">+=</span> elapsedTime<span className="token punctuation">;</span>
-      <span className="token keyword">while</span> <span className="token punctuation">(</span>accumulatedTime <span className="token operator">&gt;=</span> <span className="token constant">TIMESTEP</span><span className="token punctuation">)</span> <span className="token punctuation">{</span>
-      <span className="token comment">// Advance the simulation by our fixed `TIMESTEP`, 16.67ms</span>
-      <span className="token function">updateWorld</span><span className="token punctuation">(</span><span className="token constant">TIMESTEP</span><span className="token punctuation">)</span><span className="token punctuation">;</span>
-      accumulatedTime <span className="token operator">-=</span> <span className="token constant">TIMESTEP</span><span className="token punctuation">;</span>
-      <span className="token punctuation">}</span>
-      <span className="token comment">// `alpha` is a value between 0 and 1 that represents</span>
-      <span className="token comment">// how far along the game loop is between the previous</span>
-      <span className="token comment">// and current simulation steps</span>
-      alpha <span className="token operator">=</span> accumulatedTime <span className="token operator">/</span> <span className="token constant">TIMESTEP</span><span className="token punctuation">;</span>
-      <span className="token function">interpolate</span><span className="token punctuation">(</span>alpha<span className="token punctuation">)</span><span className="token punctuation">;</span>
-      <span className="token function">renderWorld</span><span className="token punctuation">(</span><span className="token punctuation">)</span><span className="token punctuation">;</span>
-      lastFrameTime <span className="token operator">=</span> <span className="token function">currentTime</span><span className="token punctuation">(</span><span className="token punctuation">)</span><span className="token punctuation">;</span>
-      <span className="token punctuation">}</span>
-    </code>
-  </pre>
-
-  Animate snippet
-  <pre>
-    <code className="javascript hljs"><span className="token keyword">function</span> <span className="token function">animate</span><span className="token punctuation">(</span><span className="token punctuation">)</span> <span className="token punctuation">{</span>
-      <span className="token comment">// ...</span>
-      <span className="token comment">// Get the latest snapshot received from the server</span>
-      currentSnapshot <span className="token operator">=</span> <span className="token function">getSnapshot</span><span className="token punctuation">(</span><span className="token punctuation">)</span>
-      <span className="token comment">// Iterate over all chips that exist in the snapshot</span>
-      currentSnapshot<span className="token punctuation">.</span>chips<span className="token punctuation">.</span><span className="token function">forEach</span><span className="token punctuation">(</span>chipInfo <span className="token operator">=&gt;</span> <span className="token punctuation">{</span>
-      <span className="token keyword">if</span> <span className="token punctuation">(</span><span className="token function">chipAlreadyExists</span><span className="token punctuation">(</span><span className="token punctuation">)</span><span className="token punctuation">)</span> <span className="token punctuation">{</span>
-      <span className="token comment">// If this is an existing chip, update its properties with the</span>
-      <span className="token comment">// data from the snapshot</span>
-      <span className="token function">updateExistingChip</span><span className="token punctuation">(</span>chipInfo<span className="token punctuation">)</span>
-      <span className="token punctuation">}</span> <span className="token keyword">else</span> <span className="token punctuation">{</span>
-      <span className="token comment">// If this is a new chip the client hasn't seen yet, create a new</span>
-      <span className="token comment">// chip object and add it to the renderer</span>
-      <span className="token function">createNewChip</span><span className="token punctuation">(</span>chipInfo<span className="token punctuation">)</span>
-      <span className="token function">addChipToRenderer</span><span className="token punctuation">(</span><span className="token punctuation">)</span>
-      <span className="token punctuation">}</span>
-      <span className="token punctuation">}</span><span className="token punctuation">)</span>
-      <span className="token function">renderGame</span><span className="token punctuation">(</span><span className="token punctuation">)</span>
-      <span className="token comment">// ...</span>
-      <span className="token punctuation">}</span>
-    </code>
-  </pre>
-
-  Snapshot snippet
-  <pre><code className="javascript hljs"><span className="token keyword">function</span> <span className="token function">animate</span><span className="token punctuation">(</span><span className="token punctuation">)</span> <span className="token punctuation">{</span>
-    <span className="token comment">// ...</span>
-    <span className="token comment">// Get the latest snapshot received from the server</span>
-    currentSnapshot <span className="token operator">=</span> <span className="token function">getSnapshot</span><span className="token punctuation">(</span><span className="token punctuation">)</span>
-    <span className="token comment">// Iterate over all chips that exist in the snapshot</span>
-    currentSnapshot<span className="token punctuation">.</span>chips<span className="token punctuation">.</span><span className="token function">forEach</span><span className="token punctuation">(</span>chipInfo <span className="token operator">=&gt;</span> <span className="token punctuation">{</span>
-    <span className="token keyword">if</span> <span className="token punctuation">(</span><span className="token function">chipAlreadyExists</span><span className="token punctuation">(</span><span className="token punctuation">)</span><span className="token punctuation">)</span> <span className="token punctuation">{</span>
-    <span className="token comment">// If this is an existing chip, update its properties with the</span>
-    <span className="token comment">// data from the snapshot</span>
-    <span className="token function">updateExistingChip</span><span className="token punctuation">(</span>chipInfo<span className="token punctuation">)</span>
-    <span className="token punctuation">}</span> <span className="token keyword">else</span> <span className="token punctuation">{</span>
-    <span className="token comment">// If this is a new chip the client hasn't seen yet, create a new</span>
-    <span className="token comment">// chip object and add it to the renderer</span>
-    <span className="token function">createNewChip</span><span className="token punctuation">(</span>chipInfo<span className="token punctuation">)</span>
-    <span className="token function">addChipToRenderer</span><span className="token punctuation">(</span><span className="token punctuation">)</span>
-    <span className="token punctuation">}</span>
-    <span className="token punctuation">}</span><span className="token punctuation">)</span>
-    <span className="token function">renderGame</span><span className="token punctuation">(</span><span className="token punctuation">)</span>
-    <span className="token comment">// ...</span>
-    <span className="token punctuation">}</span>
-  </code></pre>
-
-  Snapshot buffer snippet
-  <pre><code className="javascript hljs"><span className="token keyword">function</span> <span className="token function">animate</span><span className="token punctuation">(</span><span className="token punctuation">)</span> <span className="token punctuation">{</span>
-    <span className="token comment">// ...</span>
-    <span className="token comment">// If there are more than 5 frames in the buffer, the client is too far</span>
-    <span className="token comment">// behind the server and should throw away excess frames to get back in sync  </span>
-    <span className="token keyword">while</span> <span className="token punctuation">(</span>snapshotBuffer<span className="token punctuation">.</span>length <span className="token operator">&gt;</span> <span className="token number">5</span><span className="token punctuation">)</span> <span className="token punctuation">{</span> snapshotBuffer<span className="token punctuation">.</span><span className="token function">shift</span><span className="token punctuation">(</span><span className="token punctuation">)</span> <span className="token punctuation">}</span>
-    <span className="token comment">// Get the first snapshot received from the server that hasn't been processed yet</span>
-    currentSnapshot <span className="token operator">=</span> snapshotBuffer<span className="token punctuation">.</span><span className="token function">shift</span><span className="token punctuation">(</span><span className="token punctuation">)</span>
-    <span className="token comment">// If no snapshot exists to be processed, do not render a new frame</span>
-    <span className="token keyword">if</span> <span className="token punctuation">(</span><span className="token operator">!</span>currentSnapshot<span className="token punctuation">)</span> <span className="token punctuation">{</span> <span className="token keyword">return</span> <span className="token punctuation">}</span>
-    <span className="token comment">// Otherwise, iterate over all chips that exist in the snapshot</span>
-    currentSnapshot<span className="token punctuation">.</span>chips<span className="token punctuation">.</span><span className="token function">forEach</span><span className="token punctuation">(</span>chipInfo <span className="token operator">=&gt;</span> <span className="token punctuation">{</span>
-    <span className="token comment">// Update chip or create a new one, same as before</span>
-    <span className="token punctuation">}</span><span className="token punctuation">)</span>
-    <span className="token function">renderGame</span><span className="token punctuation">(</span><span className="token punctuation">)</span>
-    <span className="token comment">// ...</span>
-    <span className="token punctuation">}</span>
-  </code></pre>
-
-  Object vs JSON table
-  <table>
-    <thead>
-      <tr>
-        <th>Before</th>
-        <th>After</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><code>{</code><br><code>id: 255,</code><br><code>x: 752.34235235235,</code><br><code>y: 492.42452311111,</code><br><code>angle: 3.535450564755286</code><br><code>}</code></td>
-        <td><code>'{</code><br><code>"id":255,</code><br><code>"x":752.34235235235,</code><br><code>"y":492.42452311111,</code><br><code>"angle":3.535450564755286</code><br><code>}'</code></td>
-      </tr>
-    </tbody>
-  </table>
-
-  JSON vs binary table
-  <table>
-    <thead>
-      <tr>
-        <th>JSON</th>
-        <th>Binary</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><code>'{</code><br><code>"id":255,</code><br><code>"x":752.34235235235,</code><br><code>"y":492.42452311111,</code><br><code>"angle":3.535450564755286</code><br><code>}'</code></td>
-        <td><code>11111111</code><br><code>1011110000</code><br><code>0111101100</code><br><code>0110111001111</code></td>
-      </tr>
-      <tr>
-        <td><strong>76 bytes</strong> (608 bits)</td>
-        <td><strong>8 bytes</strong> (41 bits)</td>
-      </tr>
-    </tbody>
-  </table>
-
-  Unserialized vs serialized bandwidth table
-  <table>
-    <thead>
-      <tr>
-        <th></th>
-        <th>JSON</th>
-        <th>Binary</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>Bandwidth (kb/s)</td>
-        <td>900</td>
-        <td>96</td>
-      </tr>
-    </tbody>
-  </table>
-
-  Latency by location table
-  <table>
-    <thead>
-      <tr>
-        <th>Player Location</th>
-        <th>Estimated RTT to Our Server in San Francisco</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>Los Angeles</td>
-        <td>20 ms</td>
-      </tr>
-      <tr>
-        <td>New York</td>
-        <td>130 ms</td>
-      </tr>
-      <tr>
-        <td>London</td>
-        <td>300 ms</td>
-      </tr>
-      <tr>
-        <td>Moscow</td>
-        <td>400 ms</td>
-      </tr>
-    </tbody>
-  </table>
-
-  4.3.1 snippet
-  <pre><code className="javascript hljs">
-    <span className="token keyword">function</span>
-    <span className="token function">animate</span>
-    <span className="token punctuation">(</span>
-    <span className="token punctuation">)</span>
-    <span className="token punctuation">{</span>
-    <span className="token keyword">if</span>
-    <span className="token punctuation">(</span>
-    <span className="token function">latestSnapshotExists</span>
-    <span className="token punctuation">(</span>
-    <span className="token punctuation">)</span>
-    <span className="token punctuation">)</span>
-    <span className="token punctuation">{</span>
-    snapshot <span className="token operator">=</span>
-    <span className="token function">getLatestSnapshot</span>
-    <span className="token punctuation">(</span>
-    <span className="token punctuation">)</span>
-    <span className="token comment">// Regenerate world from latest snapshot then catch up </span>
-    <span className="token comment">// to the current frame</span>
-    <span className="token function">regenerateFromSnapshot</span>
-    <span className="token punctuation">(</span>snapshot<span className="token punctuation">)</span>
-    <span className="token function">catchUpToCurrentFrameFrom</span>
-    <span className="token punctuation">(</span>snapshot<span className="token punctuation">.</span>frame
-    <span className="token punctuation">)</span>
-    <span className="token function">deleteLatestSnapshot</span>
-    <span className="token punctuation">(</span><span className="token punctuation">)</span>
-    <span className="token comment">// Make room for next snapshot</span>
-    <span className="token punctuation">}</span>
-    <span className="token comment">// Always move the engine ahead one step</span>
-    <span className="token comment">// because we are always extrapolating</span>
-    <span className="token function">updateWorld</span><span className="token punctuation">(</span><span className="token punctuation">)</span>
-    frame <span className="token operator">+=</span> <span className="token number">1</span>
-    <span className="token punctuation">}</span>
-  </code></pre>
-
-  Regenerate from snapshot snippet
-  <pre><code className="javascript hljs">
-    <span className="token keyword">function</span>
-    <span className="token function">regenerateFromSnapshot</span>
-    <span className="token punctuation">(</span>snapshot
-    <span className="token punctuation">)</span>
-    <span className="token punctuation">{</span>snapshot
-    <span className="token punctuation">.</span>chips
-    <span className="token punctuation">.</span>
-    <span className="token function">forEach</span>
-    <span className="token punctuation">(</span>chipInfo
-    <span className="token operator">=&gt;</span>
-    <span className="token punctuation">{</span>
-    <span className="token keyword">if</span>
-    <span className="token punctuation">(</span>
-    <span className="token function">chipDoesNotExist</span>
-    <span className="token punctuation">(</span>
-    <span className="token punctuation">)</span>
-    <span className="token punctuation">)</span>
-    <span className="token punctuation">{</span>
-    <span className="token function">createChip</span>
-    <span className="token punctuation">(</span>chipInfo
-    <span className="token punctuation">)</span>
-    <span className="token punctuation">}</span>
-    <span className="token comment">// Get a reference to the chip, either newly created or already existing</span> chip
-    <span className="token operator">=</span>
-    <span className="token function">getChipById</span>
-    <span className="token punctuation">(</span>chipInfo
-    <span className="token punctuation">.</span>id<span className="token punctuation">)</span>
-    <span className="token comment">// Adjust physical properties based on snapshot's properties</span>
-    <span className="token function">updateChipProperties</span>
-    <span className="token punctuation">(</span>chip
-    <span className="token punctuation">,</span> chipInfo
-    <span className="token punctuation">)</span>
-    <span className="token punctuation">}</span>
-    <span className="token punctuation">)</span>
-    <span className="token punctuation">}</span>
-  </code></pre>
-
-  Fast forward snippet
-  <pre><code className="javascript hljs"><span className="token keyword">function</span> <span className="token function">catchUpToCurrentFrameFrom</span><span className="token punctuation">(</span>frame<span className="token punctuation">)</span> <span className="token punctuation">{</span>
-    <span className="token comment">// Indicate that we should not render reenactment steps</span>
-    <span className="token function">toggleReenactmentOn</span><span className="token punctuation">(</span><span className="token punctuation">)</span>
-    <span className="token comment">// Fast-forward up to current frame with the engine</span>
-    <span className="token keyword">while</span> <span className="token punctuation">(</span>frame <span className="token operator">&lt;</span> <span className="token function">currentFrame</span><span className="token punctuation">(</span><span className="token punctuation">)</span><span className="token punctuation">)</span> <span className="token punctuation">{</span>
-      frame <span className="token operator">+=</span> <span className="token number">1</span>
-      <span className="token function">updateWorld</span><span className="token punctuation">(</span><span className="token punctuation">)</span>
-    <span className="token punctuation">}</span>
-    <span className="token function">toggleReenactmentOff</span><span className="token punctuation">(</span><span className="token punctuation">)</span>
-    <span className="token punctuation">}</span>
-  </code></pre>
-
-  DS implementation snippet
-  <pre><code className="javascript hljs"><span className="token keyword">function</span> <span className="token function">animate</span><span className="token punctuation">(</span><span className="token punctuation">)</span> <span className="token punctuation">{</span>
-    <span className="token keyword">if</span> <span className="token punctuation">(</span><span className="token function">inputBufferNotEmpty</span><span className="token punctuation">(</span><span className="token punctuation">)</span><span className="token punctuation">)</span> <span className="token punctuation">{</span>
-    frame <span className="token operator">=</span> inputBuffer<span className="token punctuation">.</span><span className="token function">earliestFrame</span><span className="token punctuation">(</span><span className="token punctuation">)</span>
-    <span className="token comment">// Empty inputBuffer into inputHistory</span>
-    <span className="token keyword">while</span> <span className="token punctuation">(</span><span className="token function">inputBufferNotEmpty</span><span className="token punctuation">(</span><span className="token punctuation">)</span><span className="token punctuation">)</span> <span className="token punctuation">{</span>
-      input <span className="token operator">=</span> inputBuffer<span className="token punctuation">.</span><span className="token function">shift</span><span className="token punctuation">(</span><span className="token punctuation">)</span> <span className="token comment">// Get first input</span>
-      <span className="token comment">// Store it according to its frame in inputHistory</span>
-      inputHistory<span className="token punctuation">.</span><span className="token function">add</span><span className="token punctuation">(</span>input<span className="token punctuation">)</span>
-    <span className="token punctuation">}</span>
-    <span className="token comment">// Get snapshot for frame of first input in buffer</span>
-    snapshot <span className="token operator">=</span> snapshotHistory<span className="token punctuation">.</span><span className="token function">at</span><span className="token punctuation">(</span>frame<span className="token punctuation">)</span>
-    <span className="token function">restoreWorldFromSnapshot</span><span className="token punctuation">(</span>snapshot<span className="token punctuation">)</span> <span className="token comment">// Rewind</span>
-    <span className="token function">catchUpToCurrentFrameFrom</span><span className="token punctuation">(</span>frame<span className="token punctuation">)</span> <span className="token comment">// Reenact</span>
-    <span className="token punctuation">}</span>
-    <span className="token function">updateWorld</span><span className="token punctuation">(</span><span className="token punctuation">)</span>
-    frame <span className="token operator">+=</span> <span className="token number">1</span>
-    <span className="token punctuation">}</span>
-  </code></pre>
-
-  restoring world from snapshot snippet
-  <pre><code className="javascript hljs"><span className="token keyword">function</span> <span className="token function">restoreWorldFromSnapshot</span><span className="token punctuation">(</span>snapshot<span className="token punctuation">)</span> <span className="token punctuation">{</span>
-    snapshot<span className="token punctuation">.</span>chips<span className="token punctuation">.</span><span className="token function">forEach</span><span className="token punctuation">(</span>chipInfo <span className="token operator">=&gt;</span> <span className="token punctuation">{</span>
-    <span className="token comment">// Category 1; new chips</span>
-    <span className="token keyword">if</span> <span className="token punctuation">(</span><span className="token function">chipIsNewToWorld</span><span className="token punctuation">(</span><span className="token punctuation">)</span><span className="token punctuation">)</span> <span className="token punctuation">{</span> <span className="token function">createChip</span><span className="token punctuation">(</span>chipInfo<span className="token punctuation">)</span> <span className="token punctuation">}</span>
-    <span className="token comment">// Category 2; update chips</span>
-    chip <span className="token operator">=</span> <span className="token function">getChipFromWorldById</span><span className="token punctuation">(</span>id<span className="token punctuation">)</span>
-    chip<span className="token punctuation">.</span><span className="token function">updateProperties</span><span className="token punctuation">(</span>chipInfo<span className="token punctuation">)</span>
-    <span className="token punctuation">}</span><span className="token punctuation">)</span>
-
-    <span className="token comment">// Category 3; remove chips</span>
-    <span className="token function">deleteChipsNotInSnapshot</span><span className="token punctuation">(</span><span className="token punctuation">)</span>
-    <span className="token punctuation">}</span>
-  </code></pre>
-
-  server-side reenactment snippet
-  <pre><code className="javascript hljs"><span className="token keyword">function</span> <span className="token function">catchUpToCurrentFrameFrom</span><span className="token punctuation">(</span>frame<span className="token punctuation">)</span> <span className="token punctuation">{</span>
-    <span className="token comment">// `frame` is the frame from the first buffered input</span>
-    <span className="token keyword">while</span> <span className="token punctuation">(</span>frame <span className="token operator">&lt;</span> <span className="token function">currentFrame</span><span className="token punctuation">(</span><span className="token punctuation">)</span><span className="token punctuation">)</span> <span className="token punctuation">{</span>
-    <span className="token comment">// If there are inputs at the current frame, we need to</span>
-    <span className="token comment">// process them by creating and adding chips to the world</span>
-    inputs <span className="token operator">=</span> <span className="token function">inputsAtCurrentFrame</span><span className="token punctuation">(</span><span className="token punctuation">)</span>
-    <span className="token keyword">if</span> <span className="token punctuation">(</span>inputs<span className="token punctuation">)</span> <span className="token punctuation">{</span>
-      inputs<span className="token punctuation">.</span><span className="token function">forEach</span><span className="token punctuation">(</span>input <span className="token operator">=&gt;</span> <span className="token function">createChip</span><span className="token punctuation">(</span>input<span className="token punctuation">)</span><span className="token punctuation">)</span>
-    <span className="token punctuation">}</span>
-    <span className="token comment">// Our snapshot history keeps a snapshot for every frame</span>
-    <span className="token comment">// Now that we've modified the past state,</span>
-    <span className="token comment">// it needs to be overwritten</span>
-    generatedSnapshot <span className="token operator">=</span> <span className="token function">generateSnapshot</span><span className="token punctuation">(</span><span className="token punctuation">)</span>
-    snapshotHistory<span className="token punctuation">.</span><span className="token function">update</span><span className="token punctuation">(</span>frame<span className="token punctuation">,</span> generatedSnapshot<span className="token punctuation">)</span>
-    <span className="token comment">// Finally, we move the engine forward by one tick</span>
-    <span className="token function">updateWorld</span><span className="token punctuation">(</span><span className="token punctuation">)</span>
-    frame <span className="token operator">+=</span> <span className="token number">1</span>
-    <span className="token punctuation">}</span>
-    <span className="token comment">// After the while loop has executed, our world state will be back at the</span>
-    <span className="token comment">// current frame, including the new inputs</span>
-    <span className="token punctuation">}</span>
-  </code></pre>
-
-  Bending implementation snippet
-  <pre><code className="javascript hljs">
-    <span className="token comment">// Determine the number of frames before the position will converge</span>
-    totalBendingFrames <span className="token operator">=</span> <span className="token number">4</span>
-    bendingFrame <span className="token operator">=</span> <span className="token number">1</span>
-    <span className="token keyword">while</span> <span className="token punctuation">(</span>bendingFrame <span className="token operator">!==</span> totalBendingFrames<span className="token punctuation">)</span> <span className="token punctuation">{</span>
-    <span className="token comment">// Calculate bending factor. It can be a constant factor, </span>
-    <span className="token comment">// or dependent on number of bending frames</span>
-    bendingFactor <span className="token operator">=</span> <span className="token number">1</span> <span className="token operator">/</span> <span className="token punctuation">(</span>totalBendingFrames <span className="token operator">-</span> bendingFrame<span className="token punctuation">)</span>
-    <span className="token comment">// Calculate the distance between new and old position</span>
-    deltaX <span className="token operator">=</span> simulatedPosition<span className="token punctuation">.</span>x <span className="token operator">-</span> renderedPosition<span className="token punctuation">.</span>x
-    deltaY <span className="token operator">=</span> simulatedPosition<span className="token punctuation">.</span>y <span className="token operator">-</span> renderedPosition<span className="token punctuation">.</span>y
-    <span className="token comment">// Update rendered position</span>
-    renderedPosition<span className="token punctuation">.</span>x <span className="token operator">+=</span> deltaX <span className="token operator">*</span> bendingFactor
-    renderedPosition<span className="token punctuation">.</span>y <span className="token operator">+=</span> deltaY <span className="token operator">*</span> bendingFactor
-    <span className="token function">updateWorld</span><span className="token punctuation">(</span><span className="token punctuation">)</span>
-    bendingFrame<span className="token operator">++</span>
-    <span className="token punctuation">}</span>
-  </code></pre>
-
-
-
-  <div dir="ltr" className="resize-sensor" style="position: absolute; left: -10px; top: -10px; right: 0px; bottom: 0px; overflow: hidden; z-index: -1; visibility: hidden;"><div className="resize-sensor-expand" style="position: absolute; left: -10px; top: -10px; right: 0; bottom: 0; overflow: hidden; z-index: -1; visibility: hidden;"><div style="position: absolute; left: 0px; top: 0px; transition: all 0s ease 0s; width: 100000px; height: 100000px;"></div></div><div className="resize-sensor-shrink" style="position: absolute; left: -10px; top: -10px; right: 0; bottom: 0; overflow: hidden; z-index: -1; visibility: hidden;"><div style="position: absolute; left: 0; top: 0; transition: 0s; width: 200%; height: 200%"></div></div></div></div>
-
-
-
-
-  */}
