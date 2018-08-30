@@ -52,12 +52,12 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 h1 {
-  font-size: 4rem;
+  font-size: 4.5rem;
   font-weight: bold;
 }
 
 h2 {
-  font-size: 3rem;
+  font-size: 3.5rem;
 }
 
 .carousel h2,
@@ -67,19 +67,19 @@ h2 {
 }
 
 h3 {
-  font-size: 2.5rem;
+  font-size: 3rem;
 }
 
 h4 {
-  font-size: 2rem;
+  font-size: 2.5rem;
 }
 
 h5 {
-  font-size: 1.5rem;
+  font-size: 2rem;
 }
 
 h6 {
-  font-size: 1.5rem;
+  font-size: 2rem;
   color: #a3a3a3;
 }
 
@@ -207,7 +207,7 @@ wired-card {
 }
 
 .main-content {
-  padding: 2.5rem;
+  padding: 4rem 6rem;
 }
 
 .game-container {
@@ -409,10 +409,33 @@ input[type="text"]:focus {
 
 /* Pages */
 
-.left-rule {
-  margin-left: 1rem;
-  padding-left: 1rem;
-  border-left: 1px solid #c6c6c6;
+.main-content {
+  font-size: 1.7rem;
+}
+
+figure {
+  text-align: center;
+}
+
+figure img {
+  max-width: 100%;
+}
+
+ul, ol {
+  margin-left: 4rem;
+  list-style-position: outside;
+}
+
+ul {
+  list-style: disc;
+}
+
+li {
+  padding-left: 1.5rem;
+}
+
+figcaption {
+  font-size: 1.4rem;
 }
 
 aside {
@@ -436,6 +459,36 @@ aside :last-child {
 
 .emphasized wired-card {
   background-color: #e6ebe0;
+}
+
+.control-arrow {
+  height: 100%;
+}
+
+.carousel img {
+  padding-bottom: 300px;
+}
+
+.lobby .rough-circle {
+  position: relative;
+  margin-right: .5rem;
+}
+
+.rough-circle canvas {
+  position: relative;
+}
+
+.lobby .rough-circle canvas {
+  top: .5rem;
+}
+
+.citation .rough-circle canvas {
+  top: .4rem;
+}
+
+header .rough-circle canvas {
+  left: -4rem;
+  top: .5rem;
 }
 
 /* Citations */
@@ -507,35 +560,4 @@ aside :last-child {
 .citation th,
 .citation td {
   border-bottom: none;
-}
-
-.control-arrow {
-  height: 100%;
-}
-
-.carousel img {
-  padding-bottom: 300px;
-}
-
-/* Rough Cirles */
-.lobby .rough-circle {
-  position: relative;
-  margin-right: .5rem;
-}
-
-.rough-circle canvas {
-  position: relative;
-}
-
-.lobby .rough-circle canvas {
-  top: .5rem;
-}
-
-.citation .rough-circle canvas {
-  top: .4rem;
-}
-
-header .rough-circle canvas {
-  left: -4rem;
-  top: .5rem;
 }
