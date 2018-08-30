@@ -98,12 +98,18 @@ export default class ClientEngine {
     canvas.addEventListener('mousedown', (e) => { e.preventDefault() });
     // When the client moves the mouse, display a chip overlay
     canvas.addEventListener('mouseenter', this.onMouseEnter);
-    canvas.addEventListener('touchstart', e => {
-      e.preventDefault()
-      e.stopPropagation();
-    })
+    canvas.addEventListener('touchstart', this.onTouch);
   }
 
+  onTouch(e) {
+    e.preventDefault();
+
+    const evt = new Event('click');
+    evt.target = e.target;
+    evt.currentTarget = e.currentTarget;
+
+    e.target.dispatchEvent(evt)
+  }
 
   frameSync() {
     // If we have too many snapshots shorten it
@@ -224,6 +230,8 @@ export default class ClientEngine {
   stopGame() {
     clearInterval(this.loop);
   }
+
+
 
   onClick = (e) => {
     e.preventDefault();

@@ -206,10 +206,13 @@ export default class ServerEngine {
       // should be called when users refresh or navigate away from site,
       // but we are not currently emitting an explicit disconnect
       socket.on('disconnect', () => {
-        this.removeFromGame(user);
-        this.users.delete(user);
+        if (user) {
+          this.removeFromGame(user);
+          this.users.delete(user);
+        }
 
         user = undefined;
+
       });
 
       socket.on('rejoin game', ({ userId }) => {
