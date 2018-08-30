@@ -90,14 +90,20 @@ export default class ClientEngine {
   }
 
   registerCanvasEvents() {
+    const canvas = document.querySelector('#canvas');
     // On click, add a chip at the mouse's x and y relative to canvas
-    document.querySelector('#canvas').addEventListener('click', this.onClick, false);
+    canvas.addEventListener('click', this.onClick, false);
     // We prevent the default mousedown event so that when you spam chips,
     // random parts of the DOM might get highlighted due to double click
-    document.querySelector('#canvas').addEventListener('mousedown', (e) => { e.preventDefault() });
+    canvas.addEventListener('mousedown', (e) => { e.preventDefault() });
     // When the client moves the mouse, display a chip overlay
-    document.querySelector('#canvas').addEventListener('mouseenter', this.onMouseEnter);
+    canvas.addEventListener('mouseenter', this.onMouseEnter);
+    canvas.addEventListener('touchstart', e => {
+      e.preventDefault()
+      e.stopPropagation();
+    })
   }
+
 
   frameSync() {
     // If we have too many snapshots shorten it
