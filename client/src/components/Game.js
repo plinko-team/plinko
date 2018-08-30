@@ -22,9 +22,10 @@ export default class Game extends Component {
   }
 
   componentDidMount() {
-    const playerId = this.props.players[this.props.userId].playerId;
-    this.setState({players: this.props.players});
-    this.client = new ClientEngine({ playerId, socket: this.props.socket });
+
+    this.setState({ players: this.props.players });
+    this.client = this.props.client
+
     this.registerSocketEvents();
     this.client.init();
     this.client.startGame();

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import ClientEngine from '../game/clientEngine';
 
 import Game from './Game';
 import Lobby from './Lobby';
@@ -102,6 +103,9 @@ export default class GameContainer extends Component {
 
     socket.on('game started', () => {
       this.setState({ gameInProgress: true });
+
+      const playerId = this.state.activeUsers[this.props.userId].playerId;
+      this.client = new ClientEngine({ playerId, socket: this.props.socket });
     })
 
     socket.on('game over', () => {
@@ -124,7 +128,7 @@ export default class GameContainer extends Component {
     this.props.socket.removeAllListeners('rejoin game ack');
     this.props.socket.removeAllListeners('user list');
     this.props.socket.removeAllListeners('game started')
-    this.props.socket.removeAllListeners('start game')
+    this.props.socket.removeAllListeners('start game');
     this.props.socket.removeAllListeners('game over');
   }
 
@@ -133,6 +137,7 @@ export default class GameContainer extends Component {
       return (
         <Game
           socket={this.props.socket}
+          client={this.client}
           userId={this.props.userId}
           players={this.state.activeUsers}
         />
