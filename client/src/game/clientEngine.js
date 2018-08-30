@@ -140,18 +140,15 @@ export default class ClientEngine {
       }
     });
 
-    let chipsNotInSnapshot = []
+    let chipsNotInSnapshot = [];
 
-    Object.keys(this.chips).forEach(chipId => {
-      const chip = this.chips[chipId];
-      const { id, ownerId } = chip;
-      const combinedId = String(ownerId) + String(id);
+    Object.keys(this.chips).forEach(combinedId => {
+      if (chipsInCurrentSnapshot[combinedId]) {
+        return;
+      };
 
-      if (chipsInCurrentSnapshot[combinedId]) { return };
-      chipsNotInSnapshot.push(chip);
+      this.renderer.removeFromStage(this.chips[combinedId])
     })
-
-    chipsNotInSnapshot.forEach(c => this.renderer.removeFromStage(c));
 
     // leftover from extrapolation
     // for (let id of Object.keys(this.chips)) {
