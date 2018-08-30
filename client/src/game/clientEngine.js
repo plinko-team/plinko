@@ -104,9 +104,11 @@ export default class ClientEngine {
   onTouch(e) {
     e.preventDefault();
 
-    const evt = new Event('click');
-    evt.target = e.target;
-    evt.currentTarget = e.currentTarget;
+    const evt = new Event('click', {
+      target: e.target,
+      currentTarget: currentTarget
+    });
+
 
     e.target.dispatchEvent(evt)
   }
