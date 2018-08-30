@@ -104,13 +104,13 @@ export default class ClientEngine {
   onTouch(e) {
     e.preventDefault();
 
-    const evt = new Event('click', {
-      target: e.target,
-      currentTarget: currentTarget
-    });
-
-
-    e.target.dispatchEvent(evt)
+    // const evt = new Event('click', {
+    //   target: e.target,
+    //   currentTarget: e.currentTarget
+    // });
+    //
+    //
+    // e.target.dispatchEvent(evt)
   }
 
   frameSync() {
