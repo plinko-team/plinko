@@ -142,9 +142,10 @@ export default class ClientEngine {
 
     let chipsNotInSnapshot = []
 
-    this.chips.forEach(chip => {
-      let { id, ownerId } = chip;
-      let combinedId = String(ownerId) + String(id);
+    Object.keys(this.chips).forEach(chipId => {
+      const chip = this.chips(chipId);
+      const { id, ownerId } = chip;
+      const combinedId = String(ownerId) + String(id);
 
       if (chipsInCurrentSnapshot[combinedId]) { return };
       chipsNotInSnapshot.push(chip);
