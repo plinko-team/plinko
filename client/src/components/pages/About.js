@@ -1,15 +1,256 @@
 import React from 'react';
 import { Carousel } from 'react-responsive-carousel';
 import styles from 'react-responsive-carousel/lib/styles/carousel.min.css';
+import SyntaxHighlighter from 'react-syntax-highlighter';
 
-import Citation from './Citation';
 import Aside from './Aside';
+import Citation from './Citation';
+
 
 const About = () => {
+  const syntaxHighlighterProps = {
+    useInlineStyles: false,
+    language: 'javascript',
+  };
+
+  const whileLoopSnippet = `while (gameIsRunning) {
+  processInputs()
+  updateWorld()
+  renderWorld()
+}`;
+
+  const gameLoopRAF = `function gameLoop() {
+  requestAnimationFrame(gameLoop)
+  
+  processInputs()
+  updateWorld()
+  renderWorld()
+}`;
+
+  const gameLoopComplete = `function gameLoop() {
+  requestAnimationFrame(gameLoop);
+
+  // elapsedTime describes how much time the last game loop took
+  elapsedTime = currentTime() - lastFrameTime;
+
+  // MAX_ELAPSED_TIME ensures the renderer doesn't fall too far
+  // behind the simulation in the event of a processing spike
+  if (elapsedTime > MAX_ELAPSED_TIME) {
+    elapsedTime = MAX_ELAPSED_TIME;
+  }
+
+  accumulatedTime += elapsedTime;
+
+  while (accumulatedTime >= TIMESTEP) {
+    // Advance the simulation by our fixed TIMESTEP, 16.67ms
+    updateWorld(TIMESTEP);
+    accumulatedTime -= TIMESTEP;
+  }
+
+  // alpha is a value between 0 and 1 that represents
+  // how far along the game loop is between the previous
+  // and current simulation steps
+  
+  alpha = accumulatedTime / TIMESTEP;
+  interpolate(alpha);
+  renderWorld();
+
+  lastFrameTime = currentTime();
+}`;
+
+  const animate = `function animate() {
+  // ...
+  
+  // Get the latest snapshot received from the server
+  currentSnapshot = getSnapshot()
+
+  // Iterate over all chips that exist in the snapshot
+  currentSnapshot.chips.forEach(chipInfo => {
+    if (chipAlreadyExists()) {
+      // If this is an existing chip, update its properties with the
+      // data from the snapshot
+      updateExistingChip(chipInfo)
+    } else {
+      // If this is a new chip the client hasn't seen yet, create a new
+      // chip object and add it to the renderer
+      createNewChip(chipInfo)
+      addChipToRenderer()
+    }
+  })
+
+  renderGame()
+
+  // ...
+}`;
+
+  const animateWithBuffer = `function animate() {
+  // ...
+  
+  // If there are more than 5 frames in the buffer, the client is too far
+  // behind the server and should throw away excess frames to get back in sync  
+  while (snapshotBuffer.length > 5) { snapshotBuffer.shift() }
+
+  // Get the first snapshot received from the server that hasn't been processed yet
+  currentSnapshot = snapshotBuffer.shift()
+
+  // If no snapshot exists to be processed, do not render a new frame
+  if (!currentSnapshot) { return }
+
+  // Otherwise, iterate over all chips that exist in the snapshot
+  currentSnapshot.chips.forEach(chipInfo => {
+    // Update chip or create a new one, same as before
+  })
+
+  renderGame()
+
+  // ...
+}`;
+
+  const animateClientReenactment = `function animate() {
+  
+  if (latestSnapshotExists()) {
+
+    snapshot = getLatestSnapshot()
+
+    // Regenerate world from latest snapshot then catch up 
+    // to the current frame
+    
+    regenerateFromSnapshot(snapshot)
+    catchUpToCurrentFrameFrom(snapshot.frame)
+
+    deleteLatestSnapshot() // Make room for next snapshot
+    
+  }
+
+  // Always move the engine ahead one step
+  // because we are always extrapolating
+  
+  updateWorld()
+  
+  frame += 1
+}`;
+
+  const regenerateFromSnapshot = `function regenerateFromSnapshot(snapshot) {
+  snapshot.chips.forEach(chipInfo => {
+
+    if (chipDoesNotExist()) { createChip(chipInfo) }
+
+    // Get a reference to the chip, either newly created or already existing
+    chip = getChipById(chipInfo.id)
+
+    // Adjust physical properties based on snapshot's properties
+    updateChipProperties(chip, chipInfo)
+  })
+}`;
+
+  const catchUpToCurrentFrameFrom = `function catchUpToCurrentFrameFrom(frame) {
+  // Indicate that we should not render reenactment steps
+  toggleReenactmentOn()
+
+  // Fast-forward up to current frame with the engine
+  while (frame < currentFrame()) {
+    frame += 1
+    updateWorld()
+  }
+
+  toggleReenactmentOff()
+}`;
+
+  const implementationSnippet = `function animate() {
+  if (inputBufferNotEmpty()) {
+    frame = inputBuffer.earliestFrame()
+
+    // Empty inputBuffer into inputHistory
+    while (inputBufferNotEmpty()) {
+      input = inputBuffer.shift() // Get first input
+
+      // Store it according to its frame in inputHistory
+      inputHistory.add(input)
+    }
+
+    // Get snapshot for frame of first input in buffer
+    snapshot = snapshotHistory.at(frame)
+
+    restoreWorldFromSnapshot(snapshot) // Rewind
+    catchUpToCurrentFrameFrom(frame) // Reenact
+  }
+
+  updateWorld()
+  frame += 1
+}`;
+
+  const restoreWorldFromSnapshot = `function restoreWorldFromSnapshot(snapshot) {
+
+  snapshot.chips.forEach(chipInfo => {
+
+    // Category 1; new chips
+    if (chipIsNewToWorld()) { createChip(chipInfo) }
+
+    // Category 2; update chips
+    chip = getChipFromWorldById(id)
+    chip.updateProperties(chipInfo)
+  })
+
+  // Category 3; remove chips
+  deleteChipsNotInSnapshot()
+}`;
+
+  const catchUpToCurrentFrameFromServerSide = `function catchUpToCurrentFrameFrom(frame) {
+  // frame is the frame from the first buffered input
+
+  while (frame < currentFrame()) {
+
+    // If there are inputs at the current frame, we need to
+    // process them by creating and adding chips to the world
+    
+    inputs = inputsAtCurrentFrame()
+
+    if (inputs) {
+      inputs.forEach(input => createChip(input))
+    }
+
+    // Our snapshot history keeps a snapshot for every frame
+    // Now that we've modified the past state,
+    // it needs to be overwritten
+
+    generatedSnapshot = generateSnapshot()
+    snapshotHistory.update(frame, generatedSnapshot)
+
+    // Finally, we move the engine forward by one tick
+    updateWorld()
+
+    frame += 1
+  }
+
+  // After the while loop has executed, our world state will be back at the
+  // current frame, including the new inputs
+}`;
+
+  const bendingImplementation = `// Determine the number of frames before the position will converge
+totalBendingFrames = 4
+bendingFrame = 1
+
+while (bendingFrame !== totalBendingFrames) {
+  // Calculate bending factor. It can be a constant factor, 
+  // or dependent on number of bending frames
+  bendingFactor = 1 / (totalBendingFrames - bendingFrame)
+
+  // Calculate the distance between new and old position
+  deltaX = simulatedPosition.x - renderedPosition.x
+  deltaY = simulatedPosition.y - renderedPosition.y
+
+  // Update rendered position
+  renderedPosition.x += deltaX * bendingFactor
+  renderedPosition.y += deltaY * bendingFactor
+
+  updateWorld()
+  bendingFrame++
+}`;
 
   return (
     <main>
       <div className="main-content">
+
         <h1 id="test">Sample H1 (e.g. Case Study)</h1>
         <p>Paragraph for reference</p>
         <h2>Sample H2 (e.g. 4 Synchronizing Networked Game State)</h2>
@@ -148,7 +389,9 @@ const About = () => {
 
         <p>Here’s one simple idea:</p>
 
-        {/* While loop snippet goes here */}
+        <SyntaxHighlighter {...syntaxHighlighterProps}>
+          {whileLoopSnippet}
+        </SyntaxHighlighter>
 
         <p><code>while</code> loops run repeatedly, as fast as the computer’s processor can manage. This means we have a problem right away: the game will run more slowly on a slow computer than on a fast one. Instead, we need some way to get consistent performance for any machine. That means moving the simulation forward at the same speed for any user, regardless of processing power. We can achieve this with a <strong>fixed timestep</strong>.</p>
 
@@ -196,7 +439,9 @@ const About = () => {
         <p>Inexact callback timing isn’t only detrimental to our fixed timestep – it will also cause rendering problems in the browser. Browsers typically repaint pages every 16.67ms, and if our almost-but-not-exactly-16.67ms game loop gets out of sync with the repaint schedule, players may experience skipped frames and other unpleasant visual artifacts. If we run our loop more often than every 16.67ms to account for this, we end up trying to render more frequently than the browser is able to repaint, creating unnecessary computation.</p>
         <p>Luckily, there’s a better option. <code>requestAnimationFrame</code> is a JavaScript browser method on <code>window</code> that’s optimized for looping animation. It lets us pass in a callback, which will be executed before the browser’s next repaint. We’ll pass in the function we use to increment our game engine, and we’ll create a loop by calling <code>requestAnimationFrame</code> recursively inside the callback. Here’s a simplified look at our new looping architecture:</p>
 
-        {/* GameLoop snippet goes here */}
+        <SyntaxHighlighter {...syntaxHighlighterProps}>
+          {gameLoopRAF}
+        </SyntaxHighlighter>
 
         <p>Now we’re controlling <em>what</em> to animate – our updated world – but letting the browser handle <em>when</em> to animate, which will occur at its natural 60fps repaint rate. The result is a smoother visual experience for players. You can see the difference in the animations below, which contrast <code>requestAnimationFrame</code> with a loop created using <code>setTimeout</code>:</p>
 
@@ -219,7 +464,9 @@ const About = () => {
         <p>We’ll also introduce one final idea: now that we’ve decoupled our physics simulation from our renderer, it’s possible that we’ll be ready to render a new frame when the physics engine is still somewhere in between two steps. If this is the case, we need to <strong>interpolate</strong> between these steps – in other words, ask the physics engine to calculate the game world <em>in between</em> the two steps, at the moment in time we’d like to render.</p>
         <p>You can see how this works in the pseudocode for our final game loop implementation:</p>
 
-        {/* GameLoop snippet 2.1.4 goes here */}
+        <SyntaxHighlighter {...syntaxHighlighterProps}>
+          {gameLoopComplete}
+        </SyntaxHighlighter>
 
         <ul>
           <li>We track <code>elapsedTime</code> to capture how long the previous loop took</li>
@@ -368,38 +615,16 @@ const About = () => {
         </ol>
         <p>A snapshot is like a page in a flipbook. Alone, it’s a still picture. But when you view many together in a sequence, they appear to animate. To achieve our 60fps frame rate, clients must receive 60 pictures every second. In our game, a snapshot is a JavaScript object containing the current positions and owners of all chips and pegs, plus game data like current scores and a timestamp. Here’s how the client uses these snapshots in its <code>animate</code> function, which is called every 16.67 ms to animate the game:</p>
 
-        {/* animate snippet goes here */}
+        <SyntaxHighlighter {...syntaxHighlighterProps}>
+          {animate}
+        </SyntaxHighlighter>
 
         <p>With the snapshot approach, we’ve solved our state divergence problem. We can be confident all our players will see exactly the same game state, because there’s only one possible game state to see: the server’s. This is a huge improvement compared to our earlier attempt.</p>
-        <p>Unfortunately, a fully synchronized game state doesn’t come for free. The snapshot implementation introduces a few new problems of its own...</p>
+        <p>Unfortunately, a fully synchronized game state doesn’t come for free. The snapshot implementation introduces a few new problems of its own:</p>
 
         <h4 id="421-Network-Jitter">4.2.1 Network Jitter</h4>
         <p>Ever experience the frustration of a stuttering video stream or a game that seems to skip through time? With snapshots, our game is going to jitter like this too. The server is broadcasting new frames every 16.67ms to achieve our 60fps but there is no guarantee that our clients will receive them in the same regularly spaced intervals. In fact, the unpredictability of the internet all but guarantees that won’t happen.</p>
         <p>If a client receives two snapshots right in a row, then none for a while, then another three all together, and so on, the game will appear jittery on screen. Luckily, we can mitigate this problem with a buffer.</p>
-
-        <h3 id="42-Transmitting-the-Entire-Game-State">4.2 Transmitting the Entire Game State</h3>
-        <p>If we can’t rely on every client’s physics engine to give us deterministic behavior, we need to take control of the physics engine ourselves. We have an authoritative server, so let’s use it as an authority. So far, we’ve been running a physics engine on each client and using the server as a relay. Instead, we can run a single physics engine on the server and use the clients only as displays – a “smart” server with “dumb” clients.</p>
-        <figure>
-          <img src="https://i.imgur.com/6GlOUGR.png" alt="Smart Server" />
-        </figure>
-        <p>But if the clients are only responsible for rendering, how do they know <em>what</em> to render? For this to work, the server must continually broadcast snapshots of the entire game state for clients to display. Since clients no longer have their own physics engines, this is the only way they’ll know what’s happening in the game. It works like this:</p>
-        <strong>&lt;clickable carousel&gt;</strong>
-        <p>
-          <img src="https://media.giphy.com/media/2wW4ERAjpwizH5t7TF/giphy.gif" alt="Snapshots" />
-        </p>
-        <ol>
-          <li>User clicks to drop a chip</li>
-          <li>Client notifies server of input (chip is not rendered yet)</li>
-          <li>Server updates the game world</li>
-          <li>Server broadcasts a snapshot of entire game state to all users</li>
-          <li>All users, including the one who dropped chip, render the snapshot</li>
-        </ol>
-        <p>A snapshot is like a page in a flipbook. Alone, it’s a still picture. But when you view many together in a sequence, they appear to animate. To achieve our 60fps frame rate, clients must receive 60 pictures every second. In our game, a snapshot is a JavaScript object containing the current positions and owners of all chips and pegs, plus game data like current scores and a timestamp. Here’s how the client uses these snapshots in its <code>animate</code> function, which is called every 16.67 ms to animate the game:</p>
-
-        {/* snapshot snippet here */}
-
-        <p>With the snapshot approach, we’ve solved our state divergence problem. We can be confident all our players will see exactly the same game state, because there’s only one possible game state to see: the server’s. This is a huge improvement compared to our earlier attempt.</p>
-        <p>Unfortunately, a fully synchronized game state doesn’t come for free. The snapshot implementation introduces a few new problems of its own:</p>
 
         <h5 id="4211-Solution-Snapshot-Buffer">4.2.1.1 Solution: Snapshot Buffer</h5>
         <p>Right now, clients are rendering new snapshots as soon as they receive them. If they don’t get another one for a while, they’re stuck. Instead, we should have clients collect a few snapshots up front before they begin rendering. That way, they’ll have a reserve of snapshots to use in the event of a spike in network latency.</p>
@@ -410,7 +635,9 @@ const About = () => {
         <p>Our buffer should function as a queue, so we’ll implement it using a singly linked list with references to both the head and tail. This gives us O(1) insertion at the tail and O(1) removal from the head.</p>
         <p>Now that we have a buffer for snapshots, let’s update our pseudocode for the client’s <code>animate</code> function:</p>
 
-        {/* snapshot buffer snippet here */}
+        <SyntaxHighlighter {...syntaxHighlighterProps}>
+          {animateWithBuffer}
+        </SyntaxHighlighter>
 
         <h4 id="422-High-Bandwidth-Consumption">4.2.2 High Bandwidth Consumption</h4>
         <p>In the lockstep approach, when we were transmitting only inputs over the network, our data needs were very small. Each new chip sent to the server required only a set of location coordinates and an id to show which player dropped it. Once the server processed the chip and broadcast all inputs for a given frame, clients could expect to receive a maximum of one chip object per player.</p>
@@ -470,7 +697,22 @@ const About = () => {
         <p>When we’ve completed this deserialization process for the whole binary string, the client will have converted all values back into JavaScript objects that it can use to render the game world.</p>
         <p>With binary serialization, a 15kb snapshot can be compressed to just 1.6kb. The data savings for our overall bandwidth is remarkable. Assuming 200 chips are in the game and we’re sending 60 snapshots per second:</p>
 
-        {/* Unserialized vs serialized bandwidth table */}
+        <table>
+          <thead>
+          <tr>
+          <th></th>
+          <th>JSON</th>
+          <th>Binary</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+          <td>Bandwidth (kb/s)</td>
+          <td>900</td>
+          <td>96</td>
+          </tr>
+          </tbody>
+        </table>
 
         <h5 id="4222-Interpolation">4.2.2.2 Interpolation</h5>
         <p>We’ve covered sending <em>less</em> data with binary serialization, but it’s also possible to send game state data <em>less frequently</em>. What if, instead of sending a snapshot of every frame, the server only sends a snapshot of every <em>other</em> frame?</p>
@@ -507,6 +749,32 @@ const About = () => {
         <p>If a player has a fast internet connection and happens to live near the game server, they might not notice the delay. But if the player is on a slow network or lives halfway around the world, they may experience a round trip time of hundreds of milliseconds before seeing the result of their input.</p>
 
         {/* Latency by location table */}
+        <table>
+          <thead>
+            <tr>
+              <th>Player Location</th>
+              <th>Estimated RTT to Our Server in San Francisco</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Los Angeles</td>
+              <td>20 ms</td>
+            </tr>
+            <tr>
+              <td>New York</td>
+              <td>130 ms</td>
+            </tr>
+            <tr>
+              <td>London</td>
+              <td>300 ms</td>
+            </tr>
+            <tr>
+              <td>Moscow</td>
+              <td>400 ms</td>
+            </tr>
+          </tbody>
+        </table>
 
         <p>(<a href="https://wondernetwork.com/pings" target="_blank">Wonder Network</a>)</p>
         <p>Research shows that humans perceive response times of under 100-150ms as instantaneous, but that anything longer appears noticeably delayed 
@@ -583,17 +851,23 @@ const About = () => {
         </ol>
         <p>We can begin with an overview of the pseudocode executed during each frame. The gist is that if a snapshot exists, we perform regeneration and fast forward; otherwise, update the simulation as we normally would locally. Only the latest snapshot is used when regenerating; we do not buffer older snapshots as before since they are immediately stale.</p>
 
-        {/* 4.3.1 snippet */}
+        <SyntaxHighlighter {...syntaxHighlighterProps}>
+          {animateClientReenactment}
+        </SyntaxHighlighter>
 
         <h5 id="1-Regenerate-from-Snapshot">1. Regenerate from Snapshot</h5>
         <p>Regenerating from a snapshot entails two things: Updating the physical properties of chips which currently exist in the world, and creating chips which do not yet exist. If a chip in the snapshot does not exist in our world, it means that it is a newly dropped chip, so we must create and add it to the simulation and renderer.</p>
 
-        {/* Regenerate from snapshot snippet */}
+        <SyntaxHighlighter {...syntaxHighlighterProps}>
+          {regenerateFromSnapshot}
+        </SyntaxHighlighter>
 
         <h5 id="2-Fast-Forward-to-Present">2. Fast Forward to Present</h5>
         <p>Fast forwarding to the current frame is simple: we simply move the engine forward one step for every frame that the snapshot is behind. It is important to note that this process happens in the background, as we do not want the renderer to be affected by the reenactment.</p>
 
-        {/* Fast forward snippet */}
+        <SyntaxHighlighter {...syntaxHighlighterProps}>
+          {catchUpToCurrentFrameFrom}
+        </SyntaxHighlighter>
 
         <h4 id="432-Server-Side-Reenactment">4.3.2 Server-Side Reenactment</h4>
         <p>While clients are receiving a stream of snapshots, the server is enduring a constant wave of inputs from each client. Because each of these inputs are describing the past, the server must also perform a reenactment to settle on a state which includes the recent inputs.</p>
@@ -628,7 +902,9 @@ const About = () => {
         </ul>
         <p>This is an example of our <code>animate</code> function on the server side:</p>
 
-        {/* DS implementation snippet */}
+        <SyntaxHighlighter {...syntaxHighlighterProps}>
+          {implementationSnippet}
+        </SyntaxHighlighter>
 
         <h4 id="Restoring-World-from-a-Snapshot">Restoring World from a Snapshot</h4>
         <p>To rewind the state to a previous snapshot, there are 3 categories of chips which we need to handle, those which:</p>
@@ -640,13 +916,17 @@ const About = () => {
         <p>So our rewind step consists of iterating over the chips in the snapshot, creating chips that fall into <code>(1)</code> and updating chips that fall into <code>(2)</code>.</p>
         <p>Chips in category 3 result from the fact that we are going “back in time”, and the client world may contain new chips which are not present in the past. So after iterating over the snapshot, we remove any chips that fall into <code>(3)</code>.</p>
 
-        {/* restoring world from snapshot snippet */}
+        <SyntaxHighlighter {...syntaxHighlighterProps}>
+          {restoreWorldFromSnapshot}
+        </SyntaxHighlighter>
 
         <h4 id="Reenactment">Reenactment</h4>
         <p>Server-side reenactment is reminiscent of the client-side fast forward, except we have a history of the every input made along the way. Because the rewind step removed chips which have been created since that frame, we must recreate those inputs by referencing the input history at every step.</p>
         <p>Also, because we need to retain a full history of every frame simulated, we need to update that history as we reenact frames, as that canonical history has been altered.</p>
 
-        {/* server-side reenactment snippet */}
+        <SyntaxHighlighter {...syntaxHighlighterProps}>
+          {catchUpToCurrentFrameFromServerSide}
+        </SyntaxHighlighter>
 
         <h4 id="434-Client-Side-State-Divergence">4.3.4 Client-Side State Divergence</h4>
         <p>One topic we have not yet discussed is what happens in the case when state diverges? With a pure snapshot approach, all clients are consistent with the server at every point in time. Now that there is a local client-side simulation, we might find that there is a disagreement between where we <em>think</em> our chip is, and where the reenactment indicates that it <em>“really”</em> is. In some cases, it is acceptable to simply “snap” to the new state, but there are some strategies to help smooth out the discrepancies more naturally.</p>
@@ -679,7 +959,9 @@ const About = () => {
         <h6 id="Bending-Implementation">Bending Implementation</h6>
         <p>We can implement bending by snapping the physics to the new position immediately, while slowly updating the rendered position over the course of multiple frames. First we calculate the distance between the new and old object, then we render the old position plus some percentage of the distance.</p>
 
-        {/* Bending implementation snippet */}
+        <SyntaxHighlighter {...syntaxHighlighterProps}>
+          {bendingImplementation}
+        </SyntaxHighlighter>
 
         <h4 id="435-Tradeoffs">4.3.5 Tradeoffs</h4>
         <p>Comparing prediction to relying solely on snapshots, we can see that incorporating prediction provides two major benefits:</p>
