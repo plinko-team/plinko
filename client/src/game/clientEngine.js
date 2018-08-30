@@ -140,6 +140,15 @@ export default class ClientEngine {
       }
     });
 
+    // let chipsNotInSnapshot = []
+    //
+    // this.chips.forEach(chip => {
+    //   if (chipsInCurrentSnapshot[chip.combinedId]) { return }
+    //   chipsNotInSnapshot[combinedId] = chipInfo
+    // })
+    //
+    // chipsNotInSnapshot.forEach(c => this.renderer.removeFromStage(c))
+
     // leftover from extrapolation
     // for (let id of Object.keys(this.chips)) {
     //

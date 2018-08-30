@@ -156,13 +156,6 @@ export default class ServerEngine {
       socket.emit(CONNECTION_ESTABLISHED, { message: 'congratulations' });
 
       socket.on('new user', ({ name }) => {
-        // If a user already exists, we emit an error and return early
-        // This avoids one user spamming join in a laggy environment and
-        // creating multiple handles
-        if (user) {
-          socket.emit('user exists err');
-          return;
-        }
 
         user = new User({ socket });
         user.name = name;

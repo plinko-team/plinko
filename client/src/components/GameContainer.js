@@ -58,6 +58,8 @@ export default class GameContainer extends Component {
   }
 
   handleUserJoin = (name) => {
+    if (this.hasOpenSocket()) return;
+
     const socket = this.props.connectToSocket();
     this.synchronizer = new Synchronizer(socket).init();
     this.registerSocketEvents(socket);
