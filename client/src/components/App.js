@@ -44,7 +44,8 @@ class App extends Component {
   }
 
   connectToSocket = () => {
-    const socket = openSocketConnection('localhost:3001');
+    // const socket = openSocketConnection('localhost:3001');
+    const socket = openSocketConnection('206.189.74.63:3000');
     this.setState({ socket });
 
     return socket;

@@ -101,7 +101,7 @@ export default class ClientEngine {
 
   frameSync() {
     // If we have too many snapshots shorten it
-    while (this.snapshotBuffer.length > 5) {
+    while (this.snapshotBuffer.length > 30) {
       this.snapshotBuffer.shift();
     }
 
@@ -139,6 +139,17 @@ export default class ClientEngine {
         });
       }
     });
+
+    let chipsNotInSnapshot = [];
+
+    Object.keys(this.chips).forEach(combinedId => {
+      if (chipsInCurrentSnapshot[combinedId] ||
+          this.chips[combinedId].recentlyDropped) {
+        return;
+      };
+
+      this.renderer.removeFromStage(this.chips[combinedId])
+    })
 
     // leftover from extrapolation
     // for (let id of Object.keys(this.chips)) {

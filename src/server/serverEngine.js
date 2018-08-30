@@ -156,6 +156,7 @@ export default class ServerEngine {
       socket.emit(CONNECTION_ESTABLISHED, { message: 'congratulations' });
 
       socket.on('new user', ({ name }) => {
+
         user = new User({ socket });
         user.name = name;
         this.users.add(user);
