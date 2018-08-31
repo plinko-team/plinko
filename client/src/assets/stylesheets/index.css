@@ -424,12 +424,14 @@ figure img {
 
 /* at large screen sizes, constrain width of small and medium images */
 @media (min-width: 500px) {
-  figure img.small {
+  img.small {
     max-width: 250px;
+    margin: 0 auto;
   }
 
-  figure img.medium {
+  img.medium {
     max-width: 350px;
+    margin: 0 auto;
   }
 }
 

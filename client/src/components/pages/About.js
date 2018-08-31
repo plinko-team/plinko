@@ -1060,7 +1060,6 @@ while (bendingFrame !== totalBendingFrames) {
             <img className="medium" src="https://s15.postimg.cc/681xrs83v/image.png"/ >
             <p className="legend">Hi</p>
           </div>
-
           <div>
             <img className="medium" src="https://s15.postimg.cc/681xrsftn/image.png"/ >
             <p className="legend">Hi</p>
