@@ -458,6 +458,7 @@ while (bendingFrame !== totalBendingFrames) {
           <figcaption>Figure 3.1.1: Client-Server Architecture</figcaption>
         </figure>
         <p>Connected players transmit inputs to the server. The server, in turn, sends the necessary game state information to all connected clients so that they can recreate the game state locally.</p>
+
         <p>Client-server architecture is the gold standard
           <Citation
             creator={'Gabriel Gambetta'}
