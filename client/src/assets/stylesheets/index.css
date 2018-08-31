@@ -460,13 +460,36 @@ aside :last-child {
   background-color: #e6ebe0;
 }
 
-.control-arrow {
-  height: 100%;
+.slick-slider img {
+  width: 100%;
 }
 
-.carousel img {
-  padding-bottom: 300px;
+.slick-next,
+.slick-prev {
+  top: 45%;
 }
+
+.slick-next:before,
+.slick-prev:before {
+  color: #000;
+}
+
+.legend {
+  margin-bottom: 0;
+  background-color: #c6c6c6;
+  padding: .5rem 1rem;
+  font-size: 1.3rem;
+  color: #fff;
+  border-radius: 2px;
+}
+
+.slick-dots {
+  bottom: 0;
+  position: relative;
+  margin-bottom: 2rem;
+}
+
+/* Rough Circles */
 
 .lobby .rough-circle {
   position: relative;
