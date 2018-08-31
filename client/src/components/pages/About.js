@@ -354,7 +354,7 @@ while (bendingFrame !== totalBendingFrames) {
         <p>A physics simulation needs to model this behavior, but we can’t ask it to calculate incalculable data. Instead, it needs to calculate the position of the chip at a discrete moment in time, then at a moment a little while after, then one a little after that. When we see these positions all in row, we get the illusion of continuous movement.</p>
 
         <figure>
-          <img src="https://i.imgur.com/QnL9rtT.png" alt="Simulated Chip Positions" />
+          <img class="small" src="https://i.imgur.com/QnL9rtT.png" alt="Simulated Chip Positions" />
           <figcaption>Figure 2.1.1: A single chip’s positions at discrete points in time</figcaption>
         </figure>
 
@@ -418,7 +418,6 @@ while (bendingFrame !== totalBendingFrames) {
 
         <figure>
           <img src="https://s1.gifyu.com/images/ezgif-4-25e4c4895b.gif" alt="requestAnimationFrame" />
-          vs.
           <img src="https://s1.gifyu.com/images/ezgif-4-364b79fa2d.gif" alt="setTimeout" />
           <figcaption><code>requestAnimationFrame</code> renders at a smooth 60fps, while <code>setTimeout</code> creates an unpredictable frame rate</figcaption>
         </figure>
@@ -455,10 +454,11 @@ while (bendingFrame !== totalBendingFrames) {
         <h3 id="31-Client-Server-Architecture">3.1 Client-Server Architecture</h3>
         <p>We’ll use a client-server networking model, where all players connect to a central server that acts as the authority on the game state (in contrast to peer-to-peer networking, where players connect to one another and there is no central authority).</p>
         <figure>
-          <img src="https://i.imgur.com/0JXCE2e.png" alt="Client-Server architecture" />
+          <img class="medium" src="https://i.imgur.com/0JXCE2e.png" alt="Client-Server architecture" />
           <figcaption>Figure 3.1.1: Client-Server Architecture</figcaption>
         </figure>
-        <p>Connected players, the clients, transmit inputs to the server. The server, in turn, sends the necessary game state information to all connected clients so that they can recreate the game state locally.</p>
+        <p>Connected players transmit inputs to the server. The server, in turn, sends the necessary game state information to all connected clients so that they can recreate the game state locally.</p>
+
         <p>Client-server architecture is the gold standard
           <Citation
             creator={'Gabriel Gambetta'}
@@ -540,7 +540,7 @@ while (bendingFrame !== totalBendingFrames) {
 
         <p>We can think of this model as having “smart” clients and a “dumb” server:</p>
         <figure>
-          <img src="https://i.imgur.com/MicK8yI.png" alt="Smart Clients" />
+          <img class="small" src="https://i.imgur.com/7fJWXcr.png" alt="Smart Clients" />
         </figure>
 
         <p>Unfortunately, we have a problem: the chip will start falling right away for player 1, but the other players won’t find out about it for anywhere from 20-300+ milliseconds due to the latency that’s inherent to communication over the internet. In the meantime, they’re dropping their own chips and their game engines are moving forward by several frames. If everyone finds out about each others’ chips at different times, each player’s game world is going to look a little different. What if two chips collide on one player’s screen, but not on another’s? The longer the game runs, the more the state will diverge. Pretty soon, two players’ games will look nothing alike.</p>
@@ -580,20 +580,33 @@ while (bendingFrame !== totalBendingFrames) {
         <h3 id="42-Transmitting-the-Entire-Game-State">4.2 Transmitting the Entire Game State</h3>
         <p>If we can’t rely on every client’s physics engine to give us deterministic behavior, we need to take control of the physics engine ourselves. We have an authoritative server, so let’s use it as an authority. So far, we’ve been running a physics engine on each client and using the server as a relay. Instead, we can run a single physics engine on the server and use the clients only as displays – a “smart” server with “dumb” clients.</p>
         <figure>
-          <img src="https://i.imgur.com/6GlOUGR.png" alt="Smart Server" />
+          <img class="small" src="https://i.imgur.com/tMm113h.png" alt="Smart Server" />
         </figure>
         <p>But if the clients are only responsible for rendering, how do they know <em>what</em> to render? For this to work, the server must continually broadcast snapshots of the entire game state for clients to display. Since clients no longer have their own physics engines, this is the only way they’ll know what’s happening in the game. It works like this:</p>
-        <strong>&lt;clickable carousel&gt;</strong>
-        <p>
-          <img src="https://media.giphy.com/media/2wW4ERAjpwizH5t7TF/giphy.gif" alt="Snapshots" />
-        </p>
-        <ol>
-          <li>User clicks to drop a chip</li>
-          <li>Client notifies server of input (chip is not rendered yet)</li>
-          <li>Server updates the game world</li>
-          <li>Server broadcasts a snapshot of entire game state to all users</li>
-          <li>All users, including the one who dropped chip, render the snapshot</li>
-        </ol>
+
+        <Slider {...sliderSettings}>
+          <div>
+            <img src="https://i.imgur.com/4VmSuMQ.png" />
+            <p className="legend">1. A user clicks to drop a chip</p>
+          </div>
+          <div>
+            <img src="https://i.imgur.com/rEzg6ql.png" />
+            <p className="legend">2. The client notifies the server of a new input (note that chip is not rendered yet)</p>
+          </div>
+          <div>
+            <img src="https://i.imgur.com/RYWVIx1.png" />
+            <p className="legend">3. The server updates the game world</p>
+          </div>
+          <div>
+            <img src="https://i.imgur.com/Iv8PMhc.png" />
+            <p className="legend">4. The server broadcasts a snapshot of the entire game state to all users</p>
+          </div>
+          <div>
+            <img src="https://i.imgur.com/AyZlC3d.png" />
+            <p className="legend">4. All users, including the one who dropped the chip, can now render the snapshot</p>
+          </div>
+        </Slider>
+
         <p>A snapshot is like a page in a flipbook. Alone, it’s a still picture. But when you view many together in a sequence, they appear to animate. To achieve our 60fps frame rate, clients must receive 60 pictures every second. In our game, a snapshot is a JavaScript object containing the current positions and owners of all chips and pegs, plus game data like current scores and a timestamp. Here’s how the client uses these snapshots in its <code>animate</code> function, which is called every 16.67 ms to animate the game:</p>
 
         <SyntaxHighlighter {...syntaxHighlighterProps}>
@@ -745,10 +758,14 @@ while (bendingFrame !== totalBendingFrames) {
         <p>We’ve covered sending <em>less</em> data with binary serialization, but it’s also possible to send game state data <em>less frequently</em>. What if, instead of sending a snapshot of every frame, the server only sends a snapshot of every <em>other</em> frame?</p>
         <p>We still want to animate our game at 60 frames per second for our players, so if clients only receive 30 frames per second, they will somehow need to create the missing frames on their own. The clients can achieve this by interpolating–guessing what happened–in between the frames they do receive. This strategy is called snapshot interpolation, and it effectively lets us chop our bandwidth consumption in half.</p>
         <p>Here’s how it works in an ideal scenario:</p>
-        <strong>&lt;clickable carousel&gt;</strong>
-        <p>
-          <img src="https://media.giphy.com/media/e7PStfCzkGb8PqCMzB/giphy.gif" alt="Interpolation Good" />
-        </p>
+
+        <Slider {...sliderSettings}>
+          <div>
+            <img src="" />
+            <p className="legend">Good interpolation here</p>
+          </div>
+        </Slider>
+
         <ol>
           <li>Actual path the chip took in the server’s physics engine</li>
           <li>Frames received by the client as snapshots</li>
@@ -835,7 +852,7 @@ while (bendingFrame !== totalBendingFrames) {
         <h4 id="In-Our-Game">In Our Game</h4>
         <p>For prediction to work, both the client <em>and</em> the server must have a game engine. We can take advantage of prediction in our game by introducing a client-side physics simulation, so that both server and client will simulate their worlds in tandem. In other words, we need both the clients and the server to be “smart.”</p>
         <figure>
-          <img src="https://i.imgur.com/9DcONlU.png" alt="Smart Clients and Server" />
+          <img  class="small" src="https://i.imgur.com/Gg4xQfr.png" alt="Smart Clients and Server" />
         </figure>
         <p>Running a physics engine on both the clients and the server allows us to:</p>
         <ul>
