@@ -46,6 +46,7 @@ class App extends Component {
   connectToSocket = () => {
     // const socket = openSocketConnection('localhost:3001'); // For debugging
     const socket = openSocketConnection('206.189.74.63:3000'); // For Droplet
+
     this.setState({ socket });
 
     return socket;
