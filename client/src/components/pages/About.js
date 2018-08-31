@@ -995,6 +995,16 @@ while (bendingFrame !== totalBendingFrames) {
           />
           described below we are able to get an average latency estimate that’s sufficient for our purposes.
         </p>
+        <Carousel swipeable={true} emulateTouch={true} transitionTime={0} showThumbs={false} infiniteLoop={true} showStatus={false}>
+            <div>
+                <img src="https://i.imgur.com/is6kNv7.png" />
+                <p className="legend">Latency Estimation start</p>
+            </div>
+            <div>
+                <img src="https://i.imgur.com/is6kNv7.png" />
+                <p className="legend">Latency Estimation end</p>
+            </div>
+        </Carousel>
         <p>
           <img src="https://media.giphy.com/media/1gXhpaKuQfwJoipAXq/giphy.gif" alt="Estimating Latency" />
         </p>
