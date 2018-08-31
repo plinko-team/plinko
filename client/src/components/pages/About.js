@@ -1016,12 +1016,32 @@ while (bendingFrame !== totalBendingFrames) {
 
         <Slider {...sliderSettings}>
           <div>
-            <img src="https://i.imgur.com/is6kNv7.png" />
-            <p className="legend">Latency Estimation start</p>
+            <img src="https://s15.postimg.cc/jbtpyydx7/latency_step2.png" />
+            <p className="legend">Step 1: The client stamps its current local time on a “time request” packet and sends to the server</p>
+          </div>
+          <div> 
+            <img src="https://s15.postimg.cc/3qcef0p4b/latency_step3.png" />
+            <p className="legend">Step 2: When the server receives the packet, the server stamps it’s own local time time and sends back to the client</p>
           </div>
           <div>
-            <img src="https://i.imgur.com/is6kNv7.png" />
-            <p className="legend">Latency Estimation end</p>
+            <img src="https://s15.postimg.cc/atk9ummu3/latency_step4.png" />
+            <p className="legend">Step 3: When the server receives the packet, the client subtracts its current local time from its sent time and divides by two to compute latency. It also subtracts its current time from server time to determine client-server time difference and adds in the half-latency to get the correct difference in clock times.</p>
+          </div>
+          <div>
+            <img src="https://s15.postimg.cc/67o5m8r0b/latency_step5.png" />
+            <p className="legend">Step 4: The client repeats the previous steps 10 times and adds the results to a latency history</p>
+          </div>
+          <div>
+            <img src="https://s15.postimg.cc/8ozwtiy23/latency_step6b.png" />
+            <p className="legend">Step 5: The latency history is sorted lowest to highest</p>
+          </div>
+          <div>
+            <img src="https://s15.postimg.cc/n871uxbrf/latency_step7b.png" />
+            <p className="legend">Step 6: The median latency is taken. All samples above or below 1 standard deviation of the median are discarded</p>
+          </div>
+          <div>
+            <img src="https://s15.postimg.cc/t94qs063f/latency_step8b.png" />
+            <p className="legend">Step 7: The remaining samples are averaged, giving us our average latency.</p>
           </div>
         </Slider>
 
