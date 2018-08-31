@@ -98,19 +98,6 @@ export default class ClientEngine {
     canvas.addEventListener('mousedown', (e) => { e.preventDefault() });
     // When the client moves the mouse, display a chip overlay
     canvas.addEventListener('mouseenter', this.onMouseEnter);
-    canvas.addEventListener('touchstart', this.onTouch);
-  }
-
-  onTouch(e) {
-    e.preventDefault();
-
-    // const evt = new Event('click', {
-    //   target: e.target,
-    //   currentTarget: e.currentTarget
-    // });
-    //
-    //
-    // e.target.dispatchEvent(evt)
   }
 
   frameSync() {

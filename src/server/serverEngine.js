@@ -212,7 +212,6 @@ export default class ServerEngine {
         }
 
         user = undefined;
-
       });
 
       socket.on('rejoin game', ({ userId }) => {
