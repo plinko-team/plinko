@@ -151,17 +151,6 @@ export default class ClientEngine {
       this.renderer.removeFromStage(this.chips[combinedId])
     })
 
-    // leftover from extrapolation
-    // for (let id of Object.keys(this.chips)) {
-    //
-    //   // this removes chips that the server has created (and returned to the client)
-    //   // and have reached the bottom
-    //   if (!chipsInCurrentSnapshot[id] && !this.chips[id].recentlyDropped) {
-    //     this.renderer.removeFromStage(this.chips[id]);
-    //     delete this.chips[id];
-    //   }
-    // }
-
     currentSnapshot.pegs.forEach(pegInfo => {
       const peg = this.pegs[pegInfo.id];
       peg.ownerId = pegInfo.ownerId;
