@@ -460,13 +460,63 @@ aside :last-child {
   background-color: #e6ebe0;
 }
 
-.control-arrow {
+/* .control-arrow {
   height: 100%;
 }
 
-.carousel img {
-  padding-bottom: 300px;
+.carousel li {
+  padding: 0;
 }
+
+.carousel .slider-wrapper .slide {
+  background: #fff;
+}
+
+.carousel img {
+  padding: 0 1rem 80px 1rem;
+}
+
+.main-content .carousel .slide .legend {
+  margin-bottom: 0;
+  text-align: left;
+}
+
+.control-arrow {
+  height: 50%;
+  margin-bottom: 0;
+} */
+
+
+.slick-slider img {
+  width: 100%;
+}
+
+.slick-next,
+.slick-prev {
+  top: 45%;
+}
+
+.slick-next:before,
+.slick-prev:before {
+  color: #000;
+}
+
+.legend {
+  margin-bottom: 0;
+  background-color: #c6c6c6;
+  padding: .5rem 1rem;
+  font-size: 1.3rem;
+  color: #fff;
+  border-radius: 2px;
+}
+
+.slick-dots {
+  bottom: 0;
+  position: relative;
+  margin-bottom: 2rem;
+}
+
+/* Rough Circles */
 
 .lobby .rough-circle {
   position: relative;

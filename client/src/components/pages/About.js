@@ -1,16 +1,24 @@
 import React from 'react';
-import { Carousel } from 'react-responsive-carousel';
-import styles from 'react-responsive-carousel/lib/styles/carousel.min.css';
+import Slider from "react-slick";
 import SyntaxHighlighter from 'react-syntax-highlighter';
 
 import Aside from './Aside';
 import Citation from './Citation';
 
-
 const About = () => {
   const syntaxHighlighterProps = {
     useInlineStyles: false,
     language: 'javascript',
+  };
+
+  const sliderSettings = {
+    dots: true,
+    fade: true,
+    infinite: true,
+    swipeToSlide: true,
+    speed: 100,
+    slidesToShow: 1,
+    slidesToScroll: 1,
   };
 
   const whileLoopSnippet = `while (gameIsRunning) {
@@ -21,7 +29,7 @@ const About = () => {
 
   const gameLoopRAF = `function gameLoop() {
   requestAnimationFrame(gameLoop)
-  
+
   processInputs()
   updateWorld()
   renderWorld()
@@ -50,7 +58,7 @@ const About = () => {
   // alpha is a value between 0 and 1 that represents
   // how far along the game loop is between the previous
   // and current simulation steps
-  
+
   alpha = accumulatedTime / TIMESTEP;
   interpolate(alpha);
   renderWorld();
@@ -60,7 +68,7 @@ const About = () => {
 
   const animate = `function animate() {
   // ...
-  
+
   // Get the latest snapshot received from the server
   currentSnapshot = getSnapshot()
 
@@ -85,9 +93,9 @@ const About = () => {
 
   const animateWithBuffer = `function animate() {
   // ...
-  
+
   // If there are more than 5 frames in the buffer, the client is too far
-  // behind the server and should throw away excess frames to get back in sync  
+  // behind the server and should throw away excess frames to get back in sync
   while (snapshotBuffer.length > 5) { snapshotBuffer.shift() }
 
   // Get the first snapshot received from the server that hasn't been processed yet
@@ -129,26 +137,26 @@ const About = () => {
 `;
 
   const animateClientReenactment = `function animate() {
-  
+
   if (latestSnapshotExists()) {
 
     snapshot = getLatestSnapshot()
 
-    // Regenerate world from latest snapshot then catch up 
+    // Regenerate world from latest snapshot then catch up
     // to the current frame
-    
+
     regenerateFromSnapshot(snapshot)
     catchUpToCurrentFrameFrom(snapshot.frame)
 
     deleteLatestSnapshot() // Make room for next snapshot
-    
+
   }
 
   // Always move the engine ahead one step
   // because we are always extrapolating
-  
+
   updateWorld()
-  
+
   frame += 1
 }`;
 
@@ -224,7 +232,7 @@ const About = () => {
 
     // If there are inputs at the current frame, we need to
     // process them by creating and adding chips to the world
-    
+
     inputs = inputsAtCurrentFrame()
 
     if (inputs) {
@@ -253,7 +261,7 @@ totalBendingFrames = 4
 bendingFrame = 1
 
 while (bendingFrame !== totalBendingFrames) {
-  // Calculate bending factor. It can be a constant factor, 
+  // Calculate bending factor. It can be a constant factor,
   // or dependent on number of bending frames
   bendingFactor = 1 / (totalBendingFrames - bendingFrame)
 
@@ -390,7 +398,7 @@ while (bendingFrame !== totalBendingFrames) {
         <p>The solution is to decouple the renderer from the physics engine. This entails keeping track of how much time has elapsed since the previous game loop, and, if necessary, stepping the simulation forward multiple times before rendering the next frame.</p>
 
         <h4 id="213-requestAnimationFrame">2.1.3 <code>requestAnimationFrame</code></h4>
-        <p>Now that we have our game loop goals in mind, your first instinct might be to implement the loop using <code>setInterval</code> or <code>setTimeout</code>. But remember that we need to run our game on a fixed timestep, and neither of these methods are guaranteed to execute the callback at the exact delay time we pass in. Instead, this delay will be the <em>minimum</em> amount of time it takes for the callback to be executed. Actual execution time will depend on how many other tasks are also waiting in the queue 
+        <p>Now that we have our game loop goals in mind, your first instinct might be to implement the loop using <code>setInterval</code> or <code>setTimeout</code>. But remember that we need to run our game on a fixed timestep, and neither of these methods are guaranteed to execute the callback at the exact delay time we pass in. Instead, this delay will be the <em>minimum</em> amount of time it takes for the callback to be executed. Actual execution time will depend on how many other tasks are also waiting in the queue
           <Citation
             title={'Concurrency model and Event Loop'}
             contributingOrganization={'Mozilla Developor Network'}
@@ -445,18 +453,18 @@ while (bendingFrame !== totalBendingFrames) {
         <p>We’ve built a fully-functioning local physics game for a single player, but that’s only the first step. We want to let multiple users play together in the same game world, which means we need to network our game.</p>
 
         <h3 id="31-Client-Server-Architecture">3.1 Client-Server Architecture</h3>
-        <p>We’ll use a client-server networking model where all players connect to a central server that acts as the authority on the game state (in contrast to peer-to-peer networking, where players connect to one another and there is no central authority).</p>
+        <p>We’ll use a client-server networking model, where all players connect to a central server that acts as the authority on the game state (in contrast to peer-to-peer networking, where players connect to one another and there is no central authority).</p>
         <figure>
-          <img src="https://i.imgur.com/is6kNv7.png" alt="Client-Server architecture" />
+          <img src="https://i.imgur.com/0JXCE2e.png" alt="Client-Server architecture" />
           <figcaption>Figure 3.1.1: Client-Server Architecture</figcaption>
         </figure>
         <p>Connected players, the clients, transmit inputs to the server. The server, in turn, sends the necessary game state information to all connected clients so that they can recreate the game state locally.</p>
-        <p>Client-server architecture is the gold standard 
+        <p>Client-server architecture is the gold standard
           <Citation
             creator={'Gabriel Gambetta'}
             title={'Fast-Paced Multiplayer (Part I): Client-Server Game Architecture'}
             url={"http://www.gabrielgambetta.com/client-server-game-architecture.html"}
-          /> | 
+          /> |
           <Citation
             creator={'Sergey Ignatchenko'}
             creationDate={"July 7, 2017"}
@@ -464,7 +472,7 @@ while (bendingFrame !== totalBendingFrames) {
           />
           in multiplayer gaming thanks to a few chief benefits:
         </p>
-        
+
         <ul>
           <li>Server provides a single source of authority
           <ul>
@@ -482,13 +490,13 @@ while (bendingFrame !== totalBendingFrames) {
         <p>Now that we have our network in place, how will we facilitate communication between our server and clients? We want to run our game at 60 frames per second, which requires transmitting large amounts of data between client and server very quickly.</p>
         <p>HTTP is an obvious protocol choice for most apps, but it isn’t well suited to our needs. It operates on a request-response cycle, and it must open and close a new connection for each new cycle. When we’re sending messages 60 times a second, this constant opening and closing will slow us down.</p>
         <p>WebSockets is built on TCP just like HTTP, but it provides stateful, bidirectional, full-duplex communication between client and server. Either the client or server may initiate communication, and both may send messages to one another simultaneously – all over a single connection that remains open for the lifetime of the communication session. After an initial HTTP handshake to open the connection, the client and server may exchange only the relevant application data with no headers, which decreases message overhead.</p>
-        <p>These optimizations make it faster, and therefore a better choice for our game 
+        <p>These optimizations make it faster, and therefore a better choice for our game
         <Citation
           creator={'David Luecke'}
           creationDate={"January 26, 2018"}
           title={'HTTP vs Websockets: A performance comparison'}
           url={"https://blog.feathersjs.com/http-vs-websockets-a-performance-comparison-da2533f13a77"}
-        /> / 
+        /> /
         <Citation
           creator={'Arun Gupta'}
           creationDate={"February 24, 2014"}
@@ -498,7 +506,7 @@ while (bendingFrame !== totalBendingFrames) {
         .
         </p>
 
-        <h4 id="321-socketio">3.2.1 <a href="http://socket.io" target="_blank">socket.io</a></h4>
+        <h4 id="321-socketio">3.2.1 Socket.io</h4>
         <p>In order to leverage existing solutions for WebSockets, we utilize <a href="http://socket.io" target="_blank">socket.io</a>, a robust Javascript library that serves as a WebSockets wrapper. In addition to a general WebSockets interface, <a href="http://socket.io" target="_blank">socket.io</a> also provides capabilities for broadcasting to compartmentalized sockets, a critical feature for player matchmaking, and support for asynchronous I/O.</p>
 
         {/* Synchronizing Networked Game State */}
@@ -510,16 +518,26 @@ while (bendingFrame !== totalBendingFrames) {
         <h3 id="41-Transmitting-Inputs">4.1 Transmitting Inputs</h3>
         <p>No matter what, we know we need to share information about inputs between users. If we don’t, how will they know what other players are doing?</p>
         <p>We’ll use our central server to relay input messages from one client to another. Just like in our local single-player game, each player will have their own physics engine to simulate the game world. The game lifecycle looks like this:</p>
-        <p><strong>&lt;clickable carousel&gt;</strong></p>
-        <p>
-          <img src="https://media.giphy.com/media/kspUpuXiE91yXHiYUn/giphy.gif" alt="Sending Inputs" />
-        </p>
-        <ol>
-          <li>User clicks to drop a chip</li>
-          <li>Client sends input notification to server, while client’s physics engine starts moving chip</li>
-          <li>Server relays input to other clients</li>
-          <li>Other clients add chip to their engine and display it</li>
-        </ol>
+
+        <Slider {...sliderSettings}>
+          <div>
+            <img src="https://i.imgur.com/M3el5w6.png" />
+            <p className="legend">1. A user clicks to drop a new chip</p>
+          </div>
+          <div>
+            <img src="https://i.imgur.com/yuJqfTc.png" />
+            <p className="legend">2. The client sends a notification about the new chip to the server. Meanwhile, the client's physics engine starts moving the chip.</p>
+          </div>
+          <div>
+            <img src="https://i.imgur.com/Tz1CSoB.png" />
+            <p className="legend">3. The server relays the input to other clients</p>
+          </div>
+          <div>
+            <img src="https://i.imgur.com/bmlnS4f.png" />
+            <p className="legend">4. Other clients add the new chip to their engine and display it</p>
+          </div>
+        </Slider>
+
         <p>We can think of this model as having “smart” clients and a “dumb” server:</p>
         <figure>
           <img src="https://i.imgur.com/MicK8yI.png" alt="Smart Clients" />
@@ -547,14 +565,14 @@ while (bendingFrame !== totalBendingFrames) {
 
         <h5 id="412-Determinism">4.1.2 Determinism</h5>
         <p>If our plan is to share new inputs among players and let their individual physics engines take care of the rest, we need be able to trust that each of those engines will produce exactly the same result. If we drop a chip in the same place at the same time under the same conditions, it should always behave in exactly the same way for every player.</p>
-        <p>However, the vast majority of physics engines, including ours, are <em>not</em> deterministic. Physics engines rely on floating point numbers to calculate physical properties and forces, and floating point numbers are handled differently by different machines and operating systems 
+        <p>However, the vast majority of physics engines, including ours, are <em>not</em> deterministic. Physics engines rely on floating point numbers to calculate physical properties and forces, and floating point numbers are handled differently by different machines and operating systems
           <Citation
             creator={'Glenn Fiedler'}
             creationDate={"November 29, 2014"}
             title={'Deterministic Lockstep: Keeping simulations in sync by sending only inputs'}
             contributingOrganization={'Gaffer On Games'}
             url={"https://gafferongames.com/post/deterministic_lockstep/"}
-          />        
+          />
           . If floating point calculations aren’t deterministic, our game won’t be either. A small disparity in rounding might cause a chip to bounce left for one user and right for another, and soon our players’ game states have diverged just like before.
         </p>
         <p>At this point, it’s obvious that transmitting only inputs is not enough. How can we do better?</p>
@@ -786,7 +804,7 @@ while (bendingFrame !== totalBendingFrames) {
         </table>
 
         <p>(<a href="https://wondernetwork.com/pings" target="_blank">Wonder Network</a>)</p>
-        <p>Research shows that humans perceive response times of under 100-150ms as instantaneous, but that anything longer appears noticeably delayed 
+        <p>Research shows that humans perceive response times of under 100-150ms as instantaneous, but that anything longer appears noticeably delayed
           <Citation
             creator={'Sergey Ignatchenko'}
             creationDate={"July 7, 2017"}
@@ -986,7 +1004,7 @@ while (bendingFrame !== totalBendingFrames) {
 
         <h4 id="436-Estimating-Latency">4.3.6 Estimating Latency</h4>
         <p>There’s one last thing we need to address. Our game implicitly expects that the clients and server are running on the same timeline. This means that if the server is on frame 100 we should expect any given client to be within at least a few frames of that when sending or receiving inputs. If this is not the case our game will break down because our game engine will be forced to reenact too far into the past. So how do we ensure that clients and server start the game in a synchronized manner and maintain a unified timeline? We estimate the average latency between a given client and the server.</p>
-        <p>We need to estimate because there is no sure-fire of knowing the exact latency between the client and server. Part of this issue stems from the fact that no two clocks will ever agree on what the current time is and no two transmissions are guaranteed to take the exact amount of time. With that being said, we don’t need to be exact and a good estimate of latency is the best we can hope for. Utilizing the algorithm 
+        <p>We need to estimate because there is no sure-fire of knowing the exact latency between the client and server. Part of this issue stems from the fact that no two clocks will ever agree on what the current time is and no two transmissions are guaranteed to take the exact amount of time. With that being said, we don’t need to be exact and a good estimate of latency is the best we can hope for. Utilizing the algorithm
           <Citation
             creator={'Zachary Booth Simpson'}
             creationDate={"March 01, 2000"}
@@ -995,16 +1013,18 @@ while (bendingFrame !== totalBendingFrames) {
           />
           described below we are able to get an average latency estimate that’s sufficient for our purposes.
         </p>
-        <Carousel swipeable={true} emulateTouch={true} transitionTime={0} showThumbs={false} infiniteLoop={true} showStatus={false}>
-            <div>
-                <img src="https://i.imgur.com/is6kNv7.png" />
-                <p className="legend">Latency Estimation start</p>
-            </div>
-            <div>
-                <img src="https://i.imgur.com/is6kNv7.png" />
-                <p className="legend">Latency Estimation end</p>
-            </div>
-        </Carousel>
+
+        <Slider {...sliderSettings}>
+          <div>
+            <img src="https://i.imgur.com/is6kNv7.png" />
+            <p className="legend">Latency Estimation start</p>
+          </div>
+          <div>
+            <img src="https://i.imgur.com/is6kNv7.png" />
+            <p className="legend">Latency Estimation end</p>
+          </div>
+        </Slider>
+
         <p>
           <img src="https://media.giphy.com/media/1gXhpaKuQfwJoipAXq/giphy.gif" alt="Estimating Latency" />
         </p>
@@ -1018,7 +1038,7 @@ while (bendingFrame !== totalBendingFrames) {
             <li>All latencies above 1 standard-deviation from the median latency are discarded and the remaining samples are averaged.</li>
           </ol>
         <p>Now that we have a reliable means of estimating latency before the game starts each client can use this information to predict what frame of the simulation the server is on.</p>
-        
+
         <h4 id="437-Conclusion">4.3.7 Conclusion</h4>
         <p>While prediction adds complexity to our implementation, it allows us to reduce our bandwidth needs considerably and creates a better experience for the user.</p>
 
