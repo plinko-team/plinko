@@ -414,10 +414,23 @@ input[type="text"]:focus {
 
 figure {
   text-align: center;
+  margin-left: 0;
+  margin-right: 0;
 }
 
 figure img {
   max-width: 100%;
+}
+
+/* at large screen sizes, constrain width of small and medium images */
+@media (min-width: 500px) {
+  figure img.small {
+    max-width: 250px;
+  }
+
+  figure img.medium {
+    max-width: 350px;
+  }
 }
 
 ul, ol {
