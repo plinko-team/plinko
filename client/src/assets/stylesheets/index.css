@@ -83,8 +83,16 @@ h6 {
   color: #a3a3a3;
 }
 
+a:hover {
+  color: #9bc1bc;
+}
+
 .bold {
   font-weight: 900;
+}
+
+em {
+  font-style: italic;
 }
 
 main {
@@ -206,7 +214,13 @@ wired-card {
 }
 
 .main-content {
-  padding: 4rem 6rem;
+  padding: 2rem 3rem;
+}
+
+@media (min-width: 500px) {
+  .main-content {
+    padding: 4rem 6rem;
+  }
 }
 
 .game-container {
@@ -412,6 +426,11 @@ input[type="text"]:focus {
   font-size: 1.7rem;
 }
 
+p,
+figure {
+  margin-bottom: 2rem;
+}
+
 figure {
   text-align: center;
   margin-left: 0;
@@ -436,7 +455,7 @@ figure img {
 }
 
 ul, ol {
-  margin-left: 4rem;
+  margin-left: 3rem;
   list-style-position: outside;
 }
 
@@ -444,12 +463,49 @@ ul {
   list-style: disc;
 }
 
+ul ul {
+  font-size: 100%;
+  margin-top: .5rem;
+  margin-bottom: .5rem;
+}
+
 li {
-  padding-left: 1.5rem;
+  padding-left: .5rem;
+  margin-bottom: .5rem;
+}
+
+code {
+  border-radius: 0;
 }
 
 figcaption {
   font-size: 1.4rem;
+  font-style: italic;
+}
+
+table {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+th {
+  font-weight: bold;
+}
+
+table,
+th,
+td {
+  border: 1px solid #E1E1E1;
+}
+
+th:first-child,
+td:first-child {
+  padding-left: 15px;
+}
+
+th:last-child,
+td:last-child {
+  padding-right: 15px;
 }
 
 aside {
@@ -474,6 +530,53 @@ aside :last-child {
 .emphasized wired-card {
   background-color: #e6ebe0;
 }
+
+/* Table of Contents */
+
+@media (min-width: 675px) {
+  .toc {
+    float: right;
+    margin-left: 1rem;
+  }
+
+  .toc .aside-container {
+    margin-bottom: 0;
+  }
+}
+
+.toc {
+  font-size: 1.5rem;
+}
+
+.toc ol + p {
+  font-style: italic;
+  text-align: center;
+  margin-bottom: 0;
+  margin-top: .5rem;
+}
+
+.toc ol {
+  counter-reset: item;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.toc ol:first-child {
+  margin-left: 0;
+}
+
+.toc li {
+  display: block;
+  margin-bottom: 0;
+}
+
+.toc li:before {
+  content: counters(item, ".") " ";
+  counter-increment: item;
+  margin-right: .5rem;
+}
+
+/* Image Sliders */
 
 .slick-slider img {
   width: 100%;
@@ -535,6 +638,7 @@ header .rough-circle canvas {
   cursor: help;
   margin: 0 .2rem;
   font-style: normal;
+  z-index: 2;
 }
 
 .citation > a {
