@@ -526,6 +526,23 @@ header .rough-circle canvas {
   top: .5rem;
 }
 
+/* Team */
+
+.team {
+  margin: 0;
+  padding: 0;
+}
+
+.team li {
+  display: inline-block;
+  padding-left: 2rem;
+  text-align: center;
+}
+
+.team img {
+  border-radius: 10px;
+}
+
 /* Citations */
 
 .citation {
