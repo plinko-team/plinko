@@ -868,10 +868,88 @@ while (bendingFrame !== totalBendingFrames) {
         <p>Finally, on frame <code>105</code>, the client receives the snapshot reflecting the authoritative state at <code>100</code> and “regenerates” the game world based on it. It must now fast forward up to the current frame in order to reflect what it thinks the server must be seeing at frame <code>105</code>.</p>
 
         <h5 id="Detailed-Overview">Detailed Overview</h5>
+
         <p>There is a fair amount of complexity hidden by the previous diagram, especially regarding the way reenactment operates on each side. What <em>actually</em> happens when an input is received by the server, or a snapshot is received by the client? Let’s take a look step-by-step:</p>
-        <p>
-          <img src="https://s1.gifyu.com/images/extrapolation-overview.gif" alt="Extrapolation overview animation" />
-        </p>
+        <Slider {...sliderSettings}>
+          <div>
+            <img src="https://s15.postimg.cc/cwup2ewyj/image.png" />
+            <p className="legend">Hi</p>
+          </div>
+          <div>
+            <img src="https://s15.postimg.cc/sic0mdgmj/image.png" />
+            <p className="legend">Hi</p>
+          </div>
+          <div>
+            <img src="https://s15.postimg.cc/jnb6bv79n/image.png" />
+            <p className="legend">Hi</p>
+          </div>
+          <div>
+            <img src="https://s15.postimg.cc/q109f44fv/image.png" />
+            <p className="legend">Hi</p>
+          </div>
+          <div>
+            <img src="https://s15.postimg.cc/y6ibdav9n/image.png" />
+            <p className="legend">Hi</p>
+          </div>
+          <div>
+            <img src="https://s15.postimg.cc/h5zf4lv2z/image.png" />
+            <p className="legend">Hi</p>
+          </div>
+          <div>
+            <img src="https://s15.postimg.cc/mhebpbovf/image.png" />
+            <p className="legend">Hi</p>
+          </div>
+          <div>
+            <img src="https://s15.postimg.cc/jnb6bvuez/image.png" />
+            <p className="legend">Hi</p>
+          </div>
+          <div>
+            <img src="https://s15.postimg.cc/i89ln68rf/image.png" />
+            <p className="legend">Hi</p>
+          </div>
+          <div>
+            <img src="https://s15.postimg.cc/pr1xnaubf/image.png" />
+            <p className="legend">Hi</p>
+          </div>
+          <div>
+            <img src="https://s15.postimg.cc/nmhkm80ej/image.png" />
+            <p className="legend">Hi</p>
+          </div>
+          <div>
+            <img src="https://s15.postimg.cc/4hebcgtgb/image.png" />
+            <p className="legend">Hi</p>
+          </div>
+          <div>
+            <img src="https://s15.postimg.cc/nwfwe37yz/image.png" />
+            <p className="legend">Hi</p>
+          </div>
+          <div>
+            <img src="https://s15.postimg.cc/olyoqh3dn/image.png" />
+            <p className="legend">Hi</p>
+          </div>
+          <div>
+            <img src="https://s15.postimg.cc/6vx05fi2z/image.png" />
+            <p className="legend">Hi</p>
+          </div>
+          <div>
+            <img src="https://s15.postimg.cc/6j5lz8kdn/image.png" />
+            <p className="legend">Hi</p>
+          </div>
+          <div>
+            <img src="https://s15.postimg.cc/vcf5zwb3v/image.png" />
+            <p className="legend">Hi</p>
+          </div>
+          <div>
+            <img src="https://s15.postimg.cc/fqxufymaz/image.png" />
+            <p className="legend">Hi</p>
+          </div>
+          <div>
+            <img src="https://s15.postimg.cc/sic0mh3sr/image.png" />
+            <p className="legend">Hi</p>
+          </div>
+
+        </Slider>
+
         <pre><code>Carousel descriptions:
         (description) The client and server's visual output are represented with the current frame at the top right of each. Red chips and frame counters represent a reenactment.
         a) Client drops a chip, it appears instantly on their screen and begins dropping
@@ -977,16 +1055,159 @@ while (bendingFrame !== totalBendingFrames) {
 
         <h5 id="Popping">Popping</h5>
         <p>When the client performs a reenactment and discovers that the current and the reenacted chip positions have diverged, it can simply render the new position and continue simulating. This can result in a “popping” effect, where the chip pops out of existence at one point, and back into existence elsewhere:</p>
-        <figure>
-          <img src="https://s1.gifyu.com/images/extrapolation-popping.gif" alt="Popping" />
-        </figure>
+        <Slider {...sliderSettings}>
+          <div>
+            <img className="medium" src="https://s15.postimg.cc/681xrs83v/image.png"/ >
+            <p className="legend">Hi</p>
+          </div>
+          <div>
+            <img className="medium" src="https://s15.postimg.cc/681xrsftn/image.png"/ >
+            <p className="legend">Hi</p>
+          </div>
+          <div>
+            <img className="medium" src="https://s15.postimg.cc/x5vutj86j/image.png"/ >
+            <p className="legend">Hi</p>
+          </div>
+          <div>
+            <img className="medium" src="https://s15.postimg.cc/izg3yb517/image.png"/ >
+            <p className="legend">Hi</p>
+          </div>
+          <div>
+            <img className="medium" src="https://s15.postimg.cc/ppwl7r7mj/image.png"/ >
+            <p className="legend">Hi</p>
+          </div>
+          <div>
+            <img className="medium" src="https://s15.postimg.cc/q2nzdxi6j/image.png"/ >
+            <p className="legend">Hi</p>
+          </div>
+          <div>
+            <img className="medium" src="https://s15.postimg.cc/b6pg6ctx7/image.png"/ >
+            <p className="legend">Hi</p>
+          </div>
+          <div>
+            <img className="medium" src="https://s15.postimg.cc/pd571kx2j/image.png"/ >
+            <p className="legend">Hi</p>
+          </div>
+          <div>
+            <img className="medium" src="https://s15.postimg.cc/edjzpzm2z/image.png"/ >
+            <p className="legend">Hi</p>
+          </div>
+          <div>
+            <img className="medium" src="https://s15.postimg.cc/esv9j30bf/image.png"/ >
+            <p className="legend">Hi</p>
+          </div>
+          <div>
+            <img className="medium" src="https://s15.postimg.cc/wt4gnev2j/image.png"/ >
+            <p className="legend">Hi</p>
+          </div>
+          <div>
+            <img className="medium" src="https://s15.postimg.cc/cyif1a0ff/image.png"/ >
+            <p className="legend">Hi</p>
+          </div>
+          <div>
+            <img className="medium" src="https://s15.postimg.cc/eqbdw6ri3/image.png"/ >
+            <p className="legend">Hi</p>
+          </div>
+          <div>
+            <img className="medium" src="https://s15.postimg.cc/nb4pnfm9n/image.png"/ >
+            <p className="legend">Hi</p>
+          </div>
+          <div>
+            <img className="medium" src="https://s15.postimg.cc/coawi06ej/image.png"/ >
+            <p className="legend">Hi</p>
+          </div>
+          <div>
+            <img className="medium" src="https://s15.postimg.cc/9u7r4krdn/image.png"/ >
+            <p className="legend">Hi</p>
+          </div>
+          <div>
+            <img className="medium" src="https://s15.postimg.cc/oq6ac5v2j/image.png"/ >
+            <p className="legend">Hi</p>
+          </div>
+          <div>
+            <img className="medium" src="https://s15.postimg.cc/a6z5arhd7/image.png"/ >
+            <p className="legend">Hi</p>
+          </div>
+
+        </Slider>
         <p>While this works perfectly fine in the case where divergence is not severe, if the positions are dozens of pixels apart, the effect can be jarring and chips can appear to teleport. One of the most important aspects of a physics-based game is for objects to have a natural path which your eyes can follow. This creates the important illusion of continuity so that the viewer can register an object to persist between frames as the same object. If we were content for chips to pop, we would be sacrificing an important aspect of the player experience.</p>
 
         <h5 id="Solution-Bending">Solution: Bending</h5>
         <p>The best way to handle the problem of continuity with respect to state divergence is to perform bending (or smoothing). This means that once a new position is calculated, we don’t render it immediately, but instead continue rendering our <em>old</em> position. Then, over a period of 3-5 frames, we can “push” the old position towards the new one.</p>
-        <figure>
-          <img src="https://s1.gifyu.com/images/extrapolation-bending.gif" alt="Bending" />
-        </figure>
+        <Slider {...sliderSettings}>
+          <div>
+            <img className="medium" src="https://s15.postimg.cc/681xrs83v/image.png" />
+            <p className="legend">Hi</p>
+          </div>
+          <div>
+            <img className="medium" src="https://s15.postimg.cc/681xrsftn/image.png" />
+            <p className="legend">Hi</p>
+          </div>
+          <div>
+            <img className="medium" src="https://s15.postimg.cc/x5vutj86j/image.png" />
+            <p className="legend">Hi</p>
+          </div>
+          <div>
+            <img className="medium" src="https://s15.postimg.cc/izg3yb517/image.png" />
+            <p className="legend">Hi</p>
+          </div>
+          <div>
+            <img className="medium" src="https://s15.postimg.cc/ppwl7r7mj/image.png" />
+            <p className="legend">Hi</p>
+          </div>
+          <div>
+            <img className="medium" src="https://s15.postimg.cc/q2nzdxi6j/image.png" />
+            <p className="legend">Hi</p>
+          </div>
+          <div>
+            <img className="medium" src="https://s15.postimg.cc/b6pg6ctx7/image.png" />
+            <p className="legend">Hi</p>
+          </div>
+          <div>
+            <img className="medium" src="https://s15.postimg.cc/pd571kx2j/image.png" />
+            <p className="legend">Hi</p>
+          </div>
+          <div>
+            <img className="medium" src="https://s15.postimg.cc/edjzpzm2z/image.png" />
+            <p className="legend">Hi</p>
+          </div>
+          <div>
+            <img className="medium" src="https://s15.postimg.cc/5vajlnna3/image.png" />
+            <p className="legend">Hi</p>
+          </div>
+          <div>
+            <img className="medium" src="https://s15.postimg.cc/wt4gnev2j/image.png" />
+            <p className="legend">Hi</p>
+          </div>
+          <div>
+            <img className="medium" src="https://s15.postimg.cc/cyif1a0ff/image.png" />
+            <p className="legend">Hi</p>
+          </div>
+          <div>
+            <img className="medium" src="https://s15.postimg.cc/eqbdw6ri3/image.png" />
+            <p className="legend">Hi</p>
+          </div>
+          <div>
+            <img className="medium" src="https://s15.postimg.cc/3qq6klo8b/image.png" />
+            <p className="legend">Hi</p>
+          </div>
+          <div>
+            <img className="medium" src="https://s15.postimg.cc/c8zmoxn17/image.png" />
+            <p className="legend">Hi</p>
+          </div>
+          <div>
+            <img className="medium" src="https://s15.postimg.cc/8pdoz57gr/image.png" />
+            <p className="legend">Hi</p>
+          </div>
+          <div>
+            <img className="medium" src="https://s15.postimg.cc/db9t7hla3/image.png" />
+            <p className="legend">Hi</p>
+          </div>
+          <div>
+            <img className="medium" src="https://s15.postimg.cc/tz1b9zvh7/image.png" />
+            <p className="legend">Hi</p>
+          </div>
+        </Slider>
         <pre><code>a) Client is extrapolating on the client engine
           b) We receive a snapshot about the state at  `frame 53` and rewind
           c) We have caught up to the current frame, so we begin bending
@@ -1033,27 +1254,35 @@ while (bendingFrame !== totalBendingFrames) {
 
         <Slider {...sliderSettings}>
           <div>
-            <img src="https://i.imgur.com/is6kNv7.png" />
-            <p className="legend">Latency Estimation start</p>
+            <img src="https://s15.postimg.cc/jbtpyydx7/latency_step2.png" />
+            <p className="legend">Step 1: The client stamps its current local time on a “time request” packet and sends to the server</p>
+          </div>
+          <div> 
+            <img src="https://s15.postimg.cc/3qcef0p4b/latency_step3.png" />
+            <p className="legend">Step 2: When the server receives the packet, the server stamps it’s own local time time and sends back to the client</p>
           </div>
           <div>
-            <img src="https://i.imgur.com/is6kNv7.png" />
-            <p className="legend">Latency Estimation end</p>
+            <img src="https://s15.postimg.cc/atk9ummu3/latency_step4.png" />
+            <p className="legend">Step 3: When the server receives the packet, the client subtracts its current local time from its sent time and divides by two to compute latency. It also subtracts its current time from server time to determine client-server time difference and adds in the half-latency to get the correct difference in clock times.</p>
+          </div>
+          <div>
+            <img src="https://s15.postimg.cc/67o5m8r0b/latency_step5.png" />
+            <p className="legend">Step 4: The client repeats the previous steps 10 times and adds the results to a latency history</p>
+          </div>
+          <div>
+            <img src="https://s15.postimg.cc/8ozwtiy23/latency_step6b.png" />
+            <p className="legend">Step 5: The latency history is sorted lowest to highest</p>
+          </div>
+          <div>
+            <img src="https://s15.postimg.cc/n871uxbrf/latency_step7b.png" />
+            <p className="legend">Step 6: The median latency is taken. All samples above or below 1 standard deviation of the median are discarded</p>
+          </div>
+          <div>
+            <img src="https://s15.postimg.cc/t94qs063f/latency_step8b.png" />
+            <p className="legend">Step 7: The remaining samples are averaged, giving us our average latency.</p>
           </div>
         </Slider>
 
-        <p>
-          <img src="https://media.giphy.com/media/1gXhpaKuQfwJoipAXq/giphy.gif" alt="Estimating Latency" />
-        </p>
-            Note: Below will be part of the caption in the carousel
-          <ol>
-            <li>The client stamps its current local time on a “time request” packet and sends to the server</li>
-            <li>When the server receives the packet, the server stamps it’s own local time time and sends back to the client</li>
-            <li>When the server receives the packet, the client subtracts its current local time from its sent time and divides by two to compute latency. It also subtracts its current time from server time to determine client-server time difference and adds in the half-latency to get the correct difference in clock times.</li>
-            <li>The client repeats the previous steps 10 times and adds the results to a latency history</li>
-            <li>The latency history is sorted lowest to highest and the median latency is taken</li>
-            <li>All latencies above 1 standard-deviation from the median latency are discarded and the remaining samples are averaged.</li>
-          </ol>
         <p>Now that we have a reliable means of estimating latency before the game starts each client can use this information to predict what frame of the simulation the server is on.</p>
 
         <h4 id="437-Conclusion">4.3.7 Conclusion</h4>
