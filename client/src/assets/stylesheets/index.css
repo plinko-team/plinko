@@ -543,6 +543,10 @@ header .rough-circle canvas {
   border-radius: 10px;
 }
 
+.team a {
+  text-decoration: none;
+}
+
 /* Citations */
 
 .citation {
