@@ -15,6 +15,8 @@ const Team = () => {
                 <strong>Branko Culum</strong>
                   <br />
                   Software Engineer
+                  <br />
+                  Toronto, ON
               </a>
             </li>
             <li>
@@ -25,6 +27,8 @@ const Team = () => {
                 <strong>Ryann McQuilton</strong>
                   <br />
                   Software Engineer
+                  <br />
+                  Los Angeles, CA
               </a>
             </li>
             <li>
@@ -35,6 +39,8 @@ const Team = () => {
                 <strong>Josh Nelson</strong>
                   <br />
                   Software Engineer
+                  <br />
+                  Portland, OR
               </a>
             </li>
           </ul>
