@@ -1354,7 +1354,47 @@ while (bendingFrame !== totalBendingFrames) {
 
         <h2 id="about-us">About the Team</h2>
         <p>Our team of three web developers built Plinko remotely, working together from across North America. We pair-programmed, bug-squashed, and drank 3,425,718 cups of coffee.</p>
-        <p><strong>&lt;pictures of our charming faces&gt;</strong></p>
+
+        <ul className="team">
+            <li>
+              <a href="#">
+                <figure>
+                  <img src="https://via.placeholder.com/200x200" alt="Branko Culum"/>
+                </figure>
+                <strong>Branko Culum</strong>
+                  <br />
+                  Software Engineer
+                  <br />
+                  Toronto, ON
+              </a>
+            </li>
+            <li>
+              <a href="#">
+                <figure>
+                  <img src="https://via.placeholder.com/200x200" alt="Ryann McQuilton"/>
+                </figure>
+                <strong>Ryann McQuilton</strong>
+                  <br />
+                  Software Engineer
+                  <br />
+                  Los Angeles, CA
+              </a>
+            </li>
+            <li>
+              <a href="#">
+                <figure>
+                  <img src="https://i.imgur.com/2ZDRwrh.jpg" alt="Josh Nelson"/>
+                </figure>
+                <strong>Josh Nelson</strong>
+                  <br />
+                  Software Engineer
+                  <br />
+                  Portland, OR
+              </a>
+            </li>
+          </ul>
+
+
         <p>Please feel free to get in touch if you’d like to talk software engineering, games, or the web. We’re always open to learning about new opportunities.</p>
 
         {/* Further Reading */}
