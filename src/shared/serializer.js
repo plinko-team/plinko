@@ -223,50 +223,50 @@ export default class Serializer {
 
 // For testing
 
-function rng(n) {
-  return Math.floor(Math.random() * n)
-}
-
-function generateChip(id) {
-  return {
-    id: id,
-    ownerId: rng(4),
-    x: rng(600),
-    y: rng(800),
-    angle: Math.random()
-  }
-}
-
-function generatePeg(id) {
-  let rand = rng(5);
-  let ownerId = rand === 0 ? null : rand - 1;
-  return { id, ownerId };
-}
-
-function generateSnapshot(numChips=10, numPegs=10) {
-  let chips = [];
-  let pegs = [];
-
-  for (let i = 0; i < numChips; i++) {
-    chips.push(generateChip(i))
-  }
-
-  for (let i = 0; i < numPegs; i++) {
-    pegs.push(generatePeg(i))
-  }
-
-  let score = {
-    0: 33,
-    1: 12,
-    2: 0,
-    3: 10,
-  }
-
-  let targetScore = Math.floor(Math.random() * 60);
-  let winner = Math.round(Math.random());
-
-  return { chips, pegs, score, winner, targetScore }
-}
+// function rng(n) {
+//   return Math.floor(Math.random() * n)
+// }
+//
+// function generateChip(id) {
+//   return {
+//     id: id,
+//     ownerId: rng(4),
+//     x: rng(600),
+//     y: rng(800),
+//     angle: Math.random()
+//   }
+// }
+//
+// function generatePeg(id) {
+//   let rand = rng(5);
+//   let ownerId = rand === 0 ? null : rand - 1;
+//   return { id, ownerId };
+// }
+//
+// function generateSnapshot(numChips=10, numPegs=10) {
+//   let chips = [];
+//   let pegs = [];
+//
+//   for (let i = 0; i < numChips; i++) {
+//     chips.push(generateChip(i))
+//   }
+//
+//   for (let i = 0; i < numPegs; i++) {
+//     pegs.push(generatePeg(i))
+//   }
+//
+//   let score = {
+//     0: 33,
+//     1: 12,
+//     2: 0,
+//     3: 10,
+//   }
+//
+//   let targetScore = Math.floor(Math.random() * 60);
+//   let winner = Math.round(Math.random());
+//
+//   return { chips, pegs, score, winner, targetScore }
+// }
 
 // let numChips = 0;
 // let passed = true

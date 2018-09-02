@@ -16,7 +16,7 @@ const About = () => {
     fade: true,
     infinite: true,
     swipeToSlide: true,
-    speed: 100,
+    speed: 0,
     slidesToShow: 1,
     slidesToScroll: 1,
   };
@@ -284,7 +284,7 @@ while (bendingFrame !== totalBendingFrames) {
 
         <h1>Case Study</h1>
 
-        <div class="toc">
+        <div className="toc">
           <Aside>
             <ol>
               <li>
@@ -403,7 +403,7 @@ while (bendingFrame !== totalBendingFrames) {
 
         <figure>
           <img className="small" src="https://i.imgur.com/QnL9rtT.png" alt="Simulated Chip Positions" />
-          <figcaption>Figure 2.1.1: A single chip’s positions at discrete points in time</figcaption>
+          <figcaption>A single chip’s positions at discrete points in time</figcaption>
         </figure>
 
         <p>Here’s one simple idea:</p>
@@ -421,7 +421,7 @@ while (bendingFrame !== totalBendingFrames) {
           <li>Allows us to decouple rendering graphics from simulating the game</li>
         </ul>
 
-        <p>We want to display our game at 60 frames per second to provide a smooth, realistic visual experience for players
+        <p>We want to display our game at 60 frames per second to provide a smooth, realistic visual experience for players.
           <Citation
             creator={'Samit Sarkar'}
             creationDate={"June 05, 2014"}
@@ -429,7 +429,7 @@ while (bendingFrame !== totalBendingFrames) {
             contributingOrganization={'Polygon'}
             url={"https://www.polygon.com/2014/6/5/5761780/frame-rate-resolution-graphics-primer-ps4-xbox-one"}
           />
-          . To achieve this, we’ll advance the physics simulation at a fixed rate of 16.67 milliseconds in each frame (1000 milliseconds / 60 fps).
+          To achieve this, we’ll advance the physics simulation at a fixed rate of 16.67 milliseconds in each frame (1000 milliseconds / 60 fps).
         </p>
 
         <h4 id="213-Frame-Rate-Independence">2.1.3 Frame Rate Independence</h4>
@@ -446,14 +446,12 @@ while (bendingFrame !== totalBendingFrames) {
         <p>The solution is to decouple the renderer from the physics engine. This entails keeping track of how much time has elapsed since the previous game loop, and, if necessary, stepping the simulation forward multiple times before rendering the next frame.</p>
 
         <h4 id="213-requestAnimationFrame">2.1.3 <code>requestAnimationFrame</code></h4>
-        <p>Now that we have our game loop goals in mind, your first instinct might be to implement the loop using <code>setInterval</code> or <code>setTimeout</code>. But remember that we need to run our game on a fixed timestep, and neither of these methods are guaranteed to execute the callback at the exact delay time we pass in. Instead, this delay will be the <em>minimum</em> amount of time it takes for the callback to be executed. Actual execution time will depend on how many other tasks are also waiting in the queue
+        <p>Now that we have our game loop goals in mind, your first instinct might be to implement the loop using <code>setInterval</code> or <code>setTimeout</code>. But remember that we need to run our game on a fixed timestep, and neither of these methods are guaranteed to execute the callback at the exact delay time we pass in. Instead, this delay will be the <em>minimum</em> amount of time it takes for the callback to be executed. Actual execution time will depend on how many other tasks are also waiting in the queue.
           <Citation
             title={'Concurrency model and Event Loop'}
-            contributingOrganization={'Mozilla Developor Network'}
+            contributingOrganization={'Mozilla Developer Network'}
             url={"https://developer.mozilla.org/en-US/docs/Web/JavaScript/EventLoop#Zero_delays"}
-            comment={'Do we want to include a comment here?'}
           />
-          .
         </p>
         <p>Inexact callback timing isn’t only detrimental to our fixed timestep – it will also cause rendering problems in the browser. Browsers typically repaint pages every 16.67ms, and if our almost-but-not-exactly-16.67ms game loop gets out of sync with the repaint schedule, players may experience skipped frames and other unpleasant visual artifacts. If we run our loop more often than every 16.67ms to account for this, we end up trying to render more frequently than the browser is able to repaint, creating unnecessary computation.</p>
         <p>Luckily, there’s a better option. <code>requestAnimationFrame</code> is a JavaScript browser method on <code>window</code> that’s optimized for looping animation. It lets us pass in a callback, which will be executed before the browser’s next repaint. We’ll pass in the function we use to increment our game engine, and we’ll create a loop by calling <code>requestAnimationFrame</code> recursively inside the callback. Here’s a simplified look at our new looping architecture:</p>
@@ -503,21 +501,15 @@ while (bendingFrame !== totalBendingFrames) {
         <p>We’ll use a client-server networking model, where all players connect to a central server that acts as the authority on the game state (in contrast to peer-to-peer networking, where players connect to one another and there is no central authority).</p>
         <figure>
           <img className="medium" src="https://i.imgur.com/0JXCE2e.png" alt="Client-Server architecture" />
-          <figcaption>Figure 3.1.1: Client-Server Architecture</figcaption>
+          <figcaption>Client-Server Architecture</figcaption>
         </figure>
         <p>Connected players transmit inputs to the server. The server, in turn, sends the necessary game state information to all connected clients so that they can recreate the game state locally.</p>
-        <p>Client-server architecture is the gold standard
+        <p>Thanks to a few chief benefits, client-server architecture is the gold standard in multiplayer gaming.
           <Citation
             creator={'Gabriel Gambetta'}
             title={'Fast-Paced Multiplayer (Part I): Client-Server Game Architecture'}
             url={"http://www.gabrielgambetta.com/client-server-game-architecture.html"}
-          /> |
-          <Citation
-            creator={'Sergey Ignatchenko'}
-            creationDate={"July 7, 2017"}
-            title={'Development and Deployment of Multiplayer Online Games, Vol 1'}
           />
-          in multiplayer gaming thanks to a few chief benefits:
         </p>
 
         <ul>
@@ -531,30 +523,36 @@ while (bendingFrame !== totalBendingFrames) {
           <li>Connections are more reliable</li>
         </ul>
         <p>There are some tradeoffs to this approach. For one, we have to provide and maintain the servers, and scale them if we want our game to grow. Network communication can also be slower than for peer-to-peer connections: instead of communicating directly with one another, data from one client to another must route through the server first.</p>
-        <p>Still, the advantages mentioned above are significant, and the pros typically outweigh the cons when it comes to gaming.</p>
+        <p>Still, the advantages mentioned above are significant, and the pros typically outweigh the cons when it comes to gaming.
+          <Citation
+            creator={'Sergey Ignatchenko'}
+            creationDate={"July 7, 2017"}
+            title={'Development and Deployment of Multiplayer Online Games, Vol 1'}
+            publisher={'ITHare'}
+          />
+        </p>
 
         <h3 id="websockets">3.2 WebSockets</h3>
         <p>Now that we have our network in place, how will we facilitate communication between our server and clients? We want to run our game at 60 frames per second, which requires transmitting large amounts of data between client and server very quickly.</p>
         <p>HTTP is an obvious protocol choice for most apps, but it isn’t well suited to our needs. It operates on a request-response cycle, and it must open and close a new connection for each new cycle. When we’re sending messages 60 times a second, this constant opening and closing will slow us down.</p>
         <p>WebSockets is built on TCP just like HTTP, but it provides stateful, bidirectional, full-duplex communication between client and server. Either the client or server may initiate communication, and both may send messages to one another simultaneously – all over a single connection that remains open for the lifetime of the communication session. After an initial HTTP handshake to open the connection, the client and server may exchange only the relevant application data with no headers, which decreases message overhead.</p>
-        <p>These optimizations make it faster, and therefore a better choice for our game
+        <p>These optimizations make it faster, and therefore a better choice for our game.
         <Citation
           creator={'David Luecke'}
           creationDate={"January 26, 2018"}
           title={'HTTP vs Websockets: A performance comparison'}
           url={"https://blog.feathersjs.com/http-vs-websockets-a-performance-comparison-da2533f13a77"}
-        /> /
+        />
         <Citation
           creator={'Arun Gupta'}
           creationDate={"February 24, 2014"}
           title={'REST vs WebSocket Comparison and Benchmarks'}
           url={"http://blog.arungupta.me/rest-vs-websocket-comparison-benchmarks/"}
         />
-        .
         </p>
 
         <h4 id="321-socketio">3.2.1 Socket.io</h4>
-        <p>In order to leverage existing solutions for WebSockets, we utilize <a href="http://socket.io" target="_blank">socket.io</a>, a robust Javascript library that serves as a WebSockets wrapper. In addition to a general WebSockets interface, <a href="http://socket.io" target="_blank">socket.io</a> also provides capabilities for broadcasting to compartmentalized sockets, a critical feature for player matchmaking, and support for asynchronous I/O.</p>
+        <p>In order to leverage existing solutions for WebSockets, we utilize Socket.io, a robust Javascript library that serves as a WebSockets wrapper. In addition to a general WebSockets interface, Socket.io also provides capabilities for broadcasting to compartmentalized sockets, a critical feature for player matchmaking, and support for asynchronous I/O.</p>
 
         {/* Synchronizing Networked Game State */}
 
@@ -594,7 +592,7 @@ while (bendingFrame !== totalBendingFrames) {
 
         <h4 id="411-Lockstep">4.1.1 Lockstep</h4>
         <p>One solution to this problem is to constrain the client game engines to update at the same time. We’ll send inputs to the server just like above, but the server doesn’t broadcast them right away. Instead, on each frame it waits to receive inputs (or a notification that no input occurred) from every single player. Once it’s heard from everyone, it will broadcast the set of inputs for that frame. Then, and only then, may the clients render the frame. To render the next frame, the server and clients have to start this process over again.</p>
-        <p>This model is called <em>lockstep</em> because that’s exactly how the client engines move forward: together, in lockstep. It was one of the earliest approaches to networked gaming, and it’s still alive today in turn-based and strategy games
+        <p>This model is called <em>lockstep</em> because that’s exactly how the client engines move forward: together, in lockstep. It was one of the earliest approaches to networked gaming, and it’s still alive today in turn-based and strategy games.
           <Citation
             creator={'Glenn Fiedler'}
             creationDate={"February 24, 2010"}
@@ -602,7 +600,7 @@ while (bendingFrame !== totalBendingFrames) {
             contributingOrganization={'Gaffer On Games'}
             url={"https://gafferongames.com/post/what_every_programmer_needs_to_know_about_game_networking"}
           />
-          . A big advantage is the small amount of bandwidth it tends to consume – no matter how complex the game world, we only need to network new inputs. But for an action or physics-based game like ours, it has two significant limitations:
+          A big advantage is the small amount of bandwidth it tends to consume – no matter how complex the game world, we only need to network new inputs. But for an action or physics-based game like ours, it has two significant limitations:
         </p>
         <ol>
           <li>Everyone’s game will run at the speed of the slowest player connection</li>
@@ -612,7 +610,7 @@ while (bendingFrame !== totalBendingFrames) {
 
         <h5 id="412-Determinism">4.1.2 Determinism</h5>
         <p>If our plan is to share new inputs among players and let their individual physics engines take care of the rest, we need be able to trust that each of those engines will produce exactly the same result. If we drop a chip in the same place at the same time under the same conditions, it should always behave in exactly the same way for every player.</p>
-        <p>However, the vast majority of physics engines, including ours, are <em>not</em> deterministic. Physics engines rely on floating point numbers to calculate physical properties and forces, and floating point numbers are handled differently by different machines and operating systems
+        <p>However, the vast majority of physics engines, including ours, are <em>not</em> deterministic. Physics engines rely on floating point numbers to calculate physical properties and forces, and floating point numbers are handled differently by different machines and operating systems.
           <Citation
             creator={'Glenn Fiedler'}
             creationDate={"November 29, 2014"}
@@ -620,7 +618,7 @@ while (bendingFrame !== totalBendingFrames) {
             contributingOrganization={'Gaffer On Games'}
             url={"https://gafferongames.com/post/deterministic_lockstep/"}
           />
-          . If floating point calculations aren’t deterministic, our game won’t be either. A small disparity in rounding might cause a chip to bounce left for one user and right for another, and soon our players’ game states have diverged just like before.
+          If floating point calculations aren’t deterministic, our game won’t be either. A small disparity in rounding might cause a chip to bounce left for one user and right for another, and soon our players’ game states have diverged just like before.
         </p>
         <p>At this point, it’s obvious that transmitting only inputs is not enough. How can we do better?</p>
 
@@ -671,7 +669,7 @@ while (bendingFrame !== totalBendingFrames) {
         <p>Right now, clients are rendering new snapshots as soon as they receive them. If they don’t get another one for a while, they’re stuck. Instead, we should have clients collect a few snapshots up front in a buffer before they begin rendering. That way, they’ll have a reserve of snapshots to use in the event of a spike in network latency.</p>
         <figure>
          <img src="https://i.imgur.com/KylqZjL.png" alt="Snapshot Buffer" />
-         <figcaption>Figure 4.2.1.1: Visualization of client processing snapshots with and without a buffer</figcaption>
+         <figcaption>Visualization of client processing snapshots with and without a buffer</figcaption>
         </figure>
         <p>Our buffer should function as a queue, so we’ll implement it using a singly linked list with references to both the head and tail. This gives us O(1) insertion at the tail and O(1) removal from the head.</p>
         <p>Now that we have a buffer for snapshots, let’s update our pseudocode for the client’s <code>animate</code> function:</p>
@@ -729,8 +727,9 @@ while (bendingFrame !== totalBendingFrames) {
           </tbody>
         </table>
 
-        <p><small><em>Note that JSON strings don’t actually include newlines or other whitespace. We show them here for readability.</em></small></p>
-        <p>The JSON string above is 76 characters, which means it takes 76 bytes to send over the network (1 byte per character). But if we put in some extra work to serialize our snapshots into binary, we can do <em>much</em> better.</p>
+        <p className="figcaption">Note that JSON strings don’t actually include newlines or other whitespace. We show them here for readability.</p>
+
+      <p>The JSON string above is 76 characters, which means it takes 76 bytes to send over the network (1 byte per character). But if we put in some extra work to serialize our snapshots into binary, we can do <em>much</em> better.</p>
         <p>Binary serialization is the process of compressing our complex game data into a series of 0s and 1s. We’ll craft our own binary serialization algorithm for the server to use, which must take care of serializing all the game data we need to send in snapshots: chips, pegs, the score, and other state.</p>
         <Aside emphasized={true}>
           <p>Before we take a stab at binary serialization, there’s a quick optimization we can make. You probably noticed that the values in the chip above include floating point numbers, some with many digits after the decimal. If we leave them as-is, we’ll need to represent every single digit in binary, even though there’s little or no perceivable difference between a chip rendered at x = 752.34235235235 (47 bits when serialized to binary) and a chip rendered at x = 752 (10 bits when serialized).</p>
@@ -773,12 +772,12 @@ while (bendingFrame !== totalBendingFrames) {
         <p>We’ll tell the client in advance how to break up this data to be parsed:</p>
         <figure>
           <img src="https://i.imgur.com/OFRLlrv.png" alt="Deserializing a Snapshot" />
-          <small><em>The first eight bits in the snapshot let the client know how many chips to expect. The next six give the number of pegs, and so on.</em></small>
+          <figcaption>The first eight bits in the snapshot let the client know how many chips to expect. The next six give the number of pegs, and so on.</figcaption>
         </figure>
         <p>Within the group of chips, how do we identify one individual chip? And in an individual chip, how do we know which bits represent its position, and which represent its ID or other data? Since we know one chip is 41 bits, we can zero in on the first 41 bits of the chip section:</p>
         <figure>
           <img src="https://i.imgur.com/OaAMwvE.png" alt="Deserializing a Chip" />
-          <small><em>Note that we divide the angle by 1000 to account for the fact that the server multiplied it by 1000 during quantization.</em></small>
+          <figcaption>Note that we divide the angle by 1000 to account for the fact that the server multiplied it by 1000 during quantization.</figcaption>
         </figure>
 
         <p>When we’ve completed this deserialization process for the whole binary string, the client will have converted all values back into JavaScript objects that it can use to render the game world.</p>
@@ -808,35 +807,51 @@ while (bendingFrame !== totalBendingFrames) {
 
         <Slider {...sliderSettings}>
           <div>
-            <img src="" />
-            <p className="legend">Good interpolation here</p>
+            <img src="https://i.imgur.com/RnzV2EE.png" alt="A chip's path through game frame" />
+            <p className="legend">The actual path the chip took in the server’s physics engine</p>
+          </div>
+          <div>
+            <img src="https://i.imgur.com/KjfKhlf.png" alt="Frames received of chip's path" />
+            <p className="legend">Frames sent from server to client as snapshots</p>
+          </div>
+          <div>
+            <img src="https://i.imgur.com/xcqRzaN.png" alt="Interpolated frames of chip's path" />
+            <p className="legend">Frames created by the client using linear interpolation</p>
+          </div>
+          <div>
+            <img src="https://i.imgur.com/yhThQXf.png" alt="The actual path vs. the path rendered on client"/>
+            <p className="legend">The path rendered for the player vs. the actual path on the server – not exact, but very close!</p>
           </div>
         </Slider>
 
-        <ol>
-          <li>Actual path the chip took in the server’s physics engine</li>
-          <li>Frames received by the client as snapshots</li>
-          <li>Frames created by the client using linear interpolation</li>
-          <li>The path rendered on the client vs. the actual path on the server – not exact, but very close!</li>
-        </ol>
         <p>Here, the players will see the chip take almost the exact same path that it actually took in the server’s physics engine. Any small differences should be unnoticeable, and they’ll be corrected as soon as the client renders the next snapshot.</p>
         <p>Unfortunately, interpolation won’t always give us such good results. Remember that the client is guessing now, and sooner or later one of the guesses is bound to be wrong. In the previous example, the client happened to receive a snapshot of the exact moment when the chip hit a peg, but there is no guarantee this will always be the case.</p>
         <p>Imagine another scenario, where the chip takes the same path in the server engine, but the clients happen to receive different snapshots:</p>
-        <strong>&lt;clickable carousel&gt;</strong>
-        <p>
-          <img src="https://media.giphy.com/media/4ZvDoeySKDG61963xB/giphy.gif" alt="Interpolation Bad" />
-        </p>
-        <ol>
-          <li>Actual path the chip took in the server’s physics engine</li>
-          <li>Frames received by the client as snapshots</li>
-          <li>Frames created by the client using linear interpolation</li>
-          <li>The path rendered on the client vs. the actual path on the server – the chip appears to bounce right for no reason</li>
-        </ol>
+
+        <Slider {...sliderSettings}>
+          <div>
+            <img src="https://i.imgur.com/8i7pRV4.png" alt="A chip's path through game frame" />
+            <p className="legend">The actual path the chip took in the server’s physics engine, same as last time</p>
+          </div>
+          <div>
+            <img src="https://i.imgur.com/Rr29rEU.png" alt="Frames received of chip's path" />
+            <p className="legend">This time the server happens to send different frames as snapshots</p>
+          </div>
+          <div>
+            <img src="https://i.imgur.com/ARRmY4o.png" alt="Interpolated frames of chip's path" />
+            <p className="legend">So the client creates different frames using linear interpolation</p>
+          </div>
+          <div>
+            <img src="https://i.imgur.com/vvMDmc0.png" alt="The actual path vs. the path rendered on client" />
+            <p className="legend">The path rendered on the client vs. the actual path on the server – this time the chip appears to bounce right for no reason</p>
+          </div>
+        </Slider>
+
         <p>Now the chip turns right right in mid-air, but the players never see it hit a peg. It’s as if the peg has a forcefield around it, which creates a jarring, unnatural effect.</p>
         <p>There is no simple solution to this problem. We could mitigate the risk of bad guesses by sending snapshots from the server more often, but this would defeat the purpose of using interpolation to reduce bandwidth in the first place.</p>
 
         <h4 id="423-Input-Lag">4.2.3 Input Lag</h4>
-        <p>Last, relying on snapshots to keep our game state synchronized can result in input lag for players. If you take another look at Figure X (first snapshot carousel), you’ll see why. When a player clicks to drop a new chip into the game frame, they won’t see it right away. The chip must be sent to the server, processed by the server’s physics engine, and broadcast back in a snapshot before the player gets to see it.</p>
+        <p>Last, relying on snapshots to keep our game state synchronized can result in input lag for players. If you take another look at the animation in section 4.2, you’ll see why. When a player clicks to drop a new chip into the game frame, they won’t see it right away. The chip must be sent to the server, processed by the server’s physics engine, and broadcast back in a snapshot before the player gets to see it.</p>
         <p>If a player has a fast internet connection and happens to live near the game server, they might not notice the delay. But if the player is on a slow network or lives halfway around the world, they may experience a round trip time of hundreds of milliseconds before seeing the result of their input.</p>
 
         {/* Latency by location table */}
@@ -868,13 +883,14 @@ while (bendingFrame !== totalBendingFrames) {
         </table>
 
         <p>(<a href="https://wondernetwork.com/pings" target="_blank">Wonder Network</a>)</p>
-        <p>Research shows that humans perceive response times of under 100-150ms as instantaneous, but that anything longer appears noticeably delayed
+        <p>Research shows that humans perceive response times of under 100-150ms as instantaneous, but that anything longer appears noticeably delayed.
           <Citation
             creator={'Sergey Ignatchenko'}
             creationDate={"July 7, 2017"}
             title={'Development and Deployment of Multiplayer Online Games, Vol 1'}
+            publisher={'ITHare'}
           />
-          . This means some players will have a much better gaming experience than others.
+          This means some players will have a much better gaming experience than others.
         </p>
 
         <h5 id="4231-Solution-Is-There-One">Solution: ...Is There One?</h5>
@@ -908,7 +924,7 @@ while (bendingFrame !== totalBendingFrames) {
         </ul><p>Due to network latency, the client and server receive information about what is happening on the other “in the past”, which then needs to be reconciled. Let’s take a look at how the system works as a whole before focusing on the individual parts:</p>
       <figure>
           <img src="https://i.imgur.com/JVx8Ee4.png" alt="Extrapolation lifecycle" />
-          <figcaption>Figure 4.3A: Round-trip lifecycle of an input</figcaption>
+          <figcaption>Round-trip lifecycle of an input</figcaption>
         </figure>
         <p>In the figure above, an input is made on frame <code>95</code>, but does not reach the server until frame <code>100</code>. However, both sides continue to simulate the game world during these 5 frames. Once the server receives the input, it needs to rewind the game <em>back</em> to frame <code>95</code> from frame <code>100</code>, and reenact what “actually” have happened.</p>
         <p>Once the reenactment is complete, it sends a snapshot of the entire game world at frame 100. Again, the game world continues forward while the snapshot is in transit.</p>
@@ -1289,14 +1305,13 @@ while (bendingFrame !== totalBendingFrames) {
 
         <h4 id="436-Estimating-Latency">4.3.6 Estimating Latency</h4>
         <p>There’s one last thing we need to address. Our game implicitly expects that the clients and server are running on the same timeline. This means that if the server is on frame 100 we should expect any given client to be within at least a few frames of that when sending or receiving inputs. If this is not the case our game will break down because our game engine will be forced to reenact too far into the past. So how do we ensure that clients and server start the game in a synchronized manner and maintain a unified timeline? We estimate the average latency between a given client and the server.</p>
-        <p>We need to estimate because there is no sure-fire of knowing the exact latency between the client and server. Part of this issue stems from the fact that no two clocks will ever agree on what the current time is and no two transmissions are guaranteed to take the exact amount of time. With that being said, we don’t need to be exact and a good estimate of latency is the best we can hope for. Utilizing the algorithm
+        <p>We need to estimate because there is no sure-fire of knowing the exact latency between the client and server. Part of this issue stems from the fact that no two clocks will ever agree on what the current time is and no two transmissions are guaranteed to take the exact amount of time. With that being said, we don’t need to be exact and a good estimate of latency is the best we can hope for. Utilizing the algorithm described below we are able to get an average latency estimate that’s sufficient for our purposes.
           <Citation
             creator={'Zachary Booth Simpson'}
             creationDate={"March 01, 2000"}
             title={'A Stream-based Time Synchronization Technique For Networked Computer Games'}
             url={"http://www.mine-control.com/zack/timesync/timesync.html"}
           />
-          described below we are able to get an average latency estimate that’s sufficient for our purposes.
         </p>
 
         <Slider {...sliderSettings}>
@@ -1350,7 +1365,7 @@ while (bendingFrame !== totalBendingFrames) {
         <p>Our game currently supports up to four active players at a time. This forced us to create a complex lobby system to queue up waiting players and move them into the game when their turn comes, but this is not an ideal solution. In the future, we would like to scale the game to support multiple simultaneous groups of players in separate rooms.</p>
 
         <h3 id="62-A-Pure-WebSocket-Implementation">6.2 A Pure WebSocket Implementation</h3>
-        <p>We use <a href="http://Socket.io" target="_blank">Socket.io</a> as a wrapper for the WebSocket protocol and the associated WebSockets API. <a href="http://Socket.io" target="_blank">Socket.io</a> serves us well, but it also provides extraneous functionality we don’t need, while adding some extra overhead to our messages. We can cut out this data overhead by forgoing a library and interfacing directly with WebSockets.</p>
+        <p>We use Socket.io as a wrapper for the WebSocket protocol and the associated WebSockets API. Socket.io serves us well, but it also provides extraneous functionality we don’t need, while adding some extra overhead to our messages. We can cut out this data overhead by forgoing a library and interfacing directly with WebSockets.</p>
 
         <h2 id="about-us">About the Team</h2>
         <p>Our team of three web developers built Plinko remotely, working together from across North America. We pair-programmed, bug-squashed, and drank 3,425,718 cups of coffee.</p>

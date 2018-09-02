@@ -478,9 +478,16 @@ code {
   border-radius: 0;
 }
 
-figcaption {
+figcaption,
+.figcaption,
+.legend {
   font-size: 1.4rem;
   font-style: italic;
+  max-width: 80%;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 140%;
+  text-align: center;
 }
 
 table {
@@ -594,11 +601,7 @@ aside :last-child {
 
 .legend {
   margin-bottom: 0;
-  background-color: #c6c6c6;
   padding: .5rem 1rem;
-  font-size: 1.3rem;
-  color: #fff;
-  border-radius: 2px;
 }
 
 .slick-dots {
@@ -634,7 +637,7 @@ header .rough-circle canvas {
 /* Team */
 
 .team {
-  margin: 0;
+  margin: 0 0 2rem 0;
   padding: 0;
 }
 
@@ -659,7 +662,6 @@ header .rough-circle canvas {
   cursor: help;
   margin: 0 .2rem;
   font-style: normal;
-  z-index: 2;
 }
 
 .citation > a {
@@ -675,7 +677,7 @@ header .rough-circle canvas {
 }
 
 .citation > div {
-  color: black;
+  color: #555;
   font-size: 80%;
   display: block;
   position: absolute;
@@ -686,6 +688,7 @@ header .rough-circle canvas {
   padding: 1rem;
   border-radius: .5rem;
   width: 35rem;
+  z-index: 2;
 }
 
 .citation p,
