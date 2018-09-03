@@ -951,96 +951,92 @@ while (bendingFrame !== totalBendingFrames) {
         <div className="p">There is a fair amount of complexity hidden by the previous diagram, especially regarding the way reenactment operates on each side. What <em>actually</em> happens when an input is received by the server, or a snapshot is received by the client? Let’s take a look step-by-step:</div>
         <Slider {...sliderSettings}>
           <div>
-            <img src="https://s15.postimg.cc/cwup2ewyj/image.png" alt="Illustration of extrapolation" />
-            <div className="legend">Hi</div>
+            <img src="https://s15.postimg.cc/cwup2ewyj/image.png" />
+            <div className="legend">The client and the server both start on the same frame, with no chips currently in play. In this example, we assume that the latency from client to server is 3 frames.</div>
           </div>
           <div>
-            <img src="https://s15.postimg.cc/sic0mdgmj/image.png" alt="Illustration of extrapolation" />
-            <div className="legend">Hi</div>
+            <img src="https://s15.postimg.cc/sic0mdgmj/image.png" />
+            <div className="legend">(a) Client drops a chip, it appears instantly on their screen and begins dropping</div>
+            <div className="legend">(b) At the same time, the client sends input message to the server for frame 1</div>
           </div>
           <div>
-            <img src="https://s15.postimg.cc/jnb6bv79n/image.png" alt="Illustration of extrapolation" />
-            <div className="legend">Hi</div>
+            <img src="https://s15.postimg.cc/jnb6bv79n/image.png" />
+            <div className="legend">(b) Input in transit</div>
           </div>
           <div>
-            <img src="https://s15.postimg.cc/q109f44fv/image.png" alt="Illustration of extrapolation" />
-            <div className="legend">Hi</div>
+            <img src="https://s15.postimg.cc/q109f44fv/image.png" />
+            <div className="legend">(b) Input in transit</div>
           </div>
           <div>
-            <img src="https://s15.postimg.cc/y6ibdav9n/image.png" alt="Illustration of extrapolation" />
-            <div className="legend">Hi</div>
+            <img src="https://s15.postimg.cc/y6ibdav9n/image.png" />
+            <div className="legend">(b) Input in transit</div>
           </div>
           <div>
-            <img src="https://s15.postimg.cc/h5zf4lv2z/image.png" alt="Illustration of extrapolation" />
-            <div className="legend">Hi</div>
+            <img src="https://s15.postimg.cc/h5zf4lv2z/image.png" />
+              <div className="legend">(c) Server receives input after 3 frames</div>
+              <div className="legend">(d) Server rewinds state to frame when the input was created, frame 1, and processes the input by creating a chip</div>
           </div>
           <div>
-            <img src="https://s15.postimg.cc/mhebpbovf/image.png" alt="Illustration of extrapolation" />
-            <div className="legend">Hi</div>
+            <img src="https://s15.postimg.cc/mhebpbovf/image.png" />
+            <div className="legend">(d) Server reenacts state up to current frame, frame 4</div>
           </div>
           <div>
-            <img src="https://s15.postimg.cc/jnb6bvuez/image.png" alt="Illustration of extrapolation" />
-            <div className="legend">Hi</div>
+            <img src="https://s15.postimg.cc/jnb6bvuez/image.png" />
+            <div className="legend">(d) Server reenacts state up to current frame, frame 4</div>
           </div>
           <div>
-            <img src="https://s15.postimg.cc/i89ln68rf/image.png" alt="Illustration of extrapolation" />
-            <div className="legend">Hi</div>
+            <img src="https://s15.postimg.cc/i89ln68rf/image.png" />
+              <div className="legend">(e) Server reenactment as caught up to frame 4</div>
+              <div className="legend">(f) Server generates snapshot and transmits it to the client</div>
           </div>
           <div>
-            <img src="https://s15.postimg.cc/pr1xnaubf/image.png" alt="Illustration of extrapolation" />
-            <div className="legend">Hi</div>
+            <img src="https://s15.postimg.cc/pr1xnaubf/image.png" />
+            <div className="legend">(f) Snapshot in transit</div>
           </div>
           <div>
-            <img src="https://s15.postimg.cc/nmhkm80ej/image.png" alt="Illustration of extrapolation" />
-            <div className="legend">Hi</div>
+            <img src="https://s15.postimg.cc/nmhkm80ej/image.png" />
+            <div className="legend">(f) Snapshot in transit</div>
           </div>
           <div>
-            <img src="https://s15.postimg.cc/4hebcgtgb/image.png" alt="Illustration of extrapolation" />
-            <div className="legend">Hi</div>
+            <img src="https://s15.postimg.cc/4hebcgtgb/image.png" />
+            <div className="legend">(f) Snapshot in transit</div>
           </div>
           <div>
-            <img src="https://s15.postimg.cc/nwfwe37yz/image.png" alt="Illustration of extrapolation" />
-            <div className="legend">Hi</div>
+            <img src="https://s15.postimg.cc/nwfwe37yz/image.png" />
+              <div className="legend">(g) Client receives snapshot on frame 7</div>
+              <div className="legend">(h) Client regenerates state from the
+                snapshot. This state is from frame 4, so the client must reenact
+                 the simulation up to the current frame behind the scenes</div>
           </div>
           <div>
-            <img src="https://s15.postimg.cc/olyoqh3dn/image.png" alt="Illustration of extrapolation" />
-            <div className="legend">Hi</div>
+            <img src="https://s15.postimg.cc/olyoqh3dn/image.png" />
+            <div className="legend">(h) Client steps simulation forward until it
+                reaches the current frame</div>
           </div>
           <div>
-            <img src="https://s15.postimg.cc/6vx05fi2z/image.png" alt="Illustration of extrapolation" />
-            <div className="legend">Hi</div>
+            <img src="https://s15.postimg.cc/6vx05fi2z/image.png" />
+            <div className="legend">(h) Client steps simulation forward until it
+                reaches the current frame</div>
           </div>
           <div>
-            <img src="https://s15.postimg.cc/6j5lz8kdn/image.png" alt="Illustration of extrapolation" />
-            <div className="legend">Hi</div>
+            <img src="https://s15.postimg.cc/6j5lz8kdn/image.png" />
+            <div className="legend">(i) Simulation is caught up to current frame,
+                so states are now synchronized; simulation can continue until
+                the next snapshot</div>
           </div>
           <div>
-            <img src="https://s15.postimg.cc/vcf5zwb3v/image.png" alt="Illustration of extrapolation" />
-            <div className="legend">Hi</div>
+            <img src="https://s15.postimg.cc/vcf5zwb3v/image.png" />
+            <div className="legend">(j) Client and server continue simulation</div>
           </div>
           <div>
-            <img src="https://s15.postimg.cc/fqxufymaz/image.png" alt="Illustration of extrapolation" />
-            <div className="legend">Hi</div>
+            <img src="https://s15.postimg.cc/fqxufymaz/image.png" />
+            <div className="legend">(j) Client and server continue simulation</div>
           </div>
           <div>
-            <img src="https://s15.postimg.cc/sic0mh3sr/image.png" alt="Illustration of extrapolation" />
-            <div className="legend">Hi</div>
+            <img src="https://s15.postimg.cc/sic0mh3sr/image.png" />
+            <div className="legend">(j) Client and server continue simulation</div>
           </div>
         </Slider>
-
-        <pre><code>Carousel descriptions:
-        (description) The client and server's visual output are represented with the current frame at the top right of each. Red chips and frame counters represent a reenactment.
-        a) Client drops a chip, it appears instantly on their screen and begins dropping
-        b) At the same time, the client sends input message to the server for `frame 1`
-        c) Server receives input on `frame 4` about the `frame 1` input event
-        d) Server rewinds state to `frame 1`, adds the chip, and begins reenacting up to `frame 4`, the current frame
-        e) In the background, the server catches up to current frame, `frame 4`
-        f) Server sends snapshot of world at `frame 4`
-        g) Client receives snapshot on `frame 7`
-        h) In the background, the client regenerates the world state from snapshot and reenacts up to frame 7
-        i) Client is now caught up to current frame
-        j) Both sides continue simulation
-        </code></pre>
 
         <h4 id="431-Client-Side-Reenactment">4.3.1 Client-Side Reenactment</h4>
         <div className="p">Without extrapolation, the client side is constantly receiving snapshots of the entire game state, buffering the snapshots and displaying them as soon as possible. Our approach changes when we begin extrapolating, because the client’s simulation is always ahead of the snapshot it just received.</div>
@@ -1136,75 +1132,69 @@ while (bendingFrame !== totalBendingFrames) {
         <Slider {...sliderSettings}>
           <div>
             <img className="medium" src="https://s15.postimg.cc/681xrs83v/image.png"/ >
-            <div className="legend">Hi</div>
+            <div className="legend">(a) The simulation has only one chip, currently
+              simulating frame 50</div>
           </div>
           <div>
             <img className="medium" src="https://s15.postimg.cc/681xrsftn/image.png"/ >
-            <div className="legend">Hi</div>
           </div>
           <div>
             <img className="medium" src="https://s15.postimg.cc/x5vutj86j/image.png"/ >
-            <div className="legend">Hi</div>
           </div>
           <div>
             <img className="medium" src="https://s15.postimg.cc/izg3yb517/image.png"/ >
-            <div className="legend">Hi</div>
           </div>
           <div>
             <img className="medium" src="https://s15.postimg.cc/ppwl7r7mj/image.png"/ >
-            <div className="legend">Hi</div>
           </div>
           <div>
             <img className="medium" src="https://s15.postimg.cc/q2nzdxi6j/image.png"/ >
-            <div className="legend">Hi</div>
           </div>
           <div>
             <img className="medium" src="https://s15.postimg.cc/b6pg6ctx7/image.png"/ >
-            <div className="legend">Hi</div>
           </div>
           <div>
             <img className="medium" src="https://s15.postimg.cc/pd571kx2j/image.png"/ >
-            <div className="legend">Hi</div>
           </div>
           <div>
             <img className="medium" src="https://s15.postimg.cc/edjzpzm2z/image.png"/ >
-            <div className="legend">Hi</div>
+            <div className="legend">(b) On frame 57, a snapshot is received with
+              the game state on frame 53, so we must reenact until the current
+              frame</div>
           </div>
           <div>
             <img className="medium" src="https://s15.postimg.cc/esv9j30bf/image.png"/ >
-            <div className="legend">Hi</div>
           </div>
           <div>
             <img className="medium" src="https://s15.postimg.cc/wt4gnev2j/image.png"/ >
-            <div className="legend">Hi</div>
           </div>
           <div>
             <img className="medium" src="https://s15.postimg.cc/cyif1a0ff/image.png"/ >
-            <div className="legend">Hi</div>
           </div>
           <div>
             <img className="medium" src="https://s15.postimg.cc/eqbdw6ri3/image.png"/ >
-            <div className="legend">Hi</div>
+            <div className="legend">(c) Simulation has caught up to the current
+              frame, but the state is divergent; the chip is not where we
+              thought.</div>
           </div>
           <div>
             <img className="medium" src="https://s15.postimg.cc/nb4pnfm9n/image.png"/ >
-            <div className="legend">Hi</div>
+            <div className="legend">(d) The position will immediately snap to the
+              new position, as if the chip popped in and out of existence</div>
           </div>
           <div>
             <img className="medium" src="https://s15.postimg.cc/coawi06ej/image.png"/ >
-            <div className="legend">Hi</div>
           </div>
           <div>
             <img className="medium" src="https://s15.postimg.cc/9u7r4krdn/image.png"/ >
-            <div className="legend">Hi</div>
           </div>
           <div>
             <img className="medium" src="https://s15.postimg.cc/oq6ac5v2j/image.png"/ >
-            <div className="legend">Hi</div>
           </div>
           <div>
             <img className="medium" src="https://s15.postimg.cc/a6z5arhd7/image.png"/ >
-            <div className="legend">Hi</div>
+            <div className="legend">(e) Final path, showing the unnatural path
+              when including popping</div>
           </div>
 
         </Slider>
@@ -1215,75 +1205,74 @@ while (bendingFrame !== totalBendingFrames) {
         <Slider {...sliderSettings}>
           <div>
             <img className="medium" src="https://s15.postimg.cc/681xrs83v/image.png" />
-            <div className="legend">Hi</div>
+            <div className="legend">(a) We start on frame 50 with a single chip on
+               the client side simulation</div>
           </div>
           <div>
             <img className="medium" src="https://s15.postimg.cc/681xrsftn/image.png" />
-            <div className="legend">Hi</div>
           </div>
           <div>
             <img className="medium" src="https://s15.postimg.cc/x5vutj86j/image.png" />
-            <div className="legend">Hi</div>
           </div>
           <div>
             <img className="medium" src="https://s15.postimg.cc/izg3yb517/image.png" />
-            <div className="legend">Hi</div>
           </div>
           <div>
             <img className="medium" src="https://s15.postimg.cc/ppwl7r7mj/image.png" />
-            <div className="legend">Hi</div>
           </div>
           <div>
             <img className="medium" src="https://s15.postimg.cc/q2nzdxi6j/image.png" />
-            <div className="legend">Hi</div>
           </div>
           <div>
             <img className="medium" src="https://s15.postimg.cc/b6pg6ctx7/image.png" />
-            <div className="legend">Hi</div>
           </div>
           <div>
             <img className="medium" src="https://s15.postimg.cc/pd571kx2j/image.png" />
-            <div className="legend">Hi</div>
           </div>
           <div>
             <img className="medium" src="https://s15.postimg.cc/edjzpzm2z/image.png" />
-            <div className="legend">Hi</div>
+            <div className="legend">(b) On frame 57, we receive a snapshot of the
+              world at frame 53</div>
           </div>
           <div>
             <img className="medium" src="https://s15.postimg.cc/5vajlnna3/image.png" />
-            <div className="legend">Hi</div>
           </div>
           <div>
             <img className="medium" src="https://s15.postimg.cc/wt4gnev2j/image.png" />
-            <div className="legend">Hi</div>
           </div>
           <div>
             <img className="medium" src="https://s15.postimg.cc/cyif1a0ff/image.png" />
-            <div className="legend">Hi</div>
           </div>
           <div>
             <img className="medium" src="https://s15.postimg.cc/eqbdw6ri3/image.png" />
-            <div className="legend">Hi</div>
+            <div className="legend">(c) The simulation has caught up to the
+              current frame, but the state has diverged.</div>
           </div>
           <div>
             <img className="medium" src="https://s15.postimg.cc/3qq6klo8b/image.png" />
-            <div className="legend">Hi</div>
+            <div className="legend">(d) Instead of snapping the chip immediately
+              to the new position, we render the old position and calculate
+              the distance between the old and the new position. Over the
+              course of the next few frames, we will minimize this distance,
+              pulling the old position towards the actual position.</div>
           </div>
           <div>
             <img className="medium" src="https://s15.postimg.cc/c8zmoxn17/image.png" />
-            <div className="legend">Hi</div>
           </div>
           <div>
             <img className="medium" src="https://s15.postimg.cc/8pdoz57gr/image.png" />
-            <div className="legend">Hi</div>
           </div>
           <div>
             <img className="medium" src="https://s15.postimg.cc/db9t7hla3/image.png" />
-            <div className="legend">Hi</div>
+            <div className="legend">(e) The rendered position now matches the
+              actual, simulated position</div>
           </div>
           <div>
             <img className="medium" src="https://s15.postimg.cc/tz1b9zvh7/image.png" />
-            <div className="legend">Hi</div>
+            <div className="legend">(e) The final path utilizing bending. Notice
+            that the path is more continuous and natural, but there is an
+            unfortunate side effect that the chip appears to have gone through
+            a peg.</div>
           </div>
         </Slider>
         <pre><code>a) Client is extrapolating on the client engine
