@@ -25,17 +25,17 @@ Learn more about Plinko.js [here](http://www.plinkojs.com/about).
 Our team of three web developers built Plinko remotely, working together from across North America. We pair-programmed, bug-squashed, and drank 3,425,718 cups of coffee.
 
 ![Branko Culum](https://avatars3.githubusercontent.com/u/22482600?s=460&v=4 =200x200)
-<strong>Branko Culum</strong>
+*Branko Culum*
 Software Engineer
 Toronto, ON
 
 ![Ryann McQuilton](https://i.imgur.com/wZIIsLM.jpg =200x200)
-<strong>Ryann McQuilton</strong>
+*Ryann McQuilton*
 Software Engineer
 Los Angeles, CA
 
-![Josh Nelson](https://i.imgur.com/2ZDRwrh.jpg")
-<strong>Josh Nelson</strong>
+![Josh Nelson](https://i.imgur.com/2ZDRwrh.jpg =200x200)
+*Josh Nelson*
 Software Engineer
 Portland, OR
 
