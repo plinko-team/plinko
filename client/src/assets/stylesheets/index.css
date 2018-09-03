@@ -1,6 +1,7 @@
 @import './reset.css';
 @import './normalize.css';
 @import './skeleton.css';
+@import '../../../node_modules/highlight.js/styles/tomorrow-night-bright.css';
 @import url('https://fonts.googleapis.com/css?family=Cabin+Sketch:400,700|Fredoka+One|Lato:400,400i,700,900');
 
 body {
@@ -93,6 +94,11 @@ a:hover {
 
 em {
   font-style: italic;
+}
+
+.hljs {
+  background-color: #303030;
+  padding: 0;
 }
 
 main {
@@ -476,7 +482,8 @@ li {
 }
 
 code {
-  border-radius: 0;
+  border: none;
+  background: transparent;
 }
 
 figcaption,

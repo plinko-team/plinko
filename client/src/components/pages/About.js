@@ -36,41 +36,41 @@ const About = () => {
 }`;
 
   const gameLoopComplete = `function gameLoop() {
-  requestAnimationFrame(gameLoop);
+  requestAnimationFrame(gameLoop)
 
   // elapsedTime describes how much time the last game loop took
-  elapsedTime = currentTime() - lastFrameTime;
+  let elapsedTime = currentTime() - lastFrameTime
 
   // MAX_ELAPSED_TIME ensures the renderer doesn't fall too far
   // behind the simulation in the event of a processing spike
   if (elapsedTime > MAX_ELAPSED_TIME) {
-    elapsedTime = MAX_ELAPSED_TIME;
+    elapsedTime = MAX_ELAPSED_TIME
   }
 
-  accumulatedTime += elapsedTime;
+  accumulatedTime += elapsedTime
 
   while (accumulatedTime >= TIMESTEP) {
     // Advance the simulation by our fixed TIMESTEP, 16.67ms
-    updateWorld(TIMESTEP);
-    accumulatedTime -= TIMESTEP;
+    updateWorld(TIMESTEP)
+    accumulatedTime -= TIMESTEP
   }
 
   // alpha is a value between 0 and 1 that represents
   // how far along the game loop is between the previous
   // and current simulation steps
 
-  alpha = accumulatedTime / TIMESTEP;
-  interpolate(alpha);
-  renderWorld();
+  const alpha = accumulatedTime / TIMESTEP
+  interpolate(alpha)
+  renderWorld()
 
-  lastFrameTime = currentTime();
+  lastFrameTime = currentTime()
 }`;
 
   const animate = `function animate() {
   // ...
 
   // Get the latest snapshot received from the server
-  currentSnapshot = getSnapshot()
+  const currentSnapshot = getSnapshot()
 
   // Iterate over all chips that exist in the snapshot
   currentSnapshot.chips.forEach(chipInfo => {
@@ -99,7 +99,7 @@ const About = () => {
   while (snapshotBuffer.length > 5) { snapshotBuffer.shift() }
 
   // Get the first snapshot received from the server that hasn't been processed yet
-  currentSnapshot = snapshotBuffer.shift()
+  const currentSnapshot = snapshotBuffer.shift()
 
   // If no snapshot exists to be processed, do not render a new frame
   if (!currentSnapshot) { return }
@@ -140,24 +140,22 @@ const About = () => {
 
   if (latestSnapshotExists()) {
 
-    snapshot = getLatestSnapshot()
+    const snapshot = getLatestSnapshot()
 
     // Regenerate world from latest snapshot then catch up
     // to the current frame
-
     regenerateFromSnapshot(snapshot)
     catchUpToCurrentFrameFrom(snapshot.frame)
 
-    deleteLatestSnapshot() // Make room for next snapshot
-
+    // Make room for next snapshot
+    deleteLatestSnapshot()
   }
 
   // Always move the engine ahead one step
   // because we are always extrapolating
 
   updateWorld()
-
-  frame += 1
+  incrementFrame()
 }`;
 
   const regenerateFromSnapshot = `function regenerateFromSnapshot(snapshot) {
@@ -166,7 +164,7 @@ const About = () => {
     if (chipDoesNotExist()) { createChip(chipInfo) }
 
     // Get a reference to the chip, either newly created or already existing
-    chip = getChipById(chipInfo.id)
+    const chip = getChipById(chipInfo.id)
 
     // Adjust physical properties based on snapshot's properties
     updateChipProperties(chip, chipInfo)
@@ -179,7 +177,7 @@ const About = () => {
 
   // Fast-forward up to current frame with the engine
   while (frame < currentFrame()) {
-    frame += 1
+    incrementFrame()
     updateWorld()
   }
 
@@ -188,25 +186,28 @@ const About = () => {
 
   const implementationSnippet = `function animate() {
   if (inputBufferNotEmpty()) {
-    frame = inputBuffer.earliestFrame()
+    const frame = inputBuffer.earliestFrame()
 
     // Empty inputBuffer into inputHistory
     while (inputBufferNotEmpty()) {
-      input = inputBuffer.shift() // Get first input
+      // Get first input
+      const input = inputBuffer.shift()
 
       // Store it according to its frame in inputHistory
       inputHistory.add(input)
     }
 
     // Get snapshot for frame of first input in buffer
-    snapshot = snapshotHistory.at(frame)
+    const snapshot = snapshotHistory.at(frame)
 
-    restoreWorldFromSnapshot(snapshot) // Rewind
-    catchUpToCurrentFrameFrom(frame) // Reenact
+    // Rewind
+    restoreWorldFromSnapshot(snapshot)
+    // Reenact
+    catchUpToCurrentFrameFrom(frame)
   }
 
   updateWorld()
-  frame += 1
+  incrementFrame()
 }`;
 
   const restoreWorldFromSnapshot = `function restoreWorldFromSnapshot(snapshot) {
@@ -217,7 +218,7 @@ const About = () => {
     if (chipIsNewToWorld()) { createChip(chipInfo) }
 
     // Category 2; update chips
-    chip = getChipFromWorldById(id)
+    const chip = getChipFromWorldById(id)
     chip.updateProperties(chipInfo)
   })
 
@@ -232,24 +233,20 @@ const About = () => {
 
     // If there are inputs at the current frame, we need to
     // process them by creating and adding chips to the world
-
-    inputs = inputsAtCurrentFrame()
+    const inputs = inputsAtCurrentFrame()
 
     if (inputs) {
       inputs.forEach(input => createChip(input))
     }
 
     // Our snapshot history keeps a snapshot for every frame
-    // Now that we've modified the past state,
-    // it needs to be overwritten
-
-    generatedSnapshot = generateSnapshot()
+    // Now that we've modified the past state, it needs to be overwritten
+    const generatedSnapshot = generateSnapshot()
     snapshotHistory.update(frame, generatedSnapshot)
 
     // Finally, we move the engine forward by one tick
     updateWorld()
-
-    frame += 1
+    incrementFrame()
   }
 
   // After the while loop has executed, our world state will be back at the
@@ -257,8 +254,11 @@ const About = () => {
 }`;
 
   const bendingImplementation = `// Determine the number of frames before the position will converge
-totalBendingFrames = 4
-bendingFrame = 1
+const totalBendingFrames = 4
+let bendingFrame = 1
+let bendingFactor
+let deltaX
+let deltaY
 
 while (bendingFrame !== totalBendingFrames) {
   // Calculate bending factor. It can be a constant factor,
@@ -280,8 +280,6 @@ while (bendingFrame !== totalBendingFrames) {
   return (
     <main>
       <div className="main-content">
-        {/* ACTUAL WRITEUP */}
-
         <h1>Case Study</h1>
 
         <div className="toc">
