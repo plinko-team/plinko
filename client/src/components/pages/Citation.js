@@ -67,12 +67,12 @@ export default class Citation extends React.Component {
         <td>{this.props.publisher}</td>
       </tr>
     );
-    const url = (
-      <tr>
-        <th>Url</th>
-        <td><a href={this.props.url}>{this.props.url}</a></td>
-      </tr>
-    );
+    // const url = (
+    //   <tr>
+    //     <th>Url</th>
+    //     <td><a href={this.props.url}>{this.props.url}</a></td>
+    //   </tr>
+    // );
     const comment = (
       <tr>
         <th>Additional Information</th>
