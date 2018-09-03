@@ -427,6 +427,7 @@ input[type="text"]:focus {
 }
 
 p,
+.p,
 figure {
   margin-bottom: 2rem;
 }
@@ -478,14 +479,30 @@ code {
   border-radius: 0;
 }
 
-figcaption {
+figcaption,
+.figcaption,
+.legend {
   font-size: 1.4rem;
   font-style: italic;
+  max-width: 80%;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 140%;
+  text-align: center;
+}
+
+.figcaption {
+  margin-bottom: 2rem;
 }
 
 table {
   margin-left: auto;
   margin-right: auto;
+}
+
+.table-container {
+  max-width: 100%;
+  overflow: auto;
 }
 
 th {
@@ -548,7 +565,7 @@ aside :last-child {
   font-size: 1.5rem;
 }
 
-.toc ol + p {
+.toc ol + .p {
   font-style: italic;
   text-align: center;
   margin-bottom: 0;
@@ -594,11 +611,7 @@ aside :last-child {
 
 .legend {
   margin-bottom: 0;
-  background-color: #c6c6c6;
   padding: .5rem 1rem;
-  font-size: 1.3rem;
-  color: #fff;
-  border-radius: 2px;
 }
 
 .slick-dots {
@@ -634,7 +647,7 @@ header .rough-circle canvas {
 /* Team */
 
 .team {
-  margin: 0;
+  margin: 0 0 2rem 0;
   padding: 0;
 }
 
@@ -659,40 +672,34 @@ header .rough-circle canvas {
   cursor: help;
   margin: 0 .2rem;
   font-style: normal;
-  z-index: 2;
-}
-
-.citation > a {
-  border-radius: 50%;
-  background-color:#9BC1BC;
-  color: white;
-  width: 2rem;
-  height: 2rem;
-  line-height: 1.3;
-  display: inline-block;
-  text-align: center;
-  vertical-align: baseline;
+  color: #363636;
 }
 
 .citation > div {
-  color: black;
   font-size: 80%;
   display: block;
   position: absolute;
   top: 1rem;
-  left: 1rem;
+  width: 82vw;
   background-color: #E6EBE0;
-  border: solid 1px gray;
+  border: solid 1px #363636;
   padding: 1rem;
-  border-radius: .5rem;
-  width: 35rem;
+  border-radius: 4px;
+  z-index: 2;
+}
+
+@media (min-width: 850px) {
+  .citation > div {
+    left: -13rem;
+    width: 26rem;
+  }
 }
 
 .citation p,
 .citation div.p {
   text-align: center;
-  color: black;
   margin: 0 0 1rem 0;
+  font-weight: bold;
 }
 
 .citation a {
@@ -702,11 +709,13 @@ header .rough-circle canvas {
 .citation table {
   margin: 0;
   width: 100%;
+  border: none;
 }
 
 .citation th,
 .citation td {
   vertical-align: top;
+  border: none;
 }
 
 .citation th {

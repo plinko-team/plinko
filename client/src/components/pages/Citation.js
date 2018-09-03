@@ -13,6 +13,7 @@ export default class Citation extends React.Component {
     creationDate: propTypes.string,
     title: propTypes.string,
     contributingOrganization: propTypes.string,
+    publisher: propTypes.string,
     url: propTypes.string,
     comment: propTypes.string,
   };
@@ -22,6 +23,7 @@ export default class Citation extends React.Component {
     creationDate: '',
     title: '',
     contributingOrganization: '',
+    publisher: '',
     url: '',
     comment: '',
   };
@@ -37,34 +39,40 @@ export default class Citation extends React.Component {
   render() {
     const creator = (
       <tr>
-        <th>Author/Creator</th>
+        <th>Creator</th>
         <td>{this.props.creator}</td>
       </tr>
     );
     const creationDate = (
       <tr>
-        <th>Creation Date</th>
+        <th>Date</th>
         <td>{this.props.creationDate}</td>
       </tr>
     );
     const title = (
       <tr>
         <th>Title</th>
-        <td>{this.props.title}</td>
+        <td>{this.props.url ? <a href={this.props.url}>{this.props.title}</a> : this.props.title}</td>
       </tr>
     );
     const contributingOrganization = (
       <tr>
-        <th>Contributing Organization</th>
+        <th>Organization</th>
         <td>{this.props.contributingOrganization}</td>
       </tr>
     );
-    const url = (
+    const publisher = (
       <tr>
-        <th>Url</th>
-        <td><a href={this.props.url}>{this.props.url}</a></td>
+        <th>Publisher</th>
+        <td>{this.props.publisher}</td>
       </tr>
     );
+    // const url = (
+    //   <tr>
+    //     <th>Url</th>
+    //     <td><a href={this.props.url}>{this.props.url}</a></td>
+    //   </tr>
+    // );
     const comment = (
       <tr>
         <th>Additional Information</th>
@@ -77,10 +85,11 @@ export default class Citation extends React.Component {
         <table>
           <tbody>
             {this.props.creator ? creator : undefined}
-            {this.props.creationDate ? creationDate : undefined}
             {this.props.title ? title : undefined}
             {this.props.contributingOrganization ? contributingOrganization : undefined}
-            {this.props.url ? url : undefined}
+            {this.props.publisher ? publisher : undefined}
+            {/* {this.props.url ? url : undefined} */}
+            {this.props.creationDate ? creationDate : undefined}
             {this.props.comment ? comment : undefined}
           </tbody>
         </table>

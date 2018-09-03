@@ -141,8 +141,6 @@ export default class ClientEngine {
       }
     });
 
-    let chipsNotInSnapshot = [];
-
     Object.keys(this.chips).forEach(combinedId => {
       if (chipsInCurrentSnapshot[combinedId] ||
           this.chips[combinedId].recentlyDropped) {
