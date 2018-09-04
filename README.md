@@ -39,7 +39,9 @@ Los Angeles, CA
 <img src="https://i.imgur.com/2ZDRwrh.jpg" width="200" alt="Josh Nelson"/>
 
 **Josh Nelson**
+
 *Software Engineer*
+
 Portland, OR
 
 Please feel free to get in touch if you’d like to talk software engineering, games, or the web. We’re always open to learning about new opportunities.
