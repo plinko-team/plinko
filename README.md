@@ -8,7 +8,7 @@ For more information, read our [case study](http://www.plinkojs.com/about)
 
 Click here to play a [demo](http://www.plinkojs.com/play)!
 
-![Gameplay](https://media.giphy.com/media/piFH1TwJYvfB4vEX6q/giphy.gif "Gameplay")
+![Gameplay](https://s1.gifyu.com/images/giphy38d141392504b7f2.gif "Gameplay")
 
 ## Installation
 1) run `yarn install` in `/client`
@@ -24,19 +24,22 @@ Learn more about Plinko.js [here](http://www.plinkojs.com/about).
 ## About Us
 Our team of three web developers built Plinko remotely, working together from across North America. We pair-programmed, bug-squashed, and drank 3,425,718 cups of coffee.
 
-![Branko Culum](https://avatars3.githubusercontent.com/u/22482600?s=460&v=4 =200x200)
-<strong>Branko Culum</strong>
-Software Engineer
+<img src="https://avatars3.githubusercontent.com/u/22482600?s=460&v=4" width="200" alt="Branko Culum"/>
+
+**Branko Culum**<br />
+*Software Engineer*<br />
 Toronto, ON
 
-![Ryann McQuilton](https://i.imgur.com/wZIIsLM.jpg =200x200)
-<strong>Ryann McQuilton</strong>
-Software Engineer
+<img src="https://i.imgur.com/wZIIsLM.jpg =200x200" width="200" alt="Ryann McQuilton"/>
+
+**Ryann McQuilton**<br />
+*Software Engineer*<br />
 Los Angeles, CA
 
-![Josh Nelson](https://i.imgur.com/2ZDRwrh.jpg")
-<strong>Josh Nelson</strong>
-Software Engineer
+<img src="https://i.imgur.com/2ZDRwrh.jpg" width="200" alt="Josh Nelson"/>
+
+**Josh Nelson**<br />
+*Software Engineer*<br />
 Portland, OR
 
 Please feel free to get in touch if you’d like to talk software engineering, games, or the web. We’re always open to learning about new opportunities.

@@ -3,14 +3,14 @@ import React from 'react';
 const Team = () => {
   return (
     <main>
-      <div className="main-content">
+      <div className="main-content team">
         <h1>The Team</h1>
         <div>
-          <ul className="team">
+          <ul>
             <li>
-              <a href="http://brankoculum.github.io">
+              <a href="https://brankoculum.github.io/">
                 <figure>
-                  <img className="team-img" src="https://avatars3.githubusercontent.com/u/22482600?s=460&v=4" alt="Branko Culum"/>
+                  <img src="https://avatars3.githubusercontent.com/u/22482600?s=460&v=4" alt="Branko Culum"/>
                 </figure>
                 <strong>Branko Culum</strong>
                   <br />
@@ -22,7 +22,7 @@ const Team = () => {
             <li>
               <a href="https://ryannmcq.github.io/">
                 <figure>
-                  <img className="team-img" src="https://i.imgur.com/wZIIsLM.jpg" alt="Ryann McQuilton"/>
+                  <img src="https://i.imgur.com/wZIIsLM.jpg" alt="Ryann McQuilton"/>
                 </figure>
                 <strong>Ryann McQuilton</strong>
                   <br />
@@ -32,7 +32,7 @@ const Team = () => {
               </a>
             </li>
             <li>
-              <a href="http://joshcnelson.github.io/">
+              <a href="https://joshcnelson.github.io">
                 <figure>
                   <img className="team-img" src="https://i.imgur.com/2ZDRwrh.jpg" alt="Josh Nelson"/>
                 </figure>

@@ -135,7 +135,7 @@ export default class Lobby extends Component {
             <div className="rule">
               <wired-card><h2>Playing alone? </h2></wired-card>
               <p>Reach the target peg percentage as fast as you can.</p>
-              <p>Can you hit 90% of pegs? How about 95%?</p>
+              <p>Can you hit 80% of pegs? 90%?!</p>
             </div>
           </div>
         </div>
