@@ -8,7 +8,7 @@ const Team = () => {
         <div>
           <ul className="team">
             <li>
-              <a href="#">
+              <a href="http://brankoculum.github.io">
                 <figure>
                   <img className="team-img" src="https://avatars3.githubusercontent.com/u/22482600?s=460&v=4" alt="Branko Culum"/>
                 </figure>
@@ -20,7 +20,7 @@ const Team = () => {
               </a>
             </li>
             <li>
-              <a href="#">
+              <a href="https://ryannmcq.github.io/">
                 <figure>
                   <img className="team-img" src="https://i.imgur.com/wZIIsLM.jpg" alt="Ryann McQuilton"/>
                 </figure>
@@ -32,7 +32,7 @@ const Team = () => {
               </a>
             </li>
             <li>
-              <a href="#">
+              <a href="http://joshcnelson.github.io/">
                 <figure>
                   <img className="team-img" src="https://i.imgur.com/2ZDRwrh.jpg" alt="Josh Nelson"/>
                 </figure>
