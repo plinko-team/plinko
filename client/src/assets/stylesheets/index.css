@@ -653,11 +653,8 @@ header .rough-circle canvas {
 
 /* Team */
 
-.team {
-
-}
-
-.team ul {
+.team ul,
+ul.team {
   margin: 0 0 2rem 0;
   padding: 0;
 }
