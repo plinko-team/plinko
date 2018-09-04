@@ -1,3 +1,4 @@
+```
 <figure style="display:inline-block;padding:0;margin:0">
     <img src="https://avatars3.githubusercontent.com/u/22482600?s=460&v=4" width="200" alt="Branko Culum"/>
     <figcaption style="text-align:center">
@@ -21,3 +22,4 @@
     <img src="https://i.imgur.com/2ZDRwrh.jpg" width="205" alt="Josh Nelson"/>
     <figcaption style="text-align:center">
         <strong>Josh Nelson</strong><br />
+```
