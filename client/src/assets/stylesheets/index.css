@@ -745,3 +745,7 @@ header .rough-circle canvas {
 .citation td {
   border-bottom: none;
 }
+
+.team-img {
+  width: 200px;
+}

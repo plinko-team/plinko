@@ -34,7 +34,7 @@ const Team = () => {
             <li>
               <a href="https://joshcnelson.github.io">
                 <figure>
-                  <img src="https://i.imgur.com/2ZDRwrh.jpg" alt="Josh Nelson"/>
+                  <img className="team-img" src="https://i.imgur.com/2ZDRwrh.jpg" alt="Josh Nelson"/>
                 </figure>
                 <strong>Josh Nelson</strong>
                   <br />
