@@ -4,7 +4,7 @@
 
 Plinko.js is a real-time, multiplayer, physics-based game using only JavaScript and the basic features of a browser. The clients and authoritative server communicate over WebSockets, and the game employ snapshots and extrapolation to synchronize game state across nodes. To optimize bandwidth, it compresses network data using quantization and binary serialization. The game lobby and player matchmaking system is built with React.
 
-Check out the Plinko.js [case study](http://www.plinkojs.com/about), or [play a demo game](http://www.plinkojs.com/play).
+Check out the Plinko.js [case study](http://www.plinkojs.com/about) to learn more, or [play a demo game](http://www.plinkojs.com/play).
 
 ![Gameplay](https://s1.gifyu.com/images/giphy38d141392504b7f2.gif "Gameplay")
 
@@ -19,7 +19,7 @@ _Note: If you wish to run the server elsewhere, you must change `localhost:3001`
 
 ## Case Study
 
-Learn more about the project [here](http://www.plinkojs.com/about).
+Learn more about the project [here](http://www.plinkojs.com/about), including the challenges of application state synchronization and networked gaming in the browser.
 
 ## The Team
 
@@ -35,7 +35,7 @@ Toronto, ON
 *Software Engineer*<br />
 Los Angeles, CA
 
-<img src="https://i.imgur.com/2ZDRwrh.jpg" width="200" alt="Josh Nelson"/>
+<img src="https://i.imgur.com/fFPdyPZ.jpg" width="200" alt="Josh Nelson"/>
 
 **[Josh Nelson](https://joshcnelson.github.io/)**<br />
 *Software Engineer*<br />
