@@ -8,7 +8,7 @@ For more information, read our [case study](http://www.plinkojs.com/about)
 
 Click here to play a [demo](http://www.plinkojs.com/play)!
 
-![Gameplay](https://media.giphy.com/media/piFH1TwJYvfB4vEX6q/giphy.gif "Gameplay")
+![Gameplay](https://s1.gifyu.com/images/giphy38d141392504b7f2.md.gif "Gameplay")
 
 ## Installation
 1) run `yarn install` in `/client`
