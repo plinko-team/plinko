@@ -15,8 +15,6 @@ Check out the Plinko.js [case study](http://www.plinkojs.com/about) to learn mor
 3) run `npm run compile` to transpile the server side code
 4) run `npm start` to run the development server on localhost:3000
 
-_Note: If you wish to run the server elsewhere, you must change `localhost:3001` in `client/src/components/App.js` to your domain at port 3001_
-
 ## Case Study
 
 Learn more about the project [here](http://www.plinkojs.com/about), including the challenges of application state synchronization and networked gaming in the browser.
