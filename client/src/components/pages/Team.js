@@ -10,7 +10,7 @@ const Team = () => {
             <li>
               <a href="#">
                 <figure>
-                  <img src="https://avatars3.githubusercontent.com/u/22482600?s=460&v=4" alt="Branko Culum"/>
+                  <img className="team-img" src="https://avatars3.githubusercontent.com/u/22482600?s=460&v=4" alt="Branko Culum"/>
                 </figure>
                 <strong>Branko Culum</strong>
                   <br />
@@ -22,7 +22,7 @@ const Team = () => {
             <li>
               <a href="#">
                 <figure>
-                  <img src="https://i.imgur.com/wZIIsLM.jpg" alt="Ryann McQuilton"/>
+                  <img className="team-img" src="https://i.imgur.com/wZIIsLM.jpg" alt="Ryann McQuilton"/>
                 </figure>
                 <strong>Ryann McQuilton</strong>
                   <br />
@@ -34,7 +34,7 @@ const Team = () => {
             <li>
               <a href="#">
                 <figure>
-                  <img src="https://i.imgur.com/2ZDRwrh.jpg" alt="Josh Nelson"/>
+                  <img className="team-img" src="https://i.imgur.com/2ZDRwrh.jpg" alt="Josh Nelson"/>
                 </figure>
                 <strong>Josh Nelson</strong>
                   <br />
