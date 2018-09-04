@@ -10,7 +10,7 @@ const Team = () => {
             <li>
               <a href="#">
                 <figure>
-                  <img src="https://via.placeholder.com/200x200" alt="Branko Culum"/>
+                  <img src="https://avatars3.githubusercontent.com/u/22482600?s=460&v=4" alt="Branko Culum"/>
                 </figure>
                 <strong>Branko Culum</strong>
                   <br />
@@ -22,7 +22,7 @@ const Team = () => {
             <li>
               <a href="#">
                 <figure>
-                  <img src="https://via.placeholder.com/200x200" alt="Ryann McQuilton"/>
+                  <img src="https://i.imgur.com/wZIIsLM.jpg" alt="Ryann McQuilton"/>
                 </figure>
                 <strong>Ryann McQuilton</strong>
                   <br />
