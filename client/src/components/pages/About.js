@@ -95,11 +95,11 @@ const About = () => {
   // ...
 
   // If there are more than 5 frames in the buffer, the client is too
-  // far behind the server and should throw away excess frames to get 
+  // far behind the server and should throw away excess frames to get
   // back in sync
   while (snapshotBuffer.length > 5) { snapshotBuffer.shift() }
 
-  // Get the first snapshot received from the server that hasn't been 
+  // Get the first snapshot received from the server that hasn't been
   // processed yet
   const currentSnapshot = snapshotBuffer.shift()
 
@@ -165,7 +165,7 @@ const About = () => {
 
     if (chipDoesNotExist()) { createChip(chipInfo) }
 
-    // Get a reference to the chip, either newly created or 
+    // Get a reference to the chip, either newly created or
     // already existing
     const chip = getChipById(chipInfo.id)
 
@@ -243,7 +243,7 @@ const About = () => {
     }
 
     // Our snapshot history keeps a snapshot for every frame
-    // Now that we've modified the past state, it needs to be 
+    // Now that we've modified the past state, it needs to be
     // overwritten
     const generatedSnapshot = generateSnapshot()
     snapshotHistory.update(frame, generatedSnapshot)
@@ -1378,9 +1378,9 @@ while (bendingFrame !== totalBendingFrames) {
 
         <ul className="team">
             <li>
-              <a href="#">
+              <a href="https://brankoculum.github.io/">
                 <figure>
-                  <img src="https://via.placeholder.com/200x200" alt="Branko Culum"/>
+                  <img src="https://avatars3.githubusercontent.com/u/22482600?s=460&v=4" alt="Branko Culum"/>
                 </figure>
                 <strong>Branko Culum</strong>
                   <br />
@@ -1390,9 +1390,9 @@ while (bendingFrame !== totalBendingFrames) {
               </a>
             </li>
             <li>
-              <a href="#">
+              <a href="https://ryannmcq.github.io/">
                 <figure>
-                  <img src="https://via.placeholder.com/200x200" alt="Ryann McQuilton"/>
+                  <img src="https://i.imgur.com/gZ2V9tF.jpg" alt="Ryann McQuilton"/>
                 </figure>
                 <strong>Ryann McQuilton</strong>
                   <br />
@@ -1402,9 +1402,9 @@ while (bendingFrame !== totalBendingFrames) {
               </a>
             </li>
             <li>
-              <a href="#">
+              <a href="https://joshcnelson.github.io">
                 <figure>
-                  <img src="https://i.imgur.com/2ZDRwrh.jpg" alt="Josh Nelson"/>
+                  <img src="https://i.imgur.com/fFPdyPZ.jpg" alt="Josh Nelson"/>
                 </figure>
                 <strong>Josh Nelson</strong>
                   <br />
