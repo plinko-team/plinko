@@ -79,8 +79,8 @@ const About = () => {
       // data from the snapshot
       updateExistingChip(chipInfo)
     } else {
-      // If this is a new chip the client hasn't seen yet, create a new
-      // chip object and add it to the renderer
+      // If this is a new chip the client hasn't seen yet, create a
+      // new chip object and add it to the renderer
       createNewChip(chipInfo)
       addChipToRenderer()
     }
@@ -94,11 +94,13 @@ const About = () => {
   const animateWithBuffer = `function animate() {
   // ...
 
-  // If there are more than 5 frames in the buffer, the client is too far
-  // behind the server and should throw away excess frames to get back in sync
+  // If there are more than 5 frames in the buffer, the client is too
+  // far behind the server and should throw away excess frames to get 
+  // back in sync
   while (snapshotBuffer.length > 5) { snapshotBuffer.shift() }
 
-  // Get the first snapshot received from the server that hasn't been processed yet
+  // Get the first snapshot received from the server that hasn't been 
+  // processed yet
   const currentSnapshot = snapshotBuffer.shift()
 
   // If no snapshot exists to be processed, do not render a new frame
@@ -163,7 +165,8 @@ const About = () => {
 
     if (chipDoesNotExist()) { createChip(chipInfo) }
 
-    // Get a reference to the chip, either newly created or already existing
+    // Get a reference to the chip, either newly created or 
+    // already existing
     const chip = getChipById(chipInfo.id)
 
     // Adjust physical properties based on snapshot's properties
@@ -240,7 +243,8 @@ const About = () => {
     }
 
     // Our snapshot history keeps a snapshot for every frame
-    // Now that we've modified the past state, it needs to be overwritten
+    // Now that we've modified the past state, it needs to be 
+    // overwritten
     const generatedSnapshot = generateSnapshot()
     snapshotHistory.update(frame, generatedSnapshot)
 
@@ -249,8 +253,8 @@ const About = () => {
     incrementFrame()
   }
 
-  // After the while loop has executed, our world state will be back at the
-  // current frame, including the new inputs
+  // After the while loop has executed, our world state will be
+  // back at the current frame, including the new inputs
 }`;
 
   const bendingImplementation = `// Determine the number of frames before the position will converge
