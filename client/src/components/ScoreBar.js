@@ -18,7 +18,7 @@ export default class ScoreBar extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    if (this.props.score !== prevProps.score) {
+    if (this.props.score && this.props.score !== prevProps.score) {
       this.setState({
         // 63 total pegs in game
         // percentage of all pegs player has activated
