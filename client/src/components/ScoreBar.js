@@ -30,7 +30,7 @@ export default class ScoreBar extends Component {
       document.querySelector(`.player-${this.props.playerId} wired-card`).requestRender();
     }
 
-    if (this.props.targetPercentage !== prevProps.targetPercentage) {
+    if (!isNaN(this.props.targetPercentage) && this.props.targetPercentage !== prevProps.targetPercentage) {
       this.setState({
         // difference between 100% and current target percentage, as a negative
         targetBarLeftPosition: -(100 - this.props.targetPercentage) + '%',
