@@ -6,7 +6,7 @@ Plinko.js is a real-time, multiplayer, physics-based game using only JavaScript 
 
 Check out the Plinko.js [case study](http://www.plinkojs.com/about) to learn more, or [play a demo game](http://www.plinkojs.com/play).
 
-![Gameplay](https://s1.gifyu.com/images/giphy38d141392504b7f2.gif "Gameplay")
+![Gameplay](https://i.imgur.com/EoyY370.gif)
 
 ## Installation
 
