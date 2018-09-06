@@ -76,7 +76,7 @@ export default class Lobby extends Component {
             </ul>
           </div>
 
-          {this.props.gameInProgress && this.gameInProgressAlert()}
+          {this.props.gameInProgress && this.isWaitingUser() && this.gameInProgressAlert()}
         </div>
       )
     } else {
