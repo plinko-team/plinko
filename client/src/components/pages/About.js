@@ -317,7 +317,7 @@ while (bendingFrame !== totalBendingFrames) {
                 </ol>
               </li>
               <li>
-                <a href="#finished-product">Finished Product</a>
+                <a href="#finished-game">Finished Game</a>
               </li>
               <li>
                 <a href="#future-work">Future Work</a>
@@ -354,7 +354,7 @@ while (bendingFrame !== totalBendingFrames) {
           estimation.
         </div>
         <figure>
-          <img src="https://media.giphy.com/media/piFH1TwJYvfB4vEX6q/giphy.gif" alt="Plinko Gameplay" />
+          <img className="medium" src="https://media.giphy.com/media/1rRkqtfEgsK57mgN52/giphy.gif" alt="Plinko Gameplay" />
           <figcaption>Actual recorded gameplay</figcaption>
         </figure>
 
@@ -378,7 +378,7 @@ while (bendingFrame !== totalBendingFrames) {
           <li>Optimize bandwidth and throughput to support a wide variety of possible
               connection speeds
           </li>
-          <li>Manage a constantly changing divergent game-state</li>
+          <li>Manage a constantly changing divergent game state</li>
         </ul>
 
         {/* Building a Browser Game */}
@@ -653,7 +653,7 @@ while (bendingFrame !== totalBendingFrames) {
           </div>
         </Slider>
 
-        <div className="p">A snapshot is like a page in a flipbook. Alone, it’s a still picture. But when you view many together in a sequence, they appear to animate. To achieve our 60fps frame rate, clients must receive 60 pictures every second. In our game, a snapshot is a JavaScript object containing the current positions and owners of all chips and pegs, plus game data like current scores and a timestamp. Here’s how the client uses these snapshots in its <code>animate</code> function, which is called every 16.67 ms to animate the game:</div>
+        <div className="p">A snapshot is like a page in a flipbook. Alone, it’s a still picture. But when you view many together in a sequence, they appear to animate. To achieve our 60fps frame rate, clients must receive 60 pictures every second. In our game, a snapshot is a JavaScript object containing the current positions and owners of all chips and pegs, plus game data like current scores and a timestamp. Here’s how the client uses these snapshots in the pseudocode for its <code>animate</code> function, which is called every 16.67 ms to animate the game:</div>
 
         <SyntaxHighlighter {...syntaxHighlighterProps}>
           {animate}
@@ -1047,7 +1047,7 @@ while (bendingFrame !== totalBendingFrames) {
           <li>Regeneration from the snapshot</li>
           <li>Fast forward to the current frame</li>
         </ol>
-        <div className="p">We can begin with an overview of the pseudocode executed during each frame. The gist is that if a snapshot exists, we perform regeneration and fast forward; otherwise, update the simulation as we normally would locally. Only the latest snapshot is used when regenerating; we do not buffer older snapshots as before since they are immediately stale.</div>
+        <div className="p">We can begin with an overview of the pseudocode executed during each frame. The gist is that if a snapshot exists, we perform regeneration and fast forward; otherwise, update the simulation as we normally would locally. Only the latest snapshot is used when regenerating; we do not buffer older snapshots as before since they are immediately stale. Here's the pseudocode:</div>
 
         <SyntaxHighlighter {...syntaxHighlighterProps}>
           {animateClientReenactment}
@@ -1098,7 +1098,7 @@ while (bendingFrame !== totalBendingFrames) {
         </li>
           <li>Update the simulation, whether there was reenactment or not</li>
         </ul>
-        <div className="p">This is an example of our <code>animate</code> function on the server side:</div>
+        <div className="p">Here's the pseudocode for our <code>animate</code> function on the server side:</div>
 
         <SyntaxHighlighter {...syntaxHighlighterProps}>
           {implementationSnippet}
@@ -1133,68 +1133,68 @@ while (bendingFrame !== totalBendingFrames) {
         <div className="p">When the client performs a reenactment and discovers that the current and the reenacted chip positions have diverged, it can simply render the new position and continue simulating. This can result in a “popping” effect, where the chip pops out of existence at one point, and back into existence elsewhere:</div>
         <Slider {...sliderSettings}>
           <div>
-            <img className="medium" src="https://s15.postimg.cc/681xrs83v/image.png"/ >
+            <img className="small" src="https://s15.postimg.cc/681xrs83v/image.png"/ >
             <div className="legend">(a) The simulation has only one chip, currently
               simulating frame 50</div>
           </div>
           <div>
-            <img className="medium" src="https://s15.postimg.cc/681xrsftn/image.png"/ >
+            <img className="small" src="https://s15.postimg.cc/681xrsftn/image.png"/ >
           </div>
           <div>
-            <img className="medium" src="https://s15.postimg.cc/x5vutj86j/image.png"/ >
+            <img className="small" src="https://s15.postimg.cc/x5vutj86j/image.png"/ >
           </div>
           <div>
-            <img className="medium" src="https://s15.postimg.cc/izg3yb517/image.png"/ >
+            <img className="small" src="https://s15.postimg.cc/izg3yb517/image.png"/ >
           </div>
           <div>
-            <img className="medium" src="https://s15.postimg.cc/ppwl7r7mj/image.png"/ >
+            <img className="small" src="https://s15.postimg.cc/ppwl7r7mj/image.png"/ >
           </div>
           <div>
-            <img className="medium" src="https://s15.postimg.cc/q2nzdxi6j/image.png"/ >
+            <img className="small" src="https://s15.postimg.cc/q2nzdxi6j/image.png"/ >
           </div>
           <div>
-            <img className="medium" src="https://s15.postimg.cc/b6pg6ctx7/image.png"/ >
+            <img className="small" src="https://s15.postimg.cc/b6pg6ctx7/image.png"/ >
           </div>
           <div>
-            <img className="medium" src="https://s15.postimg.cc/pd571kx2j/image.png"/ >
+            <img className="small" src="https://s15.postimg.cc/pd571kx2j/image.png"/ >
           </div>
           <div>
-            <img className="medium" src="https://s15.postimg.cc/edjzpzm2z/image.png"/ >
+            <img className="small" src="https://s15.postimg.cc/edjzpzm2z/image.png"/ >
             <div className="legend">(b) On frame 57, a snapshot is received with
               the game state on frame 53, so we must reenact until the current
               frame</div>
           </div>
           <div>
-            <img className="medium" src="https://s15.postimg.cc/esv9j30bf/image.png"/ >
+            <img className="small" src="https://s15.postimg.cc/esv9j30bf/image.png"/ >
           </div>
           <div>
-            <img className="medium" src="https://s15.postimg.cc/wt4gnev2j/image.png"/ >
+            <img className="small" src="https://s15.postimg.cc/wt4gnev2j/image.png"/ >
           </div>
           <div>
-            <img className="medium" src="https://s15.postimg.cc/cyif1a0ff/image.png"/ >
+            <img className="small" src="https://s15.postimg.cc/cyif1a0ff/image.png"/ >
           </div>
           <div>
-            <img className="medium" src="https://s15.postimg.cc/eqbdw6ri3/image.png"/ >
+            <img className="small" src="https://s15.postimg.cc/eqbdw6ri3/image.png"/ >
             <div className="legend">(c) Simulation has caught up to the current
               frame, but the state is divergent; the chip is not where we
               thought.</div>
           </div>
           <div>
-            <img className="medium" src="https://s15.postimg.cc/nb4pnfm9n/image.png"/ >
+            <img className="small" src="https://s15.postimg.cc/nb4pnfm9n/image.png"/ >
             <div className="legend">(d) The position will immediately snap to the
               new position, as if the chip popped in and out of existence</div>
           </div>
           <div>
-            <img className="medium" src="https://s15.postimg.cc/coawi06ej/image.png"/ >
+            <img className="small" src="https://s15.postimg.cc/coawi06ej/image.png"/ >
           </div>
           <div>
-            <img className="medium" src="https://s15.postimg.cc/9u7r4krdn/image.png"/ >
+            <img className="small" src="https://s15.postimg.cc/9u7r4krdn/image.png"/ >
           </div>
           <div>
-            <img className="medium" src="https://s15.postimg.cc/oq6ac5v2j/image.png"/ >
+            <img className="small" src="https://s15.postimg.cc/oq6ac5v2j/image.png"/ >
           </div>
           <div>
-            <img className="medium" src="https://s15.postimg.cc/a6z5arhd7/image.png"/ >
+            <img className="small" src="https://s15.postimg.cc/a6z5arhd7/image.png"/ >
             <div className="legend">(e) Final path, showing the unnatural path
               when including popping</div>
           </div>
@@ -1206,52 +1206,52 @@ while (bendingFrame !== totalBendingFrames) {
         <div className="p">The best way to handle the problem of continuity with respect to state divergence is to perform bending (or smoothing). This means that once a new position is calculated, we don’t render it immediately, but instead continue rendering our <em>old</em> position. Then, over a period of 3-5 frames, we can “push” the old position towards the new one.</div>
         <Slider {...sliderSettings}>
           <div>
-            <img className="medium" src="https://s15.postimg.cc/681xrs83v/image.png" />
+            <img className="small" src="https://s15.postimg.cc/681xrs83v/image.png" />
             <div className="legend">(a) We start on frame 50 with a single chip on
                the client side simulation</div>
           </div>
           <div>
-            <img className="medium" src="https://s15.postimg.cc/681xrsftn/image.png" />
+            <img className="small" src="https://s15.postimg.cc/681xrsftn/image.png" />
           </div>
           <div>
-            <img className="medium" src="https://s15.postimg.cc/x5vutj86j/image.png" />
+            <img className="small" src="https://s15.postimg.cc/x5vutj86j/image.png" />
           </div>
           <div>
-            <img className="medium" src="https://s15.postimg.cc/izg3yb517/image.png" />
+            <img className="small" src="https://s15.postimg.cc/izg3yb517/image.png" />
           </div>
           <div>
-            <img className="medium" src="https://s15.postimg.cc/ppwl7r7mj/image.png" />
+            <img className="small" src="https://s15.postimg.cc/ppwl7r7mj/image.png" />
           </div>
           <div>
-            <img className="medium" src="https://s15.postimg.cc/q2nzdxi6j/image.png" />
+            <img className="small" src="https://s15.postimg.cc/q2nzdxi6j/image.png" />
           </div>
           <div>
-            <img className="medium" src="https://s15.postimg.cc/b6pg6ctx7/image.png" />
+            <img className="small" src="https://s15.postimg.cc/b6pg6ctx7/image.png" />
           </div>
           <div>
-            <img className="medium" src="https://s15.postimg.cc/pd571kx2j/image.png" />
+            <img className="small" src="https://s15.postimg.cc/pd571kx2j/image.png" />
           </div>
           <div>
-            <img className="medium" src="https://s15.postimg.cc/edjzpzm2z/image.png" />
+            <img className="small" src="https://s15.postimg.cc/edjzpzm2z/image.png" />
             <div className="legend">(b) On frame 57, we receive a snapshot of the
               world at frame 53</div>
           </div>
           <div>
-            <img className="medium" src="https://s15.postimg.cc/5vajlnna3/image.png" />
+            <img className="small" src="https://s15.postimg.cc/5vajlnna3/image.png" />
           </div>
           <div>
-            <img className="medium" src="https://s15.postimg.cc/wt4gnev2j/image.png" />
+            <img className="small" src="https://s15.postimg.cc/wt4gnev2j/image.png" />
           </div>
           <div>
-            <img className="medium" src="https://s15.postimg.cc/cyif1a0ff/image.png" />
+            <img className="small" src="https://s15.postimg.cc/cyif1a0ff/image.png" />
           </div>
           <div>
-            <img className="medium" src="https://s15.postimg.cc/eqbdw6ri3/image.png" />
+            <img className="small" src="https://s15.postimg.cc/eqbdw6ri3/image.png" />
             <div className="legend">(c) The simulation has caught up to the
               current frame, but the state has diverged.</div>
           </div>
           <div>
-            <img className="medium" src="https://s15.postimg.cc/3qq6klo8b/image.png" />
+            <img className="small" src="https://s15.postimg.cc/3qq6klo8b/image.png" />
             <div className="legend">(d) Instead of snapping the chip immediately
               to the new position, we render the old position and calculate
               the distance between the old and the new position. Over the
@@ -1259,18 +1259,18 @@ while (bendingFrame !== totalBendingFrames) {
               pulling the old position towards the actual position.</div>
           </div>
           <div>
-            <img className="medium" src="https://s15.postimg.cc/c8zmoxn17/image.png" />
+            <img className="small" src="https://s15.postimg.cc/c8zmoxn17/image.png" />
           </div>
           <div>
-            <img className="medium" src="https://s15.postimg.cc/8pdoz57gr/image.png" />
+            <img className="small" src="https://s15.postimg.cc/8pdoz57gr/image.png" />
           </div>
           <div>
-            <img className="medium" src="https://s15.postimg.cc/db9t7hla3/image.png" />
+            <img className="small" src="https://s15.postimg.cc/db9t7hla3/image.png" />
             <div className="legend">(e) The rendered position now matches the
               actual, simulated position</div>
           </div>
           <div>
-            <img className="medium" src="https://s15.postimg.cc/tz1b9zvh7/image.png" />
+            <img className="small" src="https://s15.postimg.cc/tz1b9zvh7/image.png" />
             <div className="legend">(e) The final path utilizing bending. Notice
             that the path is more continuous and natural, but there is an
             unfortunate side effect that the chip appears to have gone through
@@ -1291,7 +1291,7 @@ while (bendingFrame !== totalBendingFrames) {
         <div className="p">The result is a smooth path which the eye can follow naturally, but the path may still appear to be “impossible” based on the physics.</div>
 
         <h6 id="Bending-Implementation">Bending Implementation</h6>
-        <div className="p">We can implement bending by snapping the physics to the new position immediately, while slowly updating the rendered position over the course of multiple frames. First we calculate the distance between the new and old object, then we render the old position plus some percentage of the distance.</div>
+        <div className="p">We can implement bending by snapping the physics to the new position immediately, while slowly updating the rendered position over the course of multiple frames. In the pseudocode below, we first calculate the distance between the new and old object, then we render the old position plus some percentage of the distance:</div>
 
         <SyntaxHighlighter {...syntaxHighlighterProps}>
           {bendingImplementation}
@@ -1322,31 +1322,31 @@ while (bendingFrame !== totalBendingFrames) {
 
         <Slider {...sliderSettings}>
           <div>
-            <img src="https://s15.postimg.cc/jbtpyydx7/latency_step2.png" />
+            <img className="medium" src="https://s15.postimg.cc/jbtpyydx7/latency_step2.png" />
             <div className="legend">Step 1: The client stamps its current local time on a “time request” packet and sends to the server</div>
           </div>
           <div>
-            <img src="https://s15.postimg.cc/3qcef0p4b/latency_step3.png" />
+            <img className="medium" src="https://s15.postimg.cc/3qcef0p4b/latency_step3.png" />
             <div className="legend">Step 2: When the server receives the packet, the server stamps it’s own local time time and sends back to the client</div>
           </div>
           <div>
-            <img src="https://s15.postimg.cc/atk9ummu3/latency_step4.png" />
+            <img className="medium" src="https://s15.postimg.cc/atk9ummu3/latency_step4.png" />
             <div className="legend">Step 3: When the server receives the packet, the client subtracts its current local time from its sent time and divides by two to compute latency. It also subtracts its current time from server time to determine client-server time difference and adds in the half-latency to get the correct difference in clock times.</div>
           </div>
           <div>
-            <img src="https://s15.postimg.cc/67o5m8r0b/latency_step5.png" />
+            <img className="medium" src="https://s15.postimg.cc/67o5m8r0b/latency_step5.png" />
             <div className="legend">Step 4: The client repeats the previous steps 10 times and adds the results to a latency history</div>
           </div>
           <div>
-            <img src="https://s15.postimg.cc/8ozwtiy23/latency_step6b.png" />
+            <img className="medium" src="https://s15.postimg.cc/8ozwtiy23/latency_step6b.png" />
             <div className="legend">Step 5: The latency history is sorted lowest to highest</div>
           </div>
           <div>
-            <img src="https://s15.postimg.cc/n871uxbrf/latency_step7b.png" />
+            <img className="medium" src="https://s15.postimg.cc/n871uxbrf/latency_step7b.png" />
             <div className="legend">Step 6: The median latency is taken. All samples above or below 1 standard deviation of the median are discarded</div>
           </div>
           <div>
-            <img src="https://s15.postimg.cc/t94qs063f/latency_step8b.png" />
+            <img className="medium" src="https://s15.postimg.cc/t94qs063f/latency_step8b.png" />
             <div className="legend">Step 7: The remaining samples are averaged, giving us our average latency.</div>
           </div>
         </Slider>
@@ -1358,10 +1358,15 @@ while (bendingFrame !== totalBendingFrames) {
 
         {/* Finished Product */}
 
-        <h2 id="finished-product">5 Finished Product</h2>
+        <h2 id="finished-game">5 Finished Game</h2>
         <div className="p">In the end, we’ve built a real-time, multiplayer, physics-based game using only JavaScript and the basic features of a browser. Our clients and authoritative server communicate over WebSockets, and we employ snapshots and extrapolation to synchronize game state across nodes. To optimize bandwidth, we compress network data using quantization and binary serialization. Our game lobby and player matchmaking system is built with React.</div>
-        <div className="p"><strong>(gameplay video)</strong></div>
-        <div className="p">Find our finished implementation on <a href="https://github.com/plinko-team/plinko" target="_blank" rel="noopener noreferrer">Github</a>. Or play the game yourself <a href="/play">here</a>!</div>
+
+        <figure>
+          <img className="medium" src="https://media.giphy.com/media/7OXlwbUUS9ckxYDIl7/giphy.gif" alt="Plinko Gameplay" />
+          <figcaption>Recorded gameplay and React lobby system</figcaption>
+        </figure>
+
+        <div className="p">Find our finished implementation on <a href="https://github.com/plinko-team/plinko" target="_blank" rel="noopener noreferrer">GitHub</a>. Or play the game yourself <a href="/play">here</a>!</div>
 
         {/* Future Work */}
 
