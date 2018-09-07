@@ -193,6 +193,11 @@ export default class ServerEngine {
       socket.on('start game', () => {
         this.activeUsers.broadcastAll('start game');
         this.users.broadcastAll('game started');
+
+        this.engine = Engine.create();
+        this.createEnvironment();
+        this.registerPhysicsEvents();
+
         setTimeout(this.startGame.bind(this), 5000);
       });
 
@@ -366,16 +371,14 @@ export default class ServerEngine {
   resetGame() {
     this.logged = false
     this.activeUsers = new UserCollection();
-    this.engine = Engine.create();
+    delete this.engine;
     this.frame = 0;
     this.inputBuffer = new InputBuffer();
-    this.gameLoop = undefined;
+    delete this.gameloop;
     this.chips = {};
     this.pegs = [];
     this.winner = false;
     this.initializeScore();
-    this.createEnvironment();
-    this.registerPhysicsEvents();
   }
 
   generateSnapshot(chips, pegs, score, winner, targetScore) {
