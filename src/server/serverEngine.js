@@ -377,7 +377,8 @@ export default class ServerEngine {
     this.activeUsers = new UserCollection();
     this.unregisterPhysicsEvents()
 
-    delete this.engine.world;
+    Engine.clear(this.engine);
+
     delete this.engine;
     delete this.gameloop;
 
