@@ -47,7 +47,6 @@ export default class ServerEngine {
     this.inputBuffer = new InputBuffer();
     this.waitingQueue = new WaitingQueue();
     this.gameIsRunning = false;
-    this.gameLoop = undefined;
     this.playerIds = {0: null, 1: null, 2: null, 3: null};
 
     console.log('new ServerEngine! gameIsRunning:', this.gameIsRunning)
@@ -124,6 +123,10 @@ export default class ServerEngine {
   registerPhysicsEvents() {
     // Collision Events
     Events.on(this.engine, 'collisionStart', this.onCollisionStart);
+  }
+
+  unregisterPhysicsEvents() {
+    Events.off(this.engine, 'collisionStart', this.onCollisionStart);
   }
 
   fillActiveUsers() {
@@ -337,7 +340,9 @@ export default class ServerEngine {
       this.nextTimestep += TIMESTEP;
     }
 
-    this.gameLoop = setImmediate(this.startGame.bind(this))
+    if (this.gameIsRunning) {
+      this.gameLoop = setImmediate(this.startGame.bind(this));
+    }
   }
 
   endRound() {
@@ -371,13 +376,18 @@ export default class ServerEngine {
   resetGame() {
     this.logged = false
     this.activeUsers = new UserCollection();
+    this.unregisterPhysicsEvents()
+
+    delete this.engine.world;
     delete this.engine;
+    delete this.gameloop;
+
     this.frame = 0;
     this.inputBuffer = new InputBuffer();
-    delete this.gameloop;
     this.chips = {};
     this.pegs = [];
     this.winner = false;
+
     this.initializeScore();
   }
 
@@ -480,3 +490,9 @@ export default class ServerEngine {
     this._createTriangles();
   }
 }
+
+ssh root@206.189.74.63
+cd plinko
+pm2 status
+pm2 logs
+pm2 show server
