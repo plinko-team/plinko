@@ -1,5 +1,4 @@
-import EventEmitter from 'eventemitter3';
-import { Body, World, Engine, Events } from 'matter-js';
+import { World, Engine, Events } from 'matter-js';
 
 import Chip from '../bodies/Chip';
 import Peg from '../bodies/Peg';
