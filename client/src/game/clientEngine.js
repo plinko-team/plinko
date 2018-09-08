@@ -74,13 +74,13 @@ export default class ClientEngine {
   // }
 
   registerSocketEvents() {
-    this.socket.on('start game', () => {
+    this.socket.once('start game', () => {
       console.log('start game')
       this.frame = 0;
     });
 
     this.socket.on(SNAPSHOT, (encodedSnapshot) => {
-      console.log('SNAPSHOT')
+      console.log('SNAPSHOT');
       let { chips, pegs, score, winner, targetScore } = Serializer.decode(encodedSnapshot);
 
       // let { chips, pegs, score, winner, targetScore } = encodedSnapshot; // not actually encoded right now
@@ -209,6 +209,7 @@ export default class ClientEngine {
   }
 
   stopGame() {
+    this.socket.off(SNAPSHOT);
     while (this.snapshotBuffer.length > 0) this.snapshotBuffer.shift();
     delete this.snapshotBuffer;
     clearInterval(this.loop);
