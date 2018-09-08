@@ -67,25 +67,35 @@ export default class GameContainer extends Component {
     this.registerSocketEvents(socket);
 
     socket.on('connection established', ({ message }) => {
+      console.log('connection established')
+
       socket.emit('new user', { name })
     });
   }
 
   registerSocketEvents(socket) {
     socket.once('new user ack', ({ userId, gameInProgress }) => {
+      console.log('new user ack')
+
       this.props.setUserId(userId);
       this.setState({ gameInProgress });
     });
 
     socket.once('rejoin game ack', ({ gameInProgress }) => {
+      console.log('rejoin game ack')
+
       this.setState({ gameInProgress });
     })
 
     socket.on('user list', ({ activeUsers, waitingUsers }) => {
+      console.log('user list')
+
       this.setState({ activeUsers, waitingUsers });
     });
 
     socket.on('start game', () => {
+      console.log('start game')
+
       this.synchronizer.handshake()
       .then(latency => {
         console.log('Latency: ', latency);
@@ -107,16 +117,21 @@ export default class GameContainer extends Component {
       }, 1000);
 
       socket.once('START', () => {
+        console.log('START')
         this.setState({gameIsRunning: true});
         clearInterval(this.interval);
       })
     })
 
     socket.on('game started', () => {
+      console.log('game started')
+
       this.setState({ gameInProgress: true });
     })
 
     socket.on('game over', () => {
+      console.log('game over')
+
       this.setState({
         gameIsRunning: false,
         gameInProgress: false,

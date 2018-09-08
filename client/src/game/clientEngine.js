@@ -75,10 +75,12 @@ export default class ClientEngine {
 
   registerSocketEvents() {
     this.socket.on('start game', () => {
+      console.log('start game')
       this.frame = 0;
     });
 
     this.socket.on(SNAPSHOT, (encodedSnapshot) => {
+      console.log('SNAPSHOT')
       let { chips, pegs, score, winner, targetScore } = Serializer.decode(encodedSnapshot);
 
       // let { chips, pegs, score, winner, targetScore } = encodedSnapshot; // not actually encoded right now
