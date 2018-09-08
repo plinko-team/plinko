@@ -70,7 +70,7 @@ export default class GameContainer extends Component {
   }
 
   registerSocketEvents(socket) {
-    this.unregisterSocketEvents();
+    // this.unregisterSocketEvents();
     this.props.socket = socket;
 
     socket.once('new user ack', ({ userId, gameInProgress }) => {
