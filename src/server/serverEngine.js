@@ -490,9 +490,3 @@ export default class ServerEngine {
     this._createTriangles();
   }
 }
-
-ssh root@206.189.74.63
-cd plinko
-pm2 status
-pm2 logs
-pm2 show server

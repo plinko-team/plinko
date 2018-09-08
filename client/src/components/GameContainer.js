@@ -70,6 +70,9 @@ export default class GameContainer extends Component {
   }
 
   registerSocketEvents(socket) {
+    this.unregisterSocketEvents();
+    this.props.socket = socket;
+
     socket.once('new user ack', ({ userId, gameInProgress }) => {
       this.props.setUserId(userId);
       this.setState({ gameInProgress });
@@ -121,6 +124,7 @@ export default class GameContainer extends Component {
   }
 
   unregisterSocketEvents() {
+    if (!this.props.socket) return
     this.props.socket.removeAllListeners('connection established');
     this.props.socket.removeAllListeners('new user ack');
     this.props.socket.removeAllListeners('rejoin game ack');

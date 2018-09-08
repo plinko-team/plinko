@@ -1,8 +1,6 @@
-import path from 'path'
 import http from 'http'
 import socket from 'socket.io'
 import express from 'express'
-import startLocalTunnel from './tunnel'
 import ServerEngine from './serverEngine'
 
 const app = express()
@@ -13,7 +11,5 @@ const io = socket(server)
 app.use(express.static('public'));
 
 const serverEngine = new ServerEngine({ io }).init();
-
-// startLocalTunnel();
 
 server.listen(3001);
