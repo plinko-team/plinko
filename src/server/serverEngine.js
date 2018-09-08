@@ -364,6 +364,7 @@ export default class ServerEngine {
   }
 
   stopGame() {
+    delete this.firstChipDropped;
     clearInterval(this.targetScoreInterval);
     clearImmediate(this.gameLoop);
     this.gameIsRunning = false;
@@ -418,6 +419,12 @@ export default class ServerEngine {
   }
 
   broadcastSnapshot({ chips, pegs, score, winner, targetScore }) {
+    this.counter = this.counter || 0
+    console.log('broadcasting: ', this.counter++)
+
+    if (Object.keys(chips).length > 0) this.firstChipDropped = true;
+    if (!this.firstChipDropped) return;
+
     let encodedSnapshot = Serializer.encode({ chips, pegs, score, winner, targetScore })
 
     this.activeUsers.forEach(user => {

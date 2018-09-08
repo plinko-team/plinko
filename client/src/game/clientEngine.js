@@ -83,7 +83,6 @@ export default class ClientEngine {
       console.log('SNAPSHOT');
       let { chips, pegs, score, winner, targetScore } = Serializer.decode(encodedSnapshot);
 
-      // let { chips, pegs, score, winner, targetScore } = encodedSnapshot; // not actually encoded right now
       if (this.isRunning) {
         this.snapshotBuffer.push(new Snapshot({ pegs, chips, score, winner, targetScore, timestamp: performance.now() }));
       }
@@ -102,6 +101,7 @@ export default class ClientEngine {
   }
 
   frameSync() {
+
     // If we have too many snapshots shorten it
     if (this.snapshotBuffer.length > 30) {
       // while (this.snapshotBuffer.length > 0) {
@@ -162,6 +162,8 @@ export default class ClientEngine {
   }
 
   animate(timestamp) {
+    if (!this.isRunning) return;
+
     if (timestamp < this.lastFrameTime + TIMESTEP) {
       this.frameID = requestAnimationFrame(this.animate.bind(this));
       return;
@@ -209,13 +211,11 @@ export default class ClientEngine {
   }
 
   stopGame() {
+    this.isRunning = false;
     this.socket.off(SNAPSHOT);
-    while (this.snapshotBuffer.length > 0) this.snapshotBuffer.shift();
     delete this.snapshotBuffer;
     clearInterval(this.loop);
   }
-
-
 
   onClick = (e) => {
     e.preventDefault();
