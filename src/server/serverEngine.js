@@ -112,6 +112,7 @@ export default class ServerEngine {
         const combinedId = String(chip.ownerId) + String(chip.id);
 
         chip.shrink(() => {
+          if (!this.gameIsRunning) return;
           World.remove(this.engine.world, chip.body);
           delete this.chips[combinedId];
         })
