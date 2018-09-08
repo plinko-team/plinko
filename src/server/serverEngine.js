@@ -364,6 +364,7 @@ export default class ServerEngine {
   }
 
   stopGame() {
+    delete this.nextTimestep;
     delete this.firstChipDropped;
     clearInterval(this.targetScoreInterval);
     clearImmediate(this.gameLoop);
@@ -382,6 +383,8 @@ export default class ServerEngine {
     this.activeUsers = new UserCollection();
     this.unregisterPhysicsEvents()
 
+    this.chips = {};
+    this.pegs = [];
     Engine.clear(this.engine);
 
     delete this.engine;
@@ -389,8 +392,7 @@ export default class ServerEngine {
 
     this.frame = 0;
     this.inputBuffer = new InputBuffer();
-    this.chips = {};
-    this.pegs = [];
+
     this.winner = false;
 
     this.initializeScore();
@@ -403,12 +405,12 @@ export default class ServerEngine {
 
     const chipInfo = chips.map(chip => {
       return {
-           id: chip.id,
-           ownerId: chip.ownerId,
-           x: chip.body.position.x,
-           y: chip.body.position.y,
-           angle: chip.body.angle
-         };
+         id: chip.id,
+         ownerId: chip.ownerId,
+         x: chip.body.position.x,
+         y: chip.body.position.y,
+         angle: chip.body.angle
+       };
     });
 
     const pegInfo = pegs.map(peg => {
@@ -419,16 +421,12 @@ export default class ServerEngine {
   }
 
   broadcastSnapshot({ chips, pegs, score, winner, targetScore }) {
-    this.counter = this.counter || 0
-    console.log('broadcasting: ', this.counter++)
-
     if (Object.keys(chips).length > 0) this.firstChipDropped = true;
     if (!this.firstChipDropped) return;
 
-    let encodedSnapshot = Serializer.encode({ chips, pegs, score, winner, targetScore })
+    const encodedSnapshot = Serializer.encode({ chips, pegs, score, winner, targetScore })
 
     this.activeUsers.forEach(user => {
-      // user.socket.emit(SNAPSHOT, { chips, pegs, score, winner, targetScore });
       user.socket.emit(SNAPSHOT, encodedSnapshot);
     })
   }
