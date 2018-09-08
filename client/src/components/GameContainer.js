@@ -100,16 +100,16 @@ export default class GameContainer extends Component {
           this.setState((prevState) => {
             return {startCount: prevState.startCount - 1}
           });
-        } else {
-          this.setState({gameIsRunning: true});
-          clearInterval(this.interval);
-        }
+        } // else {
+        //   this.setState({gameIsRunning: true});
+        //   clearInterval(this.interval);
+        // }
       }, 1000);
 
-      // socket.once('START', () => {
-      //   this.setState({gameIsRunning: true});
-      //   clearInterval(this.interval);
-      // })
+      socket.once('START', () => {
+        this.setState({gameIsRunning: true});
+        clearInterval(this.interval);
+      })
     })
 
     socket.on('game started', () => {

@@ -202,7 +202,7 @@ export default class ServerEngine {
         this.registerPhysicsEvents();
 
         setTimeout(() => {
-          this.activeUsers.broadcastAll('START')
+          this.activeUsers.broadcastAll('START');
           this.startGame();
         }, 5000);
       });
