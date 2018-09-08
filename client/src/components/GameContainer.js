@@ -37,6 +37,7 @@ export default class GameContainer extends Component {
       this.props.socket.emit('rejoin game', { userId: this.props.userId });
       this.synchronizer = new Synchronizer(this.props.socket).init();
 
+      this.unregisterSocketEvents(this.props.socket);
       this.registerSocketEvents(this.props.socket);
       this.setState({
         gameInProgress: false,
@@ -70,8 +71,6 @@ export default class GameContainer extends Component {
   }
 
   registerSocketEvents(socket) {
-    // this.unregisterSocketEvents();
-
     socket.once('new user ack', ({ userId, gameInProgress }) => {
       this.props.setUserId(userId);
       this.setState({ gameInProgress });
@@ -122,15 +121,15 @@ export default class GameContainer extends Component {
     })
   }
 
-  unregisterSocketEvents() {
-    if (!this.props.socket) return
-    this.props.socket.removeAllListeners('connection established');
-    this.props.socket.removeAllListeners('new user ack');
-    this.props.socket.removeAllListeners('rejoin game ack');
-    this.props.socket.removeAllListeners('user list');
-    this.props.socket.removeAllListeners('game started')
-    this.props.socket.removeAllListeners('start game')
-    this.props.socket.removeAllListeners('game over');
+  unregisterSocketEvents(socket) {
+    socket = socket || this.props.socket
+    socket.removeAllListeners('connection established');
+    socket.removeAllListeners('new user ack');
+    socket.removeAllListeners('rejoin game ack');
+    socket.removeAllListeners('user list');
+    socket.removeAllListeners('game started')
+    socket.removeAllListeners('start game')
+    socket.removeAllListeners('game over');
   }
 
   render() {
