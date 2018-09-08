@@ -103,11 +103,13 @@ export default class ClientEngine {
 
   frameSync() {
     // If we have too many snapshots shorten it
-    // if (this.snapshotBuffer.length > 30) {
-    //   while (this.snapshotBuffer.length > 0) {
-    //     this.snapshotBuffer.shift();
-    //   }
-    // }
+    if (this.snapshotBuffer.length > 30) {
+      // while (this.snapshotBuffer.length > 0) {
+      //   this.snapshotBuffer.shift();
+      // }
+
+      this.snapshotBuffer.reset();
+    }
 
     let currentSnapshot = this.snapshotBuffer.shift();
 
