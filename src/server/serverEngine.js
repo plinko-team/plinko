@@ -200,7 +200,10 @@ export default class ServerEngine {
         this.createEnvironment();
         this.registerPhysicsEvents();
 
-        setTimeout(this.startGame.bind(this), 5000);
+        setTimeout(() => {
+          this.activeUsers.broadcastAll('START')
+          this.startGame();
+        }, 5000);
       });
 
       socket.on('leave game', () => {

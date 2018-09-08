@@ -39,6 +39,7 @@ export default class GameContainer extends Component {
 
       this.unregisterSocketEvents(this.props.socket);
       this.registerSocketEvents(this.props.socket);
+
       this.setState({
         gameInProgress: false,
         gameIsRunning: false
@@ -90,17 +91,25 @@ export default class GameContainer extends Component {
         console.log('Latency: ', latency);
       })
 
-      this.setState({startBannerVisible: true});
+      this.setState({
+        startBannerVisible: true,
+      });
+
       this.interval = setInterval(() => {
         if (this.state.startCount > 1) {
           this.setState((prevState) => {
             return {startCount: prevState.startCount - 1}
           });
-        } else {
-          this.setState({gameIsRunning: true});
-          clearInterval(this.interval);
-        }
+        } // else {
+        //   this.setState({gameIsRunning: true});
+        //   clearInterval(this.interval);
+        // }
       }, 1000);
+
+      socket.once('START', () => {
+        this.setState({gameIsRunning: true});
+        clearInterval(this.interval);
+      })
     })
 
     socket.on('game started', () => {
