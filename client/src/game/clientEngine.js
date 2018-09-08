@@ -207,6 +207,7 @@ export default class ClientEngine {
   }
 
   stopGame() {
+    delete this.snapshotBuffer;
     clearInterval(this.loop);
   }
 
