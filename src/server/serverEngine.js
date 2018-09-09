@@ -280,7 +280,8 @@ export default class ServerEngine {
       }
     })
 
-    console.log("Time: ", new Date(), "\nActive: ", activeUsers, "\nWaiting: ",  waitingUsers)
+    const timestamp = new Date().toDateString()
+    console.log("Time: ", timestamp, "\nActive: ", activeUsers)
   }
 
   processInputBuffer() {
