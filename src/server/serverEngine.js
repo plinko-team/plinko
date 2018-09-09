@@ -1,5 +1,4 @@
 import { World, Engine, Events } from 'matter-js';
-
 import Chip from '../bodies/Chip';
 import Peg from '../bodies/Peg';
 import Triangle from '../bodies/Triangle';
@@ -281,7 +280,7 @@ export default class ServerEngine {
       }
     })
 
-    console.log("Active: ", activeUsers, "\nWaiting: ",  waitingUsers)
+    console.log("Time: ", new Date(), "\nActive: ", activeUsers, "\nWaiting: ",  waitingUsers)
   }
 
   processInputBuffer() {
@@ -305,8 +304,8 @@ export default class ServerEngine {
   }
 
   reduceTargetScoreInterval() {
+    console.log("=> Starting score countdown")
     this.targetScoreInterval = setInterval(() => {
-      console.log(this.targetScore);
       this.targetScore -= 1;
     }, 1000);
   }
@@ -320,7 +319,6 @@ export default class ServerEngine {
       this.frame++
 
       !this.inputBuffer.isEmpty() && this.processInputBuffer();
-
 
       Engine.update(this.engine, TIMESTEP);
 
