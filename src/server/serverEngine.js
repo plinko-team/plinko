@@ -378,9 +378,9 @@ export default class ServerEngine {
   }
 
   resetGame() {
-    this.logged = false
+    this.logged = false;
     this.activeUsers = new UserCollection();
-    this.unregisterPhysicsEvents()
+    // this.unregisterPhysicsEvents()
 
     this.chips = {};
     this.pegs = [];

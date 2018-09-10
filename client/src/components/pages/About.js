@@ -953,89 +953,89 @@ while (bendingFrame !== totalBendingFrames) {
         <div className="p">There is a fair amount of complexity hidden by the previous diagram, especially regarding the way reenactment operates on each side. What <em>actually</em> happens when an input is received by the server, or a snapshot is received by the client? Let’s take a look step-by-step:</div>
         <Slider {...sliderSettings}>
           <div>
-            <img src="https://s15.postimg.cc/cwup2ewyj/image.png" />
+            <img alt="Extrapolation Carousel 1" src="https://s15.postimg.cc/cwup2ewyj/image.png" />
             <div className="legend">The client and the server both start on the same frame, with no chips currently in play. In this example, we assume that the latency from client to server is 3 frames.</div>
           </div>
           <div>
-            <img src="https://s15.postimg.cc/sic0mdgmj/image.png" />
+            <img alt="Extrapolation Carousel 2" src="https://s15.postimg.cc/sic0mdgmj/image.png" />
             <div className="legend">(a) Client drops a chip, it appears instantly on their screen and begins dropping</div>
             <div className="legend">(b) At the same time, the client sends input message to the server for frame 1</div>
           </div>
           <div>
-            <img src="https://s15.postimg.cc/jnb6bv79n/image.png" />
+            <img alt="Extrapolation Carousel 3" src="https://s15.postimg.cc/jnb6bv79n/image.png" />
             <div className="legend">(b) Input in transit</div>
           </div>
           <div>
-            <img src="https://s15.postimg.cc/q109f44fv/image.png" />
+            <img alt="Extrapolation Carousel 4" src="https://s15.postimg.cc/q109f44fv/image.png" />
             <div className="legend">(b) Input in transit</div>
           </div>
           <div>
-            <img src="https://s15.postimg.cc/y6ibdav9n/image.png" />
+            <img alt="Extrapolation Carousel 5" src="https://s15.postimg.cc/y6ibdav9n/image.png" />
             <div className="legend">(b) Input in transit</div>
           </div>
           <div>
-            <img src="https://s15.postimg.cc/h5zf4lv2z/image.png" />
+            <img alt="Extrapolation Carousel 6" src="https://s15.postimg.cc/h5zf4lv2z/image.png" />
               <div className="legend">(c) Server receives input after 3 frames</div>
               <div className="legend">(d) Server rewinds state to frame when the input was created, frame 1, and processes the input by creating a chip</div>
           </div>
           <div>
-            <img src="https://s15.postimg.cc/mhebpbovf/image.png" />
+            <img alt="Extrapolation Carousel 7" src="https://s15.postimg.cc/mhebpbovf/image.png" />
             <div className="legend">(d) Server reenacts state up to current frame, frame 4</div>
           </div>
           <div>
-            <img src="https://s15.postimg.cc/jnb6bvuez/image.png" />
+            <img alt="Extrapolation Carousel 8" src="https://s15.postimg.cc/jnb6bvuez/image.png" />
             <div className="legend">(d) Server reenacts state up to current frame, frame 4</div>
           </div>
           <div>
-            <img src="https://s15.postimg.cc/i89ln68rf/image.png" />
+            <img alt="Extrapolation Carousel 9" src="https://s15.postimg.cc/i89ln68rf/image.png" />
               <div className="legend">(e) Server reenactment as caught up to frame 4</div>
               <div className="legend">(f) Server generates snapshot and transmits it to the client</div>
           </div>
           <div>
-            <img src="https://s15.postimg.cc/pr1xnaubf/image.png" />
+            <img alt="Extrapolation Carousel 10" src="https://s15.postimg.cc/pr1xnaubf/image.png" />
             <div className="legend">(f) Snapshot in transit</div>
           </div>
           <div>
-            <img src="https://s15.postimg.cc/nmhkm80ej/image.png" />
+            <img alt="Extrapolation Carousel 11" src="https://s15.postimg.cc/nmhkm80ej/image.png" />
             <div className="legend">(f) Snapshot in transit</div>
           </div>
           <div>
-            <img src="https://s15.postimg.cc/4hebcgtgb/image.png" />
+            <img alt="Extrapolation Carousel 12" src="https://s15.postimg.cc/4hebcgtgb/image.png" />
             <div className="legend">(f) Snapshot in transit</div>
           </div>
           <div>
-            <img src="https://s15.postimg.cc/nwfwe37yz/image.png" />
+            <img alt="Extrapolation Carousel 13" src="https://s15.postimg.cc/nwfwe37yz/image.png" />
               <div className="legend">(g) Client receives snapshot on frame 7</div>
               <div className="legend">(h) Client regenerates state from the
                 snapshot. This state is from frame 4, so the client must reenact
                  the simulation up to the current frame behind the scenes</div>
           </div>
           <div>
-            <img src="https://s15.postimg.cc/olyoqh3dn/image.png" />
+            <img alt="Extrapolation Carousel 14" src="https://s15.postimg.cc/olyoqh3dn/image.png" />
             <div className="legend">(h) Client steps simulation forward until it
                 reaches the current frame</div>
           </div>
           <div>
-            <img src="https://s15.postimg.cc/6vx05fi2z/image.png" />
+            <img alt="Extrapolation Carousel 15" src="https://s15.postimg.cc/6vx05fi2z/image.png" />
             <div className="legend">(h) Client steps simulation forward until it
                 reaches the current frame</div>
           </div>
           <div>
-            <img src="https://s15.postimg.cc/6j5lz8kdn/image.png" />
+            <img alt="Extrapolation Carousel 16" src="https://s15.postimg.cc/6j5lz8kdn/image.png" />
             <div className="legend">(i) Simulation is caught up to current frame,
                 so states are now synchronized; simulation can continue until
                 the next snapshot</div>
           </div>
           <div>
-            <img src="https://s15.postimg.cc/vcf5zwb3v/image.png" />
+            <img alt="Extrapolation Carousel 17" src="https://s15.postimg.cc/vcf5zwb3v/image.png" />
             <div className="legend">(j) Client and server continue simulation</div>
           </div>
           <div>
-            <img src="https://s15.postimg.cc/fqxufymaz/image.png" />
+            <img alt="Extrapolation Carousel 18" src="https://s15.postimg.cc/fqxufymaz/image.png" />
             <div className="legend">(j) Client and server continue simulation</div>
           </div>
           <div>
-            <img src="https://s15.postimg.cc/sic0mh3sr/image.png" />
+            <img alt="Extrapolation Carousel 19" src="https://s15.postimg.cc/sic0mh3sr/image.png" />
             <div className="legend">(j) Client and server continue simulation</div>
           </div>
         </Slider>
@@ -1133,68 +1133,68 @@ while (bendingFrame !== totalBendingFrames) {
         <div className="p">When the client performs a reenactment and discovers that the current and the reenacted chip positions have diverged, it can simply render the new position and continue simulating. This can result in a “popping” effect, where the chip pops out of existence at one point, and back into existence elsewhere:</div>
         <Slider {...sliderSettings}>
           <div>
-            <img className="small" src="https://s15.postimg.cc/681xrs83v/image.png"/ >
+            <img alt="Popping Carousel 1" className="small" src="https://s15.postimg.cc/681xrs83v/image.png"/ >
             <div className="legend">(a) The simulation has only one chip, currently
               simulating frame 50</div>
           </div>
           <div>
-            <img className="small" src="https://s15.postimg.cc/681xrsftn/image.png"/ >
+            <img alt="Popping Carousel 2" className="small" src="https://s15.postimg.cc/681xrsftn/image.png"/ >
           </div>
           <div>
-            <img className="small" src="https://s15.postimg.cc/x5vutj86j/image.png"/ >
+            <img alt="Popping Carousel 3" className="small" src="https://s15.postimg.cc/x5vutj86j/image.png"/ >
           </div>
           <div>
-            <img className="small" src="https://s15.postimg.cc/izg3yb517/image.png"/ >
+            <img alt="Popping Carousel 4" className="small" src="https://s15.postimg.cc/izg3yb517/image.png"/ >
           </div>
           <div>
-            <img className="small" src="https://s15.postimg.cc/ppwl7r7mj/image.png"/ >
+            <img alt="Popping Carousel 5" className="small" src="https://s15.postimg.cc/ppwl7r7mj/image.png"/ >
           </div>
           <div>
-            <img className="small" src="https://s15.postimg.cc/q2nzdxi6j/image.png"/ >
+            <img alt="Popping Carousel 6" className="small" src="https://s15.postimg.cc/q2nzdxi6j/image.png"/ >
           </div>
           <div>
-            <img className="small" src="https://s15.postimg.cc/b6pg6ctx7/image.png"/ >
+            <img alt="Popping Carousel 7" className="small" src="https://s15.postimg.cc/b6pg6ctx7/image.png"/ >
           </div>
           <div>
-            <img className="small" src="https://s15.postimg.cc/pd571kx2j/image.png"/ >
+            <img alt="Popping Carousel 8" className="small" src="https://s15.postimg.cc/pd571kx2j/image.png"/ >
           </div>
           <div>
-            <img className="small" src="https://s15.postimg.cc/edjzpzm2z/image.png"/ >
+            <img alt="Popping Carousel 9" className="small" src="https://s15.postimg.cc/edjzpzm2z/image.png"/ >
             <div className="legend">(b) On frame 57, a snapshot is received with
               the game state on frame 53, so we must reenact until the current
               frame</div>
           </div>
           <div>
-            <img className="small" src="https://s15.postimg.cc/esv9j30bf/image.png"/ >
+            <img alt="Popping Carousel 10" className="small" src="https://s15.postimg.cc/esv9j30bf/image.png"/ >
           </div>
           <div>
-            <img className="small" src="https://s15.postimg.cc/wt4gnev2j/image.png"/ >
+            <img alt="Popping Carousel 11" className="small" src="https://s15.postimg.cc/wt4gnev2j/image.png"/ >
           </div>
           <div>
-            <img className="small" src="https://s15.postimg.cc/cyif1a0ff/image.png"/ >
+            <img alt="Popping Carousel 12" className="small" src="https://s15.postimg.cc/cyif1a0ff/image.png"/ >
           </div>
           <div>
-            <img className="small" src="https://s15.postimg.cc/eqbdw6ri3/image.png"/ >
+            <img alt="Popping Carousel 13" className="small" src="https://s15.postimg.cc/eqbdw6ri3/image.png"/ >
             <div className="legend">(c) Simulation has caught up to the current
               frame, but the state is divergent; the chip is not where we
               thought.</div>
           </div>
           <div>
-            <img className="small" src="https://s15.postimg.cc/nb4pnfm9n/image.png"/ >
+            <img alt="Popping Carousel 14" className="small" src="https://s15.postimg.cc/nb4pnfm9n/image.png"/ >
             <div className="legend">(d) The position will immediately snap to the
               new position, as if the chip popped in and out of existence</div>
           </div>
           <div>
-            <img className="small" src="https://s15.postimg.cc/coawi06ej/image.png"/ >
+            <img alt="Popping Carousel 15" className="small" src="https://s15.postimg.cc/coawi06ej/image.png"/ >
           </div>
           <div>
-            <img className="small" src="https://s15.postimg.cc/9u7r4krdn/image.png"/ >
+            <img alt="Popping Carousel 16" className="small" src="https://s15.postimg.cc/9u7r4krdn/image.png"/ >
           </div>
           <div>
-            <img className="small" src="https://s15.postimg.cc/oq6ac5v2j/image.png"/ >
+            <img alt="Popping Carousel 17" className="small" src="https://s15.postimg.cc/oq6ac5v2j/image.png"/ >
           </div>
           <div>
-            <img className="small" src="https://s15.postimg.cc/a6z5arhd7/image.png"/ >
+            <img alt="Popping Carousel 18" className="small" src="https://s15.postimg.cc/a6z5arhd7/image.png"/ >
             <div className="legend">(e) Final path, showing the unnatural path
               when including popping</div>
           </div>
@@ -1206,52 +1206,52 @@ while (bendingFrame !== totalBendingFrames) {
         <div className="p">The best way to handle the problem of continuity with respect to state divergence is to perform bending (or smoothing). This means that once a new position is calculated, we don’t render it immediately, but instead continue rendering our <em>old</em> position. Then, over a period of 3-5 frames, we can “push” the old position towards the new one.</div>
         <Slider {...sliderSettings}>
           <div>
-            <img className="small" src="https://s15.postimg.cc/681xrs83v/image.png" />
+            <img alt="Bending Carousel 1" className="small" src="https://s15.postimg.cc/681xrs83v/image.png" />
             <div className="legend">(a) We start on frame 50 with a single chip on
                the client side simulation</div>
           </div>
           <div>
-            <img className="small" src="https://s15.postimg.cc/681xrsftn/image.png" />
+            <img alt="Bending Carousel 2" className="small" src="https://s15.postimg.cc/681xrsftn/image.png" />
           </div>
           <div>
-            <img className="small" src="https://s15.postimg.cc/x5vutj86j/image.png" />
+            <img alt="Bending Carousel 3" className="small" src="https://s15.postimg.cc/x5vutj86j/image.png" />
           </div>
           <div>
-            <img className="small" src="https://s15.postimg.cc/izg3yb517/image.png" />
+            <img alt="Bending Carousel 4" className="small" src="https://s15.postimg.cc/izg3yb517/image.png" />
           </div>
           <div>
-            <img className="small" src="https://s15.postimg.cc/ppwl7r7mj/image.png" />
+            <img alt="Bending Carousel 5" className="small" src="https://s15.postimg.cc/ppwl7r7mj/image.png" />
           </div>
           <div>
-            <img className="small" src="https://s15.postimg.cc/q2nzdxi6j/image.png" />
+            <img alt="Bending Carousel 6" className="small" src="https://s15.postimg.cc/q2nzdxi6j/image.png" />
           </div>
           <div>
-            <img className="small" src="https://s15.postimg.cc/b6pg6ctx7/image.png" />
+            <img alt="Bending Carousel 7" className="small" src="https://s15.postimg.cc/b6pg6ctx7/image.png" />
           </div>
           <div>
-            <img className="small" src="https://s15.postimg.cc/pd571kx2j/image.png" />
+            <img alt="Bending Carousel 8" className="small" src="https://s15.postimg.cc/pd571kx2j/image.png" />
           </div>
           <div>
-            <img className="small" src="https://s15.postimg.cc/edjzpzm2z/image.png" />
+            <img alt="Bending Carousel 9" className="small" src="https://s15.postimg.cc/edjzpzm2z/image.png" />
             <div className="legend">(b) On frame 57, we receive a snapshot of the
               world at frame 53</div>
           </div>
           <div>
-            <img className="small" src="https://s15.postimg.cc/5vajlnna3/image.png" />
+            <img alt="Bending Carousel 10" className="small" src="https://s15.postimg.cc/5vajlnna3/image.png" />
           </div>
           <div>
-            <img className="small" src="https://s15.postimg.cc/wt4gnev2j/image.png" />
+            <img alt="Bending Carousel 11" className="small" src="https://s15.postimg.cc/wt4gnev2j/image.png" />
           </div>
           <div>
-            <img className="small" src="https://s15.postimg.cc/cyif1a0ff/image.png" />
+            <img alt="Bending Carousel 12" className="small" src="https://s15.postimg.cc/cyif1a0ff/image.png" />
           </div>
           <div>
-            <img className="small" src="https://s15.postimg.cc/eqbdw6ri3/image.png" />
+            <img alt="Bending Carousel 13" className="small" src="https://s15.postimg.cc/eqbdw6ri3/image.png" />
             <div className="legend">(c) The simulation has caught up to the
               current frame, but the state has diverged.</div>
           </div>
           <div>
-            <img className="small" src="https://s15.postimg.cc/3qq6klo8b/image.png" />
+            <img alt="Bending Carousel 14" className="small" src="https://s15.postimg.cc/3qq6klo8b/image.png" />
             <div className="legend">(d) Instead of snapping the chip immediately
               to the new position, we render the old position and calculate
               the distance between the old and the new position. Over the
@@ -1259,18 +1259,18 @@ while (bendingFrame !== totalBendingFrames) {
               pulling the old position towards the actual position.</div>
           </div>
           <div>
-            <img className="small" src="https://s15.postimg.cc/c8zmoxn17/image.png" />
+            <img alt="Bending Carousel 15" className="small" src="https://s15.postimg.cc/c8zmoxn17/image.png" />
           </div>
           <div>
-            <img className="small" src="https://s15.postimg.cc/8pdoz57gr/image.png" />
+            <img alt="Bending Carousel 16" className="small" src="https://s15.postimg.cc/8pdoz57gr/image.png" />
           </div>
           <div>
-            <img className="small" src="https://s15.postimg.cc/db9t7hla3/image.png" />
+            <img alt="Bending Carousel 17" className="small" src="https://s15.postimg.cc/db9t7hla3/image.png" />
             <div className="legend">(e) The rendered position now matches the
               actual, simulated position</div>
           </div>
           <div>
-            <img className="small" src="https://s15.postimg.cc/tz1b9zvh7/image.png" />
+            <img alt="Bending Carousel 18" className="small" src="https://s15.postimg.cc/tz1b9zvh7/image.png" />
             <div className="legend">(e) The final path utilizing bending. Notice
             that the path is more continuous and natural, but there is an
             unfortunate side effect that the chip appears to have gone through
@@ -1322,31 +1322,31 @@ while (bendingFrame !== totalBendingFrames) {
 
         <Slider {...sliderSettings}>
           <div>
-            <img className="medium" src="https://s15.postimg.cc/jbtpyydx7/latency_step2.png" />
+            <img alt="Latency Estimation Carousel 1" className="medium" src="https://s15.postimg.cc/jbtpyydx7/latency_step2.png" />
             <div className="legend">Step 1: The client stamps its current local time on a “time request” packet and sends to the server</div>
           </div>
           <div>
-            <img className="medium" src="https://s15.postimg.cc/3qcef0p4b/latency_step3.png" />
+            <img alt="Latency Estimation Carousel 2" className="medium" src="https://s15.postimg.cc/3qcef0p4b/latency_step3.png" />
             <div className="legend">Step 2: When the server receives the packet, the server stamps it’s own local time time and sends back to the client</div>
           </div>
           <div>
-            <img className="medium" src="https://s15.postimg.cc/atk9ummu3/latency_step4.png" />
+            <img alt="Latency Estimation Carousel 3" className="medium" src="https://s15.postimg.cc/atk9ummu3/latency_step4.png" />
             <div className="legend">Step 3: When the server receives the packet, the client subtracts its current local time from its sent time and divides by two to compute latency. It also subtracts its current time from server time to determine client-server time difference and adds in the half-latency to get the correct difference in clock times.</div>
           </div>
           <div>
-            <img className="medium" src="https://s15.postimg.cc/67o5m8r0b/latency_step5.png" />
+            <img alt="Latency Estimation Carousel 4" className="medium" src="https://s15.postimg.cc/67o5m8r0b/latency_step5.png" />
             <div className="legend">Step 4: The client repeats the previous steps 10 times and adds the results to a latency history</div>
           </div>
           <div>
-            <img className="medium" src="https://s15.postimg.cc/8ozwtiy23/latency_step6b.png" />
+            <img alt="Latency Estimation Carousel 5" className="medium" src="https://s15.postimg.cc/8ozwtiy23/latency_step6b.png" />
             <div className="legend">Step 5: The latency history is sorted lowest to highest</div>
           </div>
           <div>
-            <img className="medium" src="https://s15.postimg.cc/n871uxbrf/latency_step7b.png" />
+            <img alt="Latency Estimation Carousel 6" className="medium" src="https://s15.postimg.cc/n871uxbrf/latency_step7b.png" />
             <div className="legend">Step 6: The median latency is taken. All samples above or below 1 standard deviation of the median are discarded</div>
           </div>
           <div>
-            <img className="medium" src="https://s15.postimg.cc/t94qs063f/latency_step8b.png" />
+            <img alt="Latency Estimation Carousel 7" className="medium" src="https://s15.postimg.cc/t94qs063f/latency_step8b.png" />
             <div className="legend">Step 7: The remaining samples are averaged, giving us our average latency.</div>
           </div>
         </Slider>
