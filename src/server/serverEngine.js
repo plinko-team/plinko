@@ -47,7 +47,7 @@ export default class ServerEngine {
     this.gameIsRunning = false;
     this.playerIds = {0: null, 1: null, 2: null, 3: null};
 
-    console.log('new ServerEngine! gameIsRunning:', this.gameIsRunning)
+    console.log('New ServerEngine created!')
   }
 
   init() {
@@ -170,7 +170,7 @@ export default class ServerEngine {
 
         this.waitingQueue.enqueue(user);
 
-        console.log('new user! gameIsRunning:', this.gameIsRunning)
+        console.log('New user! Name: ', name)
 
         if (!this.gameIsRunning) {
           this.fillActiveUsers();
@@ -333,9 +333,6 @@ export default class ServerEngine {
 
       let snapshot = this.generateSnapshot(this.chips, this.pegs, this.score,
                                            this.winner, this.targetScore);
-      if (this.chips.length > 5) {
-        console.log(snapshot);
-      }
 
       this.broadcastSnapshot(snapshot);
 
