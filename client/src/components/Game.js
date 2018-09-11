@@ -32,11 +32,18 @@ export default class Game extends Component {
 
   componentWillUnmount() {
     // unregister socket events on unmount
+    this.client.stopGame();
     this.props.socket.off(SNAPSHOT);
   }
 
   registerSocketEvents = () => {
+    this.props.socket.on('game over', () => {
+      this.client.stopGame();
+      this.props.socket.off(SNAPSHOT);
+    })
+
     this.props.socket.on(SNAPSHOT, (encodedSnapshot) => {
+
       let { score, winner, targetScore } = Serializer.decode(encodedSnapshot);
 
       // let { score, winner, targetScore } = encodedSnapshot;

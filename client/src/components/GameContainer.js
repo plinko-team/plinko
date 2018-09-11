@@ -37,7 +37,9 @@ export default class GameContainer extends Component {
       this.props.socket.emit('rejoin game', { userId: this.props.userId });
       this.synchronizer = new Synchronizer(this.props.socket).init();
 
+      this.unregisterSocketEvents(this.props.socket);
       this.registerSocketEvents(this.props.socket);
+
       this.setState({
         gameInProgress: false,
         gameIsRunning: false
@@ -65,6 +67,8 @@ export default class GameContainer extends Component {
     this.registerSocketEvents(socket);
 
     socket.on('connection established', ({ message }) => {
+      console.log('Connection established')
+
       socket.emit('new user', { name })
     });
   }
@@ -89,17 +93,22 @@ export default class GameContainer extends Component {
         console.log('Latency: ', latency);
       })
 
-      this.setState({startBannerVisible: true});
+      this.setState({
+        startBannerVisible: true,
+      });
+
       this.interval = setInterval(() => {
         if (this.state.startCount > 1) {
           this.setState((prevState) => {
             return {startCount: prevState.startCount - 1}
           });
-        } else {
-          this.setState({gameIsRunning: true});
-          clearInterval(this.interval);
         }
       }, 1000);
+
+      socket.once('START', () => {
+        this.setState({gameIsRunning: true});
+        clearInterval(this.interval);
+      })
     })
 
     socket.on('game started', () => {
@@ -120,14 +129,15 @@ export default class GameContainer extends Component {
     })
   }
 
-  unregisterSocketEvents() {
-    this.props.socket.removeAllListeners('connection established');
-    this.props.socket.removeAllListeners('new user ack');
-    this.props.socket.removeAllListeners('rejoin game ack');
-    this.props.socket.removeAllListeners('user list');
-    this.props.socket.removeAllListeners('game started')
-    this.props.socket.removeAllListeners('start game')
-    this.props.socket.removeAllListeners('game over');
+  unregisterSocketEvents(socket) {
+    socket = socket || this.props.socket
+    socket.removeAllListeners('connection established');
+    socket.removeAllListeners('new user ack');
+    socket.removeAllListeners('rejoin game ack');
+    socket.removeAllListeners('user list');
+    socket.removeAllListeners('game started')
+    socket.removeAllListeners('start game')
+    socket.removeAllListeners('game over');
   }
 
   render() {

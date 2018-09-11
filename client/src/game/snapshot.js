@@ -9,6 +9,12 @@ export class SnapshotBuffer {
     return this.first === null && this.last === null;
   }
 
+  reset() {
+    this.first = null;
+    this.last = null;
+    this.length = 0;
+  }
+
   push(snapshot) {
     if (this.first === null) {
       this.first = snapshot;

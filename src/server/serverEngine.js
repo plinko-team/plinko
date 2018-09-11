@@ -1,6 +1,4 @@
-import EventEmitter from 'eventemitter3';
-import { Body, World, Engine, Events } from 'matter-js';
-
+import { World, Engine, Events } from 'matter-js';
 import Chip from '../bodies/Chip';
 import Peg from '../bodies/Peg';
 import Triangle from '../bodies/Triangle';
@@ -47,10 +45,9 @@ export default class ServerEngine {
     this.inputBuffer = new InputBuffer();
     this.waitingQueue = new WaitingQueue();
     this.gameIsRunning = false;
-    this.gameLoop = undefined;
     this.playerIds = {0: null, 1: null, 2: null, 3: null};
 
-    console.log('new ServerEngine! gameIsRunning:', this.gameIsRunning)
+    console.log('New ServerEngine created!')
   }
 
   init() {
@@ -114,6 +111,7 @@ export default class ServerEngine {
         const combinedId = String(chip.ownerId) + String(chip.id);
 
         chip.shrink(() => {
+          if (!this.gameIsRunning) return;
           World.remove(this.engine.world, chip.body);
           delete this.chips[combinedId];
         })
@@ -124,6 +122,10 @@ export default class ServerEngine {
   registerPhysicsEvents() {
     // Collision Events
     Events.on(this.engine, 'collisionStart', this.onCollisionStart);
+  }
+
+  unregisterPhysicsEvents() {
+    Events.off(this.engine, 'collisionStart', this.onCollisionStart);
   }
 
   fillActiveUsers() {
@@ -168,7 +170,7 @@ export default class ServerEngine {
 
         this.waitingQueue.enqueue(user);
 
-        console.log('new user! gameIsRunning:', this.gameIsRunning)
+        console.log('New user! Name: ', name)
 
         if (!this.gameIsRunning) {
           this.fillActiveUsers();
@@ -193,7 +195,15 @@ export default class ServerEngine {
       socket.on('start game', () => {
         this.activeUsers.broadcastAll('start game');
         this.users.broadcastAll('game started');
-        setTimeout(this.startGame.bind(this), 5000);
+
+        this.engine = Engine.create();
+        this.createEnvironment();
+        this.registerPhysicsEvents();
+
+        setTimeout(() => {
+          this.activeUsers.broadcastAll('START');
+          this.startGame();
+        }, 5000);
       });
 
       socket.on('leave game', () => {
@@ -270,7 +280,8 @@ export default class ServerEngine {
       }
     })
 
-    console.log("Active: ", activeUsers, "\nWaiting: ",  waitingUsers)
+    const timestamp = new Date().toDateString()
+    console.log("Time: ", timestamp, "\nActive: ", activeUsers)
   }
 
   processInputBuffer() {
@@ -294,8 +305,8 @@ export default class ServerEngine {
   }
 
   reduceTargetScoreInterval() {
+    console.log("=> Starting score countdown")
     this.targetScoreInterval = setInterval(() => {
-      console.log(this.targetScore);
       this.targetScore -= 1;
     }, 1000);
   }
@@ -310,7 +321,6 @@ export default class ServerEngine {
 
       !this.inputBuffer.isEmpty() && this.processInputBuffer();
 
-
       Engine.update(this.engine, TIMESTEP);
 
       if (!this.targetScoreInterval) { this.reduceTargetScoreInterval() }
@@ -323,16 +333,15 @@ export default class ServerEngine {
 
       let snapshot = this.generateSnapshot(this.chips, this.pegs, this.score,
                                            this.winner, this.targetScore);
-      if (this.chips.length > 5) {
-        console.log(snapshot);
-      }
 
       this.broadcastSnapshot(snapshot);
 
       this.nextTimestep += TIMESTEP;
     }
 
-    this.gameLoop = setImmediate(this.startGame.bind(this))
+    if (this.gameIsRunning) {
+      this.gameLoop = setImmediate(this.startGame.bind(this));
+    }
   }
 
   endRound() {
@@ -351,6 +360,8 @@ export default class ServerEngine {
   }
 
   stopGame() {
+    delete this.nextTimestep;
+    delete this.firstChipDropped;
     clearInterval(this.targetScoreInterval);
     clearImmediate(this.gameLoop);
     this.gameIsRunning = false;
@@ -364,18 +375,23 @@ export default class ServerEngine {
   }
 
   resetGame() {
-    this.logged = false
+    this.logged = false;
     this.activeUsers = new UserCollection();
-    this.engine = Engine.create();
-    this.frame = 0;
-    this.inputBuffer = new InputBuffer();
-    this.gameLoop = undefined;
+    // this.unregisterPhysicsEvents()
+
     this.chips = {};
     this.pegs = [];
+    Engine.clear(this.engine);
+
+    delete this.engine;
+    delete this.gameloop;
+
+    this.frame = 0;
+    this.inputBuffer = new InputBuffer();
+
     this.winner = false;
+
     this.initializeScore();
-    this.createEnvironment();
-    this.registerPhysicsEvents();
   }
 
   generateSnapshot(chips, pegs, score, winner, targetScore) {
@@ -385,12 +401,12 @@ export default class ServerEngine {
 
     const chipInfo = chips.map(chip => {
       return {
-           id: chip.id,
-           ownerId: chip.ownerId,
-           x: chip.body.position.x,
-           y: chip.body.position.y,
-           angle: chip.body.angle
-         };
+         id: chip.id,
+         ownerId: chip.ownerId,
+         x: chip.body.position.x,
+         y: chip.body.position.y,
+         angle: chip.body.angle
+       };
     });
 
     const pegInfo = pegs.map(peg => {
@@ -401,10 +417,12 @@ export default class ServerEngine {
   }
 
   broadcastSnapshot({ chips, pegs, score, winner, targetScore }) {
-    let encodedSnapshot = Serializer.encode({ chips, pegs, score, winner, targetScore })
+    if (Object.keys(chips).length > 0) this.firstChipDropped = true;
+    if (!this.firstChipDropped) return;
+
+    const encodedSnapshot = Serializer.encode({ chips, pegs, score, winner, targetScore })
 
     this.activeUsers.forEach(user => {
-      // user.socket.emit(SNAPSHOT, { chips, pegs, score, winner, targetScore });
       user.socket.emit(SNAPSHOT, encodedSnapshot);
     })
   }
