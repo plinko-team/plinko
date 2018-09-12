@@ -437,7 +437,7 @@ while (bendingFrame !== totalBendingFrames) {
         <h4 id="213-Frame-Rate-Independence">2.1.3 Frame Rate Independence</h4>
         <div className="p">Currently, our physics engine steps forward and the game is rendered on every single frame. A loop that renders and updates the simulation at the same time can work well as long as conditions are ideal, but a user with a particularly fast processor will experience a faster moving physics simulation. Likewise, a slower computer will result in a sluggish physical environment.</div>
         <div className="p">Let’s consider an example where, due to heavy computational load, it takes 100ms of real time to run a single step of our game loop. Essentially, 100ms have passed in the real world, but the physics simulation has only moved forward 16ms. In 100ms, we would expect six frames to be simulated and rendered, but instead our game only generates one. If this happens multiple times in a row, the frame rate will drop and the game world will actually appear to <em>slow down</em>.</div>
-        <div className="p">Even if our display frame rate is lowered, we still need the physics engine to simulate 100ms when 100ms have elapsed. Otherwise, the motion on the screen will be  and jittery; the speed of a chip should only depend on its physical properties, not the speed of the computer running it.
+        <div className="p">Even if our display frame rate is lowered, we still need the physics engine to simulate 100ms when 100ms have elapsed. Otherwise, the motion on the screen will be jittery. The speed of a chip should only depend on its physical properties, not the speed of the computer running it.
           <Citation
             creator={'Koen Witters'}
             creationDate={"July 13, 2009"}
@@ -536,7 +536,7 @@ while (bendingFrame !== totalBendingFrames) {
         <h3 id="websockets">3.2 WebSockets</h3>
         <div className="p">Now that we have our network in place, how will we facilitate communication between our server and clients? We want to run our game at 60 frames per second, which requires transmitting large amounts of data between client and server very quickly.</div>
         <div className="p">HTTP is an obvious protocol choice for most apps, but it isn’t well suited to our needs. It operates on a request-response cycle, and it must open and close a new connection for each new cycle. When we’re sending messages 60 times a second, this constant opening and closing will slow us down.</div>
-        <div className="p">WebSockets is built on TCP just like HTTP, but it provides stateful, bidirectional, full-duplex communication between client and server. Either the client or server may initiate communication, and both may send messages to one another simultaneously – all over a single connection that remains open for the lifetime of the communication session. After an initial HTTP handshake to open the connection, the client and server may exchange only the relevant application data with no headers, which decreases message overhead.</div>
+        <div className="p">WebSockets is built on TCP just like HTTP is, but it provides stateful, bidirectional, full-duplex communication between client and server. Either the client or server may initiate communication, and both may send messages to one another simultaneously – all over a single connection that remains open for the lifetime of the communication session. After an initial HTTP handshake to open the connection, the client and server may exchange only the relevant application data with no headers, which decreases message overhead.</div>
         <div className="p">These optimizations make it faster, and therefore a better choice for our game.
         <Citation
           creator={'David Luecke'}
@@ -589,10 +589,10 @@ while (bendingFrame !== totalBendingFrames) {
           <img className="small" src="https://i.imgur.com/7fJWXcr.png" alt="Smart Clients" />
         </figure>
 
-        <div className="p">Unfortunately, we have a problem: the chip will start falling right away for player 1, but the other players won’t find out about it for anywhere from 20-300+ milliseconds due to the latency that’s inherent to communication over the internet. In the meantime, they’re dropping their own chips and their game engines are moving forward by several frames. If everyone finds out about each others’ chips at different times, each player’s game world is going to look a little different. What if two chips collide on one player’s screen, but not on another’s? The longer the game runs, the more the state will diverge. Pretty soon, two players’ games will look nothing alike.</div>
+        <div className="p">Unfortunately, we have a problem: the chip will start falling right away for player 1, but the other players won’t find out about it for anywhere from 20-300+ milliseconds due to the latency that’s inherent in communication over the internet. In the meantime, they’re dropping their own chips and their game engines are moving forward by several frames. If everyone finds out about each others’ chips at different times, each player’s game world is going to look a little different. What if two chips collide on one player’s screen, but not on another’s? The longer the game runs, the more the state will diverge. Pretty soon, two players’ games will look nothing alike.</div>
 
         <h4 id="411-Lockstep">4.1.1 Lockstep</h4>
-        <div className="p">One solution to this problem is to constrain the client game engines to update at the same time. We’ll send inputs to the server just like above, but the server doesn’t broadcast them right away. Instead, on each frame it waits to receive inputs (or a notification that no input occurred) from every single player. Once it’s heard from everyone, it will broadcast the set of inputs for that frame. Then, and only then, may the clients render the frame. To render the next frame, the server and clients have to start this process over again.</div>
+        <div className="p">One solution to this problem is to constrain the client game engines to update at the same time. We’ll send inputs to the server just like above, but the server won’t broadcast them right away. Instead, on each frame it waits to receive inputs (or a notification that no input occurred) from every single player. Once it’s heard from everyone, it will broadcast the set of inputs for that frame. Then, and only then, may the clients render the frame. To render the next frame, the server and clients have to start this process over again.</div>
         <div className="p">This model is called <em>lockstep</em> because that’s exactly how the client engines move forward: together, in lockstep. It was one of the earliest approaches to networked gaming, and it’s still alive today in turn-based and strategy games.
           <Citation
             creator={'Glenn Fiedler'}
@@ -637,11 +637,11 @@ while (bendingFrame !== totalBendingFrames) {
           </div>
           <div>
             <img src="https://i.imgur.com/rEzg6ql.png" alt="Illustration of client-server communication 2" />
-            <div className="legend">2. The client notifies the server of a new input (note that chip is not rendered yet)</div>
+            <div className="legend">2. The client notifies the server of a new input (note that the chip is not rendered yet)</div>
           </div>
           <div>
             <img src="https://i.imgur.com/RYWVIx1.png" alt="Illustration of client-server communication 3" />
-            <div className="legend">3. The server updates the game world</div>
+            <div className="legend">3. The server’s physics engine updates the game world</div>
           </div>
           <div>
             <img src="https://i.imgur.com/Iv8PMhc.png" alt="Illustration of client-server communication 4" />
@@ -663,7 +663,7 @@ while (bendingFrame !== totalBendingFrames) {
         <div className="p">Unfortunately, a fully synchronized game state doesn’t come for free. The snapshot implementation introduces a few new problems of its own:</div>
 
         <h4 id="421-Network-Jitter">4.2.1 Network Jitter</h4>
-        <div className="p">Ever experience the frustration of a stuttering video stream or a game that seems to skip through time? With snapshots, our game is going to jitter like this too. The server is broadcasting new frames every 16.67ms to achieve our 60fps but there is no guarantee that our clients will receive them in the same regularly spaced intervals. In fact, the unpredictability of the internet all but guarantees that won’t happen.</div>
+        <div className="p">Ever experience the frustration of a stuttering video stream or a game that seems to skip through time? With snapshots, our game is going to jitter like this too. The server is broadcasting new frames every 16.67ms to achieve our 60fps frame rate, but there is no guarantee that our clients will receive them in the same regularly spaced intervals. In fact, the unpredictability of the internet all but guarantees that won’t happen.</div>
         <div className="p">If a client receives two snapshots right in a row, then none for a while, then another three all together, and so on, the game will appear jittery on screen. Luckily, we can mitigate this problem with a buffer.</div>
 
         <h5 id="4211-Solution-Snapshot-Buffer">Solution: Snapshot Buffer</h5>
@@ -680,7 +680,7 @@ while (bendingFrame !== totalBendingFrames) {
         </SyntaxHighlighter>
 
         <h4 id="422-High-Bandwidth-Consumption">4.2.2 High Bandwidth Consumption</h4>
-        <div className="p">In the lockstep approach, when we were transmitting only inputs over the network, our data needs were very small. Each new chip sent to the server required only a set of location coordinates and an id to show which player dropped it. Once the server processed the chip and broadcast all inputs for a given frame, clients could expect to receive a maximum of one chip object per player.</div>
+        <div className="p">In the lockstep approach, when we were transmitting only inputs over the network, our data needs were very small. Each new chip sent to the server required only a set of location coordinates and an ID to show which player dropped it. Once the server processed the chip and broadcast all inputs for a given frame, clients could expect to receive a maximum of one chip object per player.</div>
         <div className="p">With snapshots, the initial input data sent from client to server remains the same. However, the data broadcast back from the server is <em>much</em> larger. Now, the server must transmit the entire game world – all the chips, all the pegs, everything – to every player, 60 times every second. As you might imagine, this adds up quickly.</div>
         <div className="p">Let’s compare our bandwidth, assuming there are 200 chips in the game and a new one is added every second:</div>
 
@@ -813,7 +813,7 @@ while (bendingFrame !== totalBendingFrames) {
 
         <h5 id="4222-Interpolation">Solution: Interpolation</h5>
         <div className="p">We’ve covered sending <em>less</em> data with binary serialization, but it’s also possible to send game state data <em>less frequently</em>. What if, instead of sending a snapshot of every frame, the server only sends a snapshot of every <em>other</em> frame?</div>
-        <div className="p">We still want to animate our game at 60 frames per second for our players, so if clients only receive 30 frames per second, they will somehow need to create the missing frames on their own. The clients can achieve this by interpolating–guessing what happened–in between the frames they do receive. This strategy is called snapshot interpolation, and it effectively lets us chop our bandwidth consumption in half.</div>
+        <div className="p">We still want to animate our game at 60 frames per second for our players, so if clients only receive 30 frames per second, they will somehow need to create the missing frames on their own. The clients can achieve this by interpolating – guessing what happened – in between the frames they do receive. This strategy is called snapshot interpolation, and it effectively lets us chop our bandwidth consumption in half.</div>
         <div className="p">Here’s how it works in an ideal scenario:</div>
 
         <Slider {...sliderSettings}>
@@ -836,7 +836,7 @@ while (bendingFrame !== totalBendingFrames) {
         </Slider>
 
         <div className="p">Here, the players will see the chip take almost the exact same path that it actually took in the server’s physics engine. Any small differences should be unnoticeable, and they’ll be corrected as soon as the client renders the next snapshot.</div>
-        <div className="p">Unfortunately, interpolation won’t always give us such good results. Remember that the client is guessing now, and sooner or later one of the guesses is bound to be wrong. In the previous example, the client happened to receive a snapshot of the exact moment when the chip hit a peg, but there is no guarantee this will always be the case.</div>
+        <div className="p">Unfortunately, interpolation won’t always give us such good results. Remember that the client is guessing now, and sooner or later one of those guesses is bound to be wrong. In the previous example, the client happened to receive a snapshot of the exact moment when the chip hit a peg, but there is no guarantee this will always be the case.</div>
         <div className="p">Imagine another scenario, where the chip takes the same path in the server engine, but the clients happen to receive different snapshots:</div>
 
         <Slider {...sliderSettings}>
@@ -858,7 +858,7 @@ while (bendingFrame !== totalBendingFrames) {
           </div>
         </Slider>
 
-        <div className="p">Now the chip turns right right in mid-air, but the players never see it hit a peg. It’s as if the peg has a forcefield around it, which creates a jarring, unnatural effect.</div>
+        <div className="p">Now the chip turns right in mid-air, but the players never see it hit a peg. It’s as if the peg has a forcefield around it, which creates a jarring, unnatural effect.</div>
         <div className="p">There is no simple solution to this problem. We could mitigate the risk of bad guesses by sending snapshots from the server more often, but this would defeat the purpose of using interpolation to reduce bandwidth in the first place.</div>
 
         <h4 id="423-Input-Lag">4.2.3 Input Lag</h4>
@@ -939,12 +939,12 @@ while (bendingFrame !== totalBendingFrames) {
         <ul>
         <li>Instantly render new chips on the client before the server knows about them</li>
         <li>Extrapolate chip behaviour in between snapshots from the server</li>
-        </ul><div className="p">Due to network latency, the client and server receive information about what is happening on the other “in the past”, which then needs to be reconciled. Let’s take a look at how the system works as a whole before focusing on the individual parts:</div>
+        </ul><div className="p">Due to network latency, the client and server receive information about what is happening on the other “in the past,” which then needs to be reconciled. Let’s take a look at how the system works as a whole before focusing on the individual parts:</div>
       <figure>
           <img src="https://i.imgur.com/JVx8Ee4.png" alt="Extrapolation lifecycle" />
           <figcaption>Round-trip lifecycle of an input</figcaption>
         </figure>
-        <div className="p">In the figure above, an input is made on frame <code>95</code>, but does not reach the server until frame <code>100</code>. However, both sides continue to simulate the game world during these 5 frames. Once the server receives the input, it needs to rewind the game <em>back</em> to frame <code>95</code> from frame <code>100</code>, and reenact what “actually” have happened.</div>
+        <div className="p">In the figure above, an input is made on frame <code>95</code>, but does not reach the server until frame <code>100</code>. However, both sides continue to simulate the game world during these 5 frames. Once the server receives the input, it needs to rewind the game <em>back</em> to frame <code>95</code> from frame <code>100</code>, and reenact what “actually” happened.</div>
         <div className="p">Once the reenactment is complete, it sends a snapshot of the entire game world at frame 100. Again, the game world continues forward while the snapshot is in transit.</div>
         <div className="p">Finally, on frame <code>105</code>, the client receives the snapshot reflecting the authoritative state at <code>100</code> and “regenerates” the game world based on it. It must now fast forward up to the current frame in order to reflect what it thinks the server must be seeing at frame <code>105</code>.</div>
 
@@ -1068,17 +1068,17 @@ while (bendingFrame !== totalBendingFrames) {
         </SyntaxHighlighter>
 
         <h4 id="432-Server-Side-Reenactment">4.3.2 Server-Side Reenactment</h4>
-        <div className="p">While clients are receiving a stream of snapshots, the server is enduring a constant wave of inputs from each client. Because each of these inputs are describing the past, the server must also perform a reenactment to settle on a state which includes the recent inputs.</div>
+        <div className="p">While clients are receiving a stream of snapshots, the server is enduring a constant wave of inputs from each client. Because each of these inputs are describing the past, the server must also perform a reenactment to settle on a state that includes the recent inputs.</div>
 
         <h5 id="Useful-Data-structures">Useful Data structures</h5>
         <div className="p">Before we cover the implementation details of server-side reenactment, there are a few very useful data structures we can use to help: A <strong>snapshot history</strong> to keep track of all frames generated, an <strong>input history</strong> to keep track of all input events, and an <strong>input buffer</strong> to optimize how often we perform reenactments.</div>
 
         <Aside emphasized={true}>
           <h6 id="Snapshot-History">Snapshot History</h6>
-          <div className="p">Our server must keep a snapshot history of every single frame it has already simulated, and be able to recall it when a new input is received. As the only constraints here are a constant <code>O(1)</code> read time and delete time, we use a regular JavaScript object for our history with frames as keys and snapshots as values. This way, when we can access a historical frame and rewind to it in one step.</div>
+          <div className="p">Our server must keep a snapshot history of every single frame it has already simulated, and be able to recall it when a new input is received. As the only constraints here are a constant <code>O(1)</code> read time and delete time, we use a regular JavaScript object for our history with frames as keys and snapshots as values. This way, we can access a historical frame and rewind to it in one step.</div>
 
           <h6 id="Input-History">Input History</h6>
-          <div className="p">But once we have rewound to a past frame, what happened to those inputs which occured between then and the current frame? It’s clear that we need to have an input history as well. Again, we used a JavaScript object for its <code>O(1)</code> read time; this time the value is the input itself (or an array of inputs), so as we fast-forward through each frame, we can check if an input exists in constant time, and process it if so.</div>
+          <div className="p">But once we have rewound to a past frame, what happens to those inputs that occured between then and the current frame? It’s clear that we need to have an input history as well. Again, we used a JavaScript object for its <code>O(1)</code> read time; this time the value is the input itself (or an array of inputs), so as we fast-forward through each frame, we can check if an input exists in constant time, and process it if so.</div>
 
           <h6 id="Input-Buffer">Input Buffer</h6>
           <div className="p">If we processed every input as it came in, the server would end up reenacting a lot more often than necessary. In the worst case scenario, every player might input a chip at the same frame, and we would reenact multiple times to produce a <em>single</em> snapshot.</div>
@@ -1105,14 +1105,14 @@ while (bendingFrame !== totalBendingFrames) {
         </SyntaxHighlighter>
 
         <h4 id="Restoring-World-from-a-Snapshot">Restoring World from a Snapshot</h4>
-        <div className="p">To rewind the state to a previous snapshot, there are 3 categories of chips which we need to handle, those which:</div>
+        <div className="p">To rewind the state to a previous snapshot, there are 3 categories of chips we need to handle, those which:</div>
         <ol>
           <li>Do not exist on the client, but exist in the snapshot</li>
           <li>Exist on the client <em>and</em> in the snapshot</li>
           <li>Exist on the client but not in the snapshot</li>
         </ol>
         <div className="p">So our rewind step consists of iterating over the chips in the snapshot, creating chips that fall into (1) and updating chips that fall into (2).</div>
-        <div className="p">Chips in (3) result from the fact that we are going “back in time,” and the client world may contain new chips which are not present in the past. So after iterating over the snapshot, we remove any chips that fall into (3).</div>
+        <div className="p">Chips in (3) result from the fact that we are going “back in time,” and the client world may contain new chips that are not present in the past. So after iterating over the snapshot, we remove any chips that fall into (3).</div>
 
         <SyntaxHighlighter {...syntaxHighlighterProps}>
           {restoreWorldFromSnapshot}
@@ -1127,7 +1127,7 @@ while (bendingFrame !== totalBendingFrames) {
         </SyntaxHighlighter>
 
         <h4 id="434-Client-Side-State-Divergence">4.3.4 Client-Side State Divergence</h4>
-        <div className="p">One topic we have not yet discussed is what happens in the case when state diverges? With a pure snapshot approach, all clients are consistent with the server at every point in time. Now that there is a local client-side simulation, we might find that there is a disagreement between where we <em>think</em> our chip is, and where the reenactment indicates that it <em>“really”</em> is. In some cases, it is acceptable to simply “snap” to the new state, but there are some strategies to help smooth out the discrepancies more naturally.</div>
+        <div className="p">One topic we have not yet discussed is what happens when state diverges. With a pure snapshot approach, all clients are consistent with the server at every point in time. Now that there is a local client-side simulation, we might find that there is a disagreement between where the client <em>thinks</em> a chip is, and where the reenactment indicates that it <em>“really”</em> is. In some cases, it is acceptable to simply “snap” to the new state, but there are some strategies to help smooth out the discrepancies more naturally.</div>
 
         <h5 id="Popping">Popping</h5>
         <div className="p">When the client performs a reenactment and discovers that the current and the reenacted chip positions have diverged, it can simply render the new position and continue simulating. This can result in a “popping” effect, where the chip pops out of existence at one point, and back into existence elsewhere:</div>
@@ -1200,7 +1200,7 @@ while (bendingFrame !== totalBendingFrames) {
           </div>
 
         </Slider>
-        <div className="p">While this works perfectly fine in the case where divergence is not severe, if the positions are dozens of pixels apart, the effect can be jarring and chips can appear to teleport. One of the most important aspects of a physics-based game is for objects to have a natural path which your eyes can follow. This creates the important illusion of continuity so that the viewer can register an object to persist between frames as the same object. If we were content for chips to pop, we would be sacrificing an important aspect of the player experience.</div>
+        <div className="p">While this works perfectly fine when divergence is not severe, if the positions are dozens of pixels apart, the effect can be jarring and chips can appear to teleport. One of the most important aspects of a physics-based game is for objects to have a natural path that your eyes can follow. This creates the important illusion of continuity so that the viewer can register an object to persist between frames as the same object. If we let chips pop, we will be sacrificing an important aspect of the player experience.</div>
 
         <h5 id="Solution-Bending">Solution: Bending</h5>
         <div className="p">The best way to handle the problem of continuity with respect to state divergence is to perform bending (or smoothing). This means that once a new position is calculated, we don’t render it immediately, but instead continue rendering our <em>old</em> position. Then, over a period of 3-5 frames, we can “push” the old position towards the new one.</div>
@@ -1277,17 +1277,7 @@ while (bendingFrame !== totalBendingFrames) {
             a peg.</div>
           </div>
         </Slider>
-        <pre><code>a) Client is extrapolating on the client engine
-          b) We receive a snapshot about the state at  `frame 53` and rewind
-          c) We have caught up to the current frame, so we begin bending
-          d) We calculate the distance between the rendered position and the new simulated position, and use that to push the chip towards its actual position
-          e) Bending is complete and we can continue extrapolating
 
-          (accidentally labeled last frame as e instead of f)
-          f) We can see from the final state that it is easy to follow the continuous chip path, at the expense of some unnatural behaviour such as going through a peg.
-
-          note: This is exaggerated for effect, generally the divergence will be on a smaller scale.
-        </code></pre>
         <div className="p">The result is a smooth path which the eye can follow naturally, but the path may still appear to be “impossible” based on the physics.</div>
 
         <h6 id="Bending-Implementation">Bending Implementation</h6>
@@ -1298,20 +1288,20 @@ while (bendingFrame !== totalBendingFrames) {
         </SyntaxHighlighter>
 
         <h4 id="435-Tradeoffs">4.3.5 Tradeoffs</h4>
-        <div className="p">Comparing prediction to relying solely on snapshots, we can see that incorporating prediction provides two major benefits:</div>
+        <div className="p">Compared to relying solely on snapshots, prediction provides two major benefits:</div>
         <ul>
           <li><strong>Lower Bandwidth:</strong> Snapshots can be transmitted as infrequently as 5-10 times per second because a client-side simulation is so effective at estimating what occurs between snapshots.</li>
-          <li><strong>Instant Feedback:</strong> The client gets instant visual feedback when an input is made by simulating and rendering it to the screen before any snapshot reflecting the input is received.</li>
+          <li><strong>Instant Feedback:</strong> The client gets instant visual feedback when an input is made because it can render that input before any snapshot reflecting the input is received.</li>
         </ul>
         <div className="p">In exchange for these benefits, there are some drawbacks:</div>
         <ul>
-          <li><strong>Lag Compensation:</strong> Every communication must compensate for the latency between the client and server. While both client and server simulate in the “present,” all inputs and snapshots come from the “past.” Thus, the world must constantly be rewound and reenacted to maintain a real time experience.</li>
-          <li><strong>More Computationally Intensive:</strong> Both the client and the server need to do considerably more work per frame. If one user experiences a high CPU load or has a slower computer, the computations necessary for reenactment might exceed the number of milliseconds available per frame. If this is the case, there may be a need to lower that client’s frame rate (along with raising his physics timestep) in order to extend this computation budget. Likewise, if the reenactment strain is too high on the server, the server would need to lower its own frame rate as well as every client’s.</li>
+          <li><strong>Lag Compensation:</strong> Every communication must compensate for the latency between the client and server. While both client and server simulate in the “present,” all inputs and snapshots come from the “past.” Thus, the world must constantly be rewound and reenacted to maintain a real-time experience.</li>
+          <li><strong>More Computationally Intensive:</strong> Both the client and the server need to do considerably more work per frame. If one user experiences a high CPU load or has a slower computer, the computations necessary for reenactment might exceed the number of milliseconds available per frame. If this is the case, there may be a need to lower that client’s frame rate (along with raising his or her physics timestep) in order to extend this computation budget. Likewise, if the reenactment strain is too high on the server, the server would need to lower its own frame rate as well as every client’s.</li>
         </ul>
 
         <h4 id="436-Estimating-Latency">4.3.6 Estimating Latency</h4>
-        <div className="p">There’s one last thing we need to address. Our game implicitly expects that the clients and server are running on the same timeline. This means that if the server is on frame 100 we should expect any given client to be within at least a few frames of that when sending or receiving inputs. If this is not the case our game will break down because our game engine will be forced to reenact too far into the past. So how do we ensure that clients and server start the game in a synchronized manner and maintain a unified timeline? We estimate the average latency between a given client and the server.</div>
-        <div className="p">We need to estimate because there is no sure-fire of knowing the exact latency between the client and server. Part of this issue stems from the fact that no two clocks will ever agree on what the current time is and no two transmissions are guaranteed to take the exact amount of time. With that being said, we don’t need to be exact and a good estimate of latency is the best we can hope for. Utilizing the algorithm described below we are able to get an average latency estimate that’s sufficient for our purposes.
+        <div className="p">There’s one last thing we need to address. Our game implicitly expects that the clients and server are running on the same timeline. This means that if the server is on frame 100, we expect any given client to be within a few frames of that when sending or receiving inputs. If this is not the case, our game will break down because our game engine will be forced to reenact too far into the past. So how do we ensure that clients and the server start the game in a synchronized manner and maintain a unified timeline?</div>
+        <div className="p">We need to estimate the average latency between a given client and the server. We use the term "estimate" because there is no sure-fire of knowing the exact latency between the client and server. No two clocks will ever agree on exactly what the current time is, and no two transmissions over the internet are guaranteed to take the exact amount of time. But by utilizing the algorithm described below, we are able to get a latency estimate that’s sufficient for our purposes.
           <Citation
             creator={'Zachary Booth Simpson'}
             creationDate={"March 01, 2000"}
@@ -1323,11 +1313,11 @@ while (bendingFrame !== totalBendingFrames) {
         <Slider {...sliderSettings}>
           <div>
             <img alt="Latency Estimation Carousel 1" className="medium" src="https://s15.postimg.cc/jbtpyydx7/latency_step2.png" />
-            <div className="legend">Step 1: The client stamps its current local time on a “time request” packet and sends to the server</div>
+            <div className="legend">Step 1: The client stamps its current local time on a “time request” packet and sends to the server as a ping</div>
           </div>
           <div>
             <img alt="Latency Estimation Carousel 2" className="medium" src="https://s15.postimg.cc/3qcef0p4b/latency_step3.png" />
-            <div className="legend">Step 2: When the server receives the packet, the server stamps it’s own local time time and sends back to the client</div>
+            <div className="legend">Step 2: When the server receives the packet, the server stamps its own local time time and sends a pong back to the client</div>
           </div>
           <div>
             <img alt="Latency Estimation Carousel 3" className="medium" src="https://s15.postimg.cc/atk9ummu3/latency_step4.png" />
@@ -1351,10 +1341,10 @@ while (bendingFrame !== totalBendingFrames) {
           </div>
         </Slider>
 
-        <div className="p">Now that we have a reliable means of estimating latency before the game starts each client can use this information to predict what frame of the simulation the server is on.</div>
+        <div className="p">Now that we have a reliable means of estimating latency before the game starts, each client can use this information to predict what frame of the simulation the server is on.</div>
 
         <h4 id="437-Conclusion">4.3.7 Conclusion</h4>
-        <div className="p">While prediction adds complexity to our implementation, it allows us to reduce our bandwidth needs considerably and creates a better experience for the user.</div>
+        <div className="p">While prediction adds significant complexity to our implementation, it allows us to reduce our bandwidth needs considerably and creates a better experience for the user.</div>
 
         {/* Finished Product */}
 
