@@ -383,7 +383,7 @@ export default class ServerEngine {
     this.pegs = [];
     Engine.clear(this.engine);
 
-    delete this.engine;
+    // delete this.engine;
     delete this.gameloop;
 
     this.frame = 0;

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { WiredCard } from 'wired-card';
+// import { WiredCard } from 'wired-card';
 
 export default class ScoreBar extends Component {
   static propTypes = {

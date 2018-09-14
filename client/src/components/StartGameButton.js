@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { WiredButton } from 'wired-button';
+// import { WiredButton } from 'wired-button';
 
 const StartGameButton = ({ handleClick }) => {
   return (

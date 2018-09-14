@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { WiredCard } from 'wired-card';
+// import { WiredCard } from 'wired-card';
 
 const Aside = ({ emphasized, children }) => {
   const elevation = emphasized ? "4" : "2";
